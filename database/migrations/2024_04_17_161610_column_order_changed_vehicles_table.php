@@ -8,13 +8,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
+     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->boolean('private')->default(1);
+            $table->foreignId('user_id')->after('id')->change();
+            $table->boolean('private')->after('fuel_type')->change();
         });
     }
 
@@ -24,7 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->dropColumn('private');
+            $table->foreignId('user_id')->after('updated_at')->change();
+            $table->boolean('private')->after('updated_at')->change();
         });
     }
 };

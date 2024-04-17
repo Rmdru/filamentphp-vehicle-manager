@@ -14,7 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->boolean('private')->default(1);
+            $table->integer('brand')->change();
+            $table->integer('fuel_type')->nullable()->change();
         });
     }
 
@@ -24,7 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->dropColumn('private');
+            $table->string('brand', 50)->change();
+            $table->string('fuel_type', 30)->nullable()->change();
         });
     }
 };
