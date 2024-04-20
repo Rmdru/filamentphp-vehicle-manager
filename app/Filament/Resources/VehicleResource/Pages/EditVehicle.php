@@ -10,6 +10,13 @@ class EditVehicle extends EditRecord
 {
     protected static string $resource = VehicleResource::class;
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['powertrain'] = config('cars.powertrain')[$data['powertrain']];
+
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

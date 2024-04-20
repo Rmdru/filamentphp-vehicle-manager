@@ -27,6 +27,8 @@ class VehicleResource extends Resource
                 Select::make('brand')
                     ->label(__('Brand'))
                     ->required()
+                    ->native(false)
+                    ->searchable()
                     ->options(config('cars.brands')),
                 TextInput::make('model')
                     ->label(__('Model'))
@@ -58,7 +60,9 @@ class VehicleResource extends Resource
                     ->extraInputAttributes(['class' => '!text-black bg-yellow-600']),
                 Select::make('powertrain')
                     ->label(__('Powertrain'))
-                    ->options(config('cars.fuel_types')),
+                    ->native(false)
+                    ->searchable()
+                    ->options(config('cars.powertrain')),
                 Toggle::make('is_private')
                     ->label(__('Private'))
             ]);
