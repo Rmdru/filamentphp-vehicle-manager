@@ -56,10 +56,10 @@ class VehicleResource extends Resource
                     ->required()
                     ->prefix('NL')
                     ->extraInputAttributes(['class' => '!text-black bg-yellow-600']),
-                Select::make('fuel_type')
-                    ->label(__('Fuel type'))
+                Select::make('powertrain')
+                    ->label(__('Powertrain'))
                     ->options(config('cars.fuel_types')),
-                Toggle::make('private')
+                Toggle::make('is_private')
                     ->label(__('Private'))
             ]);
     }
@@ -67,34 +67,66 @@ class VehicleResource extends Resource
     public static function table(Table $table): Table
     {
         $brands = config('cars.brands');
-        $fuelTypes = config('cars.fuel_types');
+        $fuelTypes = config('cars.powertrain');
 
         return $table
             ->columns([
                 TextColumn::make('brand')
+                    ->sortable()
+                    ->searchable()
                     ->label(__('Brand'))
                     ->formatStateUsing(fn (string $state) => $brands[$state] ?? $state),
                 TextColumn::make('model')
+                    ->sortable()
+                    ->searchable()
                     ->label(__('Model')),
                 TextColumn::make('version')
+                    ->sortable()
+                    ->searchable()
                     ->label(__('Version')),
                 TextColumn::make('engine')
+                    ->sortable()
+                    ->searchable()
+                    ->placeholder('-')
                     ->label(__('Engine')),
                 TextColumn::make('factory_specification_fuel_consumption')
+                    ->sortable()
+                    ->placeholder('-')
                     ->label(__('Factory specification for fuel consumption')),
                 TextColumn::make('mileage_start')
+                    ->sortable()
+                    ->placeholder('-')
                     ->label(__('Mileage begin')),
                 TextColumn::make('mileage_latest')
+                    ->sortable()
+                    ->placeholder('-')
                     ->label(__('Latest mileage')),
                 TextColumn::make('purchase_date')
+                    ->sortable()
+                    ->date()
+                    ->searchable()
+                    ->placeholder('-')
                     ->label(__('Purchase date')),
                 TextColumn::make('license_plate')
+                    ->sortable()
+                    ->badge()
+                    ->color('warning')
+                    ->searchable()
+                    ->placeholder('-')
                     ->label(__('License plate')),
-                TextColumn::make('fuel_type')
-                    ->label(__('Fuel type'))
+                TextColumn::make('powertrain')
+                    ->sortable()
+                    ->badge()
+                    ->placeholder('-')
+                    ->label(__('Powertrain'))
                     ->formatStateUsing(fn (string $state) => $fuelTypes[$state] ?? $state),
-                TextColumn::make('private')
-                    ->label(__('Private')),
+                Tables\Columns\IconColumn::make('is_private')
+                    ->boolean()
+                    ->sortable()
+                    ->color('unset')
+                    ->trueIcon('gmdi-lock')
+                    ->falseIcon('gmdi-public')
+                    ->label(__('Privacy')),
             ])
             ->filters([
                 //

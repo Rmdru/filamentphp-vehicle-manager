@@ -82,7 +82,7 @@ return [
         "Wiesmann",
         "ZAZ",
     ],
-    'fuel_types' => [
+    'powertrain' => [
         "Gasoline",
         "Gasoline mild-hybrid",
         "Gasoline full-hybrid",
