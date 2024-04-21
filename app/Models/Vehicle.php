@@ -34,10 +34,12 @@ class Vehicle extends Model
         'purchase_date',
         'license_plate',
         'fuel_type',
+        'private',
     ];
 
     protected $casts = [
         'purchase_date' => 'date:Y-m-d',
+        'private' => 'boolean',
     ];
 
     /**

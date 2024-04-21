@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->boolean('private')->default(1);
+            $table->renameColumn('private', 'is_private');
         });
     }
 
@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->dropColumn('private');
+            $table->renameColumn('is_private', 'private');
         });
     }
 };
