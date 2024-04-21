@@ -7,12 +7,16 @@ use App\Models\Vehicle;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class VehicleResource extends Resource
 {
@@ -44,9 +48,10 @@ class VehicleResource extends Resource
                 TextInput::make('factory_specification_fuel_consumption')
                     ->label(__('Factory specification for fuel consumption'))
                     ->numeric()
+                    ->suffix(' l/100km')
                     ->inputMode('decimal'),
                 TextInput::make('mileage_start')
-                    ->label(__('Mileage begin'))
+                    ->label(__('Mileage on purchase'))
                     ->numeric(),
                 DatePicker::make('purchase_date')
                     ->label(__('Purchase date'))
@@ -74,68 +79,60 @@ class VehicleResource extends Resource
         $fuelTypes = config('cars.powertrain');
 
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', Auth::user()->id))
             ->columns([
-                TextColumn::make('brand')
-                    ->sortable()
-                    ->searchable()
-                    ->label(__('Brand'))
-                    ->formatStateUsing(fn (string $state) => $brands[$state] ?? $state),
-                TextColumn::make('model')
-                    ->sortable()
-                    ->searchable()
-                    ->label(__('Model')),
-                TextColumn::make('version')
-                    ->sortable()
-                    ->searchable()
-                    ->label(__('Version')),
-                TextColumn::make('engine')
-                    ->sortable()
-                    ->searchable()
-                    ->placeholder('-')
-                    ->label(__('Engine')),
-                TextColumn::make('factory_specification_fuel_consumption')
-                    ->sortable()
-                    ->placeholder('-')
-                    ->label(__('Factory specification for fuel consumption')),
-                TextColumn::make('mileage_start')
-                    ->sortable()
-                    ->placeholder('-')
-                    ->label(__('Mileage begin')),
-                TextColumn::make('mileage_latest')
-                    ->sortable()
-                    ->placeholder('-')
-                    ->label(__('Latest mileage')),
-                TextColumn::make('purchase_date')
-                    ->sortable()
-                    ->date()
-                    ->searchable()
-                    ->placeholder('-')
-                    ->label(__('Purchase date')),
-                TextColumn::make('license_plate')
-                    ->sortable()
-                    ->badge()
-                    ->color('warning')
-                    ->searchable()
-                    ->placeholder('-')
-                    ->label(__('License plate')),
-                TextColumn::make('powertrain')
-                    ->sortable()
-                    ->badge()
-                    ->placeholder('-')
-                    ->label(__('Powertrain'))
-                    ->formatStateUsing(fn (string $state) => $fuelTypes[$state] ?? $state),
-                Tables\Columns\IconColumn::make('is_private')
-                    ->boolean()
-                    ->sortable()
-                    ->color('unset')
-                    ->trueIcon('gmdi-lock')
-                    ->falseIcon('gmdi-public')
-                    ->label(__('Privacy')),
+                Tables\Columns\Layout\Split::make([
+                    Stack::make([
+                        TextColumn::make('brand')
+                            ->sortable()
+                            ->searchable()
+                            ->label(__('Car'))
+                            ->icon(fn (Vehicle $vehicle) => 'si-' . strtolower($brands[$vehicle->brand]))
+                            ->formatStateUsing(fn (Vehicle $vehicle) => $brands[$vehicle->brand] . " " . $vehicle->model),
+                        TextColumn::make('mileage_start')
+                            ->sortable()
+                            ->searchable()
+                            ->icon('gmdi-route')
+                            ->suffix(' km')
+                            ->label(__('Mileage'))
+                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
+                        TextColumn::make('powertrain')
+                            ->sortable()
+                            ->icon('gmdi-local-gas-station')
+                            ->placeholder('-')
+                            ->label(__('Powertrain'))
+                            ->formatStateUsing(fn (string $state) => $fuelTypes[$state] ?? $state),
+                    ])
+                        ->space(1),
+                    Stack::make([
+                        TextColumn::make('license_plate')
+                            ->sortable()
+                            ->badge()
+                            ->color('warning')
+                            ->searchable()
+                            ->label(__('License plate')),
+                        TextColumn::make('status')
+                            ->icon('gmdi-check')
+                            ->badge()
+                            ->default('OK')
+                            ->color('success')
+                            ->label(__('Status')),
+                        TextColumn::make('is_private')
+                            ->icon(fn (Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
+                            ->badge()
+                            ->default('OK')
+                            ->color('gray')
+                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
+                            ->label(__('Privacy')),
+                    ])
+                        ->space(1),
+                ])
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -157,6 +154,7 @@ class VehicleResource extends Resource
         return [
             'index' => Pages\ListVehicles::route('/'),
             'create' => Pages\CreateVehicle::route('/create'),
+            'view' => Pages\ViewVehicle::route('/{record}'),
             'edit' => Pages\EditVehicle::route('/{record}/edit'),
         ];
     }

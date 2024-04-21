@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.2",
         "codeat3/blade-google-material-design-icons": "^1.19",
+        "codeat3/blade-simple-icons": "^3.12",
         "filament/filament": "^3.2",
         "laravel-frontend-presets/tall": "^8.0",
         "laravel/framework": "^11.0",
