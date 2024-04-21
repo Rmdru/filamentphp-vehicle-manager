@@ -87,7 +87,7 @@ class VehicleResource extends Resource
                             ->sortable()
                             ->searchable()
                             ->label(__('Car'))
-                            ->icon(fn (Vehicle $vehicle) => 'si-' . strtolower($brands[$vehicle->brand]))
+                            ->icon(fn (Vehicle $vehicle) => 'si-' . strtolower(str_replace(' ', '', $brands[$vehicle->brand])))
                             ->formatStateUsing(fn (Vehicle $vehicle) => $brands[$vehicle->brand] . " " . $vehicle->model),
                         TextColumn::make('mileage_start')
                             ->sortable()

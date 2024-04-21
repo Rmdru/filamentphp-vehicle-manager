@@ -36,7 +36,7 @@ class ViewVehicle extends ViewRecord
                     ->schema([
                         TextEntry::make(__('brand'))
                             ->label(__('Brand'))
-                            ->icon(fn (Vehicle $vehicle) => 'si-' . strtolower($brands[$vehicle->brand]))
+                            ->icon(fn (Vehicle $vehicle) => 'si-' . strtolower(str_replace(' ', '', $brands[$vehicle->brand])))
                             ->formatStateUsing(fn (Vehicle $vehicle) => $brands[$vehicle->brand]),
                         TextEntry::make(__('model'))
                             ->icon('gmdi-directions-car-filled-r')
