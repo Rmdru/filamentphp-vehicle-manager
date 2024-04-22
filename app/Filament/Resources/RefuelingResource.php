@@ -100,7 +100,15 @@ class RefuelingResource extends Resource
                             ->label(__('Mileage end'))
                             ->suffix('km')
                             ->numeric(),
+                        TextInput::make('fuel_usage_onboard_computer')
+                            ->label(__('Fuel usage onboard computer'))
+                            ->suffix('l/100km')
+                            ->numeric(),
                         ]),
+                Fieldset::make(__('Circumstances'))
+                    ->schema([
+
+                    ]),
             ]);
     }
 
