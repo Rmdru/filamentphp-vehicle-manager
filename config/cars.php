@@ -95,4 +95,18 @@ return [
         "Hydrogen",
         "Electricity",
     ],
+    'fuel_types' => [
+        "Euro 95 E10",
+        "Euro 98 E5",
+        "Super Plus E5",
+        "Euro 102",
+        "Diesel",
+        "Premium diesel",
+        "Adblue",
+        "LPG",
+        "CNG",
+        "Hydrogen",
+        "Fast charging electricity",
+        "Electricity",
+    ],
 ];

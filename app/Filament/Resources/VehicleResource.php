@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\Vehicle;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -28,48 +29,58 @@ class VehicleResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('brand')
-                    ->label(__('Brand'))
-                    ->required()
-                    ->native(false)
-                    ->searchable()
-                    ->options(config('cars.brands')),
-                TextInput::make('model')
-                    ->label(__('Model'))
-                    ->required()
-                    ->maxLength(50),
-                TextInput::make('version')
-                    ->label(__('Version'))
-                    ->required()
-                    ->maxLength(50),
-                TextInput::make('engine')
-                    ->label(__('Engine'))
-                    ->maxLength(50),
-                TextInput::make('factory_specification_fuel_consumption')
-                    ->label(__('Factory specification for fuel consumption'))
-                    ->numeric()
-                    ->suffix(' l/100km')
-                    ->inputMode('decimal'),
-                TextInput::make('mileage_start')
-                    ->label(__('Mileage on purchase'))
-                    ->numeric(),
-                DatePicker::make('purchase_date')
-                    ->label(__('Purchase date'))
-                    ->native(false)
-                    ->displayFormat('d-m-Y')
-                    ->maxDate(now()),
-                TextInput::make('license_plate')
-                    ->label(__('License plate'))
-                    ->required()
-                    ->prefix('NL')
-                    ->extraInputAttributes(['class' => '!text-black bg-yellow-600']),
-                Select::make('powertrain')
-                    ->label(__('Powertrain'))
-                    ->native(false)
-                    ->searchable()
-                    ->options(config('cars.powertrain')),
-                Toggle::make('is_private')
-                    ->label(__('Private'))
+                Fieldset::make(__('Car specifications'))
+                    ->schema([
+                        Select::make('brand')
+                            ->label(__('Brand'))
+                            ->required()
+                            ->native(false)
+                            ->searchable()
+                            ->options(config('cars.brands')),
+                        TextInput::make('model')
+                            ->label(__('Model'))
+                            ->required()
+                            ->maxLength(50),
+                        TextInput::make('version')
+                            ->label(__('Version'))
+                            ->required()
+                            ->maxLength(50),
+                        TextInput::make('engine')
+                            ->label(__('Engine'))
+                            ->maxLength(50),
+                        TextInput::make('factory_specification_fuel_consumption')
+                            ->label(__('Factory specification for fuel consumption'))
+                            ->numeric()
+                            ->suffix(' l/100km')
+                            ->inputMode('decimal'),
+                        Select::make('powertrain')
+                            ->label(__('Powertrain'))
+                            ->native(false)
+                            ->searchable()
+                            ->options(config('cars.powertrain')),
+                        ]),
+                Fieldset::make(__('Ownership'))
+                    ->schema([
+                        TextInput::make('mileage_start')
+                            ->label(__('Mileage on purchase'))
+                            ->suffix('km')
+                            ->numeric(),
+                        DatePicker::make('purchase_date')
+                            ->label(__('Purchase date'))
+                            ->native(false)
+                            ->displayFormat('d-m-Y')
+                            ->maxDate(now()),
+                        TextInput::make('license_plate')
+                            ->label(__('License plate'))
+                            ->required()
+                            ->prefix('NL')
+                            ->extraInputAttributes(['class' => '!text-black bg-yellow-600']),
+                        ]),
+                Fieldset::make(__('Privacy'))
+                    ->schema([
+                        Toggle::make('is_private')
+                            ->label(__('Private'))
+                        ]),
             ]);
     }
 
@@ -128,9 +139,6 @@ class VehicleResource extends Resource
                         ->space(1),
                 ])
             ])
-            ->filters([
-                //
-            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -140,13 +148,6 @@ class VehicleResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
