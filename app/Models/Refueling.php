@@ -22,6 +22,7 @@ class Refueling extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'vehicle_id',
         'date',
         'gas_station',
         'fuel_type',
@@ -30,8 +31,8 @@ class Refueling extends Model
         'total_price',
         'mileage_begin',
         'mileage_end',
-        'fuel_usage_onboard_computer',
-        'fuel_usage',
+        'fuel_consumption_onboard_computer',
+        'fuel_consumption',
         'costs_per_kilometer',
         'tyres',
         'climate_control',

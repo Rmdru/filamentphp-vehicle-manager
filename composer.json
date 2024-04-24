@@ -9,8 +9,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "codeat3/blade-forkawesome": "^1.10",
+        "codeat3/blade-game-icons": "^1.4",
         "codeat3/blade-google-material-design-icons": "^1.19",
         "codeat3/blade-simple-icons": "^3.12",
+        "codeat3/blade-unicons": "^1.8",
         "filament/filament": "^3.2",
         "laravel-frontend-presets/tall": "^8.0",
         "laravel/framework": "^11.0",

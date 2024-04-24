@@ -63,7 +63,7 @@ class VehicleResource extends Resource
                     ->schema([
                         TextInput::make('mileage_start')
                             ->label(__('Mileage on purchase'))
-                            ->suffix('km')
+                            ->suffix(' km')
                             ->numeric(),
                         DatePicker::make('purchase_date')
                             ->label(__('Purchase date'))
@@ -138,6 +138,10 @@ class VehicleResource extends Resource
                     ])
                         ->space(1),
                 ])
+            ])
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

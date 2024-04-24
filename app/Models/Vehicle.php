@@ -33,8 +33,8 @@ class Vehicle extends Model
         'mileage_latest',
         'purchase_date',
         'license_plate',
-        'fuel_type',
-        'private',
+        'powertrain',
+        'is_private',
     ];
 
     protected $casts = [
