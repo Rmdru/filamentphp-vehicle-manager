@@ -25,6 +25,21 @@ class VehicleResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-directions-car-filled-r';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('Vehicles');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Vehicles');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Vehicle');
+    }
+
     public static function form(Form $form): Form
     {
         return $form

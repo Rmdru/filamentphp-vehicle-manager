@@ -2,10 +2,6 @@
 
 <div>
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <a href="{{ route('home') }}">
-            <x-logo class="w-auto h-16 mx-auto text-indigo-600" />
-        </a>
-
         <h2 class="mt-6 text-3xl font-extrabold text-center text-gray-900 leading-9">
             Create a new account
         </h2>
@@ -70,6 +66,71 @@
 
                     <div class="mt-1 rounded-md shadow-sm">
                         <input wire:model.lazy="passwordConfirmation" id="password_confirmation" type="password" required class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 appearance-none rounded-md focus:outline-none focus:ring-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label for="country" class="block text-sm font-medium text-gray-700 leading-5">
+                        Country
+                    </label>
+
+                    <div class="mt-1 rounded-md shadow-sm">
+                        <select wire:model.lazy="country" id="country" required class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 appearance-none rounded-md focus:outline-none focus:ring-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                            <option value="">Choose your country</option>
+                            <option value="nl">Nederland (Netherlands)</option>
+                            <option value="de">Deutschland (Germany)</option>
+                            <option value="fr">France (France)</option>
+                            <option value="it">Italia (Italy)</option>
+                            <option value="be">België (Belgium)</option>
+                            <option value="uk">United Kingdom (United Kingdom)</option>
+                            <option value="es">España (Spain)</option>
+                            <option value="pt">Portugal (Portugal)</option>
+                            <option value="gr">Ελλάδα (Greece)</option>
+                            <option value="se">Sverige (Sweden)</option>
+                            <option value="fi">Suomi (Finland)</option>
+                            <option value="dk">Danmark (Denmark)</option>
+                            <option value="pl">Polska (Poland)</option>
+                            <option value="cz">Česko (Czechia)</option>
+                            <option value="hu">Magyarország (Hungary)</option>
+                            <option value="at">Österreich (Austria)</option>
+                            <option value="ch">Schweiz (Switzerland)</option>
+                            <option value="no">Norge (Norway)</option>
+                            <option value="ie">Éire (Ireland)</option>
+                            <option value="ro">România (Romania)</option>
+                            <option value="bg">България (Bulgaria)</option>
+                            <option value="hr">Hrvatska (Croatia)</option>
+                            <option value="sk">Slovensko (Slovakia)</option>
+                            <option value="si">Slovenija (Slovenia)</option>
+                            <option value="lt">Lietuva (Lithuania)</option>
+                            <option value="lv">Latvija (Latvia)</option>
+                            <option value="ee">Eesti (Estonia)</option>
+                            <option value="lu">Luxembourg (Luxembourg)</option>
+                            <option value="mt">Malta (Malta)</option>
+                            <option value="cy">Κύπρος (Cyprus)</option>
+                            <option value="is">Ísland (Iceland)</option>
+                            <option value="li">Liechtenstein (Liechtenstein)</option>
+                            <option value="mc">Monaco (Monaco)</option>
+                            <option value="sm">San Marino (San Marino)</option>
+                            <option value="va">Città del Vaticano (Vatican City)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label for="language" class="block text-sm font-medium text-gray-700 leading-5">
+                        Language
+                    </label>
+
+                    <div class="mt-1 rounded-md shadow-sm">
+                        <select wire:model.lazy="language" id="language" required class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 appearance-none rounded-md focus:outline-none focus:ring-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+                            <option value="">Choose your language</option>
+                            <option value="en">English (English)</option>
+                            <option value="nl">Nederlands (Dutch)</option>
+                            <option value="de">Deutsch (German)</option>
+                            <option value="fr">Français (French)</option>
+                            <option value="it">Italiano (Italian)</option>
+                            <option value="es">Español (Spanish)</option>
+                        </select>
                     </div>
                 </div>
 

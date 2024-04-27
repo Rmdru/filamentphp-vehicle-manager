@@ -19,7 +19,8 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "owenvoke/blade-fontawesome": "^2.6",
-        "postare/blade-mdi": "^1.0"
+        "postare/blade-mdi": "^1.0",
+        "thiagocordeiro/laravel-translator": "^1.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -20,6 +20,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
 
 class RefuelingResource extends Resource
@@ -28,6 +29,21 @@ class RefuelingResource extends Resource
     protected static ?string $model = Refueling::class;
 
     protected static ?string $navigationIcon = 'gmdi-local-gas-station';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Refuelings');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Refuelings');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Refueling');
+    }
 
     public static function form(Form $form): Form
     {
