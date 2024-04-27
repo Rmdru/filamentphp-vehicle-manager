@@ -7,9 +7,6 @@ use App\Filament\Resources\RefuelingResource\RelationManagers;
 use App\HasVehicleName;
 use App\Models\Refueling;
 use App\Models\Vehicle;
-use Codeat3\BladeSimpleIcons\BladeSimpleIconsServiceProvider;
-use Faker\Core\Color;
-use Faker\Provider\Text;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -17,15 +14,13 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 
 class RefuelingResource extends Resource
 {
@@ -205,7 +200,6 @@ class RefuelingResource extends Resource
     {
         $brands = config('cars.brands');
         $fuelTypes = config('cars.fuel_types');
-        $gasStationIcons = config('cars.gas_station_icons');
 
         return $table
             ->modifyQueryUsing(function ($query) {
@@ -293,6 +287,84 @@ class RefuelingResource extends Resource
                             ->suffix(' l/100km'),
                     ])
                         ->space(1),
+                    Stack::make([
+                        TextColumn::make('tyres')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'all_season' => 'danger',
+                                'summer' => 'warning',
+                                'winter' => 'info',
+                                default => '',
+                            })
+                            ->icon(fn (string $state): string => match ($state) {
+                                'all_season' => 'gmdi-sunny-snowing',
+                                'summer' => 'gmdi-wb-sunny-o',
+                                'winter' => 'forkawesome-snowflake-o',
+                                default => '',
+                            })
+                            ->formatStateUsing(fn (string $state) => match ($state) {
+                                'all_season' => __('All season tyres'),
+                                'summer' => __('Summer tyres'),
+                                'winter' => __('Winter tyres'),
+                            }),
+                        TextColumn::make('climate_control')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'auto' => 'warning',
+                                'airco' => 'info',
+                                'heater' => 'primary',
+                            })
+                            ->icon(fn (string $state): string => match ($state) {
+                                'auto' => 'fas-temperature-high',
+                                'airco' => 'mdi-air-conditioner',
+                                'heater' => 'mdi-heat-wave',
+                            })
+                            ->formatStateUsing(fn (string $state) => match ($state) {
+                                'auto' => __('Auto'),
+                                'airco' => __('Airco'),
+                                'heater' => __('Heater'),
+                            }),
+                        TextColumn::make('routes')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'highway' => 'info',
+                                'country_road' => 'success',
+                                'city' => 'warning',
+
+                            })
+                            ->icon(fn (string $state): string => match ($state) {
+                                'highway' => 'mdi-highway',
+                                'country_road' => 'gmdi-landscape-s',
+                                'city' => 'gmdi-location-city-r',
+
+                            })
+                            ->listWithLineBreaks()
+                            ->formatStateUsing(fn (string $state) => match ($state) {
+                                'highway' => __('Highway'),
+                                'country_road' => __('Country road'),
+                                'city' => __('City'),
+
+                            }),
+                        TextColumn::make('driving_style')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'slow' => 'success',
+                                'average' => 'warning',
+                                'fast' => 'primary',
+                            })
+                            ->icon(fn (string $state): string => match ($state) {
+                                'slow' => 'mdi-speedometer-slow',
+                                'average' => 'mdi-speedometer-medium',
+                                'fast' => 'mdi-speedometer',
+                            })
+                            ->listWithLineBreaks()
+                            ->formatStateUsing(fn (string $state) => match ($state) {
+                                'slow' => __('Slow'),
+                                'average' => __('Average'),
+                                'fast' => __('Fast'),
+                            }),
+                    ])
+                        ->space(1),
                 ])
             ])
             ->filters([
@@ -316,13 +388,6 @@ class RefuelingResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
