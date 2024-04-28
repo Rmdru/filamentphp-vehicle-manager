@@ -12,7 +12,7 @@ class EditVehicle extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['powertrain'] = config('cars.powertrain')[$data['powertrain']] ?? null;
+        $data['powertrain'] = trans('powertrains')[$data['powertrain']] ?? null;
 
         return $data;
     }

@@ -44,7 +44,8 @@ class VehicleResource extends Resource
     {
         return $form
             ->schema([
-                Fieldset::make(__('Car specifications'))
+                Fieldset::make('car_specifications')
+                    ->label(__('Car specifications'))
                     ->schema([
                         Select::make('brand')
                             ->label(__('Brand'))
@@ -72,9 +73,10 @@ class VehicleResource extends Resource
                             ->label(__('Powertrain'))
                             ->native(false)
                             ->searchable()
-                            ->options(config('cars.powertrain')),
+                            ->options(trans('powertrains')),
                         ]),
-                Fieldset::make(__('Ownership'))
+                Fieldset::make('ownership')
+                    ->label(__('Ownership'))
                     ->schema([
                         TextInput::make('mileage_start')
                             ->label(__('Mileage on purchase'))
@@ -91,7 +93,8 @@ class VehicleResource extends Resource
                             ->prefix('NL')
                             ->extraInputAttributes(['class' => '!text-black bg-yellow-600']),
                         ]),
-                Fieldset::make(__('Privacy'))
+                Fieldset::make('privacy')
+                    ->label(__('Privacy'))
                     ->schema([
                         Toggle::make('is_private')
                             ->label(__('Private'))
@@ -102,7 +105,7 @@ class VehicleResource extends Resource
     public static function table(Table $table): Table
     {
         $brands = config('cars.brands');
-        $fuelTypes = config('cars.powertrain');
+        $fuelTypes = trans('powertrains');
 
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', Auth::user()->id))

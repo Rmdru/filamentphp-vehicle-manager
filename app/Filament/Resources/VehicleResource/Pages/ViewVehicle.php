@@ -18,13 +18,14 @@ class ViewVehicle extends ViewRecord
     public function infolist(Infolist $infolist): Infolist
     {
         $brands = config('cars.brands');
-        $fuelTypes = config('cars.powertrain');
+        $fuelTypes = trans('powertrains');
 
         return $infolist
             ->schema([
-                Infolists\Components\Fieldset::make(__('Status'))
+                Infolists\Components\Fieldset::make('status')
+                    ->label(__('Status'))
                     ->schema([
-                        TextEntry::make(__('status'))
+                        TextEntry::make('status')
                             ->icon('gmdi-check')
                             ->badge()
                             ->default('OK')
@@ -32,13 +33,14 @@ class ViewVehicle extends ViewRecord
                             ->columnSpan(2)
                             ->label(__('Status')),
                     ]),
-                Infolists\Components\Fieldset::make(__('Car specifications'))
+                Infolists\Components\Fieldset::make('car_specifications')
+                    ->label(__('Car specifications'))
                     ->schema([
-                        TextEntry::make(__('brand'))
+                        TextEntry::make('brand')
                             ->label(__('Brand'))
                             ->icon(fn (Vehicle $vehicle) => 'si-' . strtolower(str_replace(' ', '', $brands[$vehicle->brand])))
                             ->formatStateUsing(fn (Vehicle $vehicle) => $brands[$vehicle->brand]),
-                        TextEntry::make(__('model'))
+                        TextEntry::make('model')
                             ->icon('gmdi-directions-car-filled-r')
                             ->label(__('Model')),
                         TextEntry::make('version')
@@ -48,23 +50,25 @@ class ViewVehicle extends ViewRecord
                             ->label(__('Engine'))
                             ->placeholder('-')
                             ->icon('mdi-engine'),
-                        TextEntry::make(__('factory_specification_fuel_consumption'))
+                        TextEntry::make('factory_specification_fuel_consumption')
                             ->icon('gmdi-local-gas-station')
                             ->suffix(' l/100km')
                             ->placeholder('-')
                             ->label(__('Factory specification fuel consumption')),
-                        TextEntry::make(__('powertrain'))
+                        TextEntry::make('powertrain')
                             ->icon('gmdi-local-gas-station')
                             ->placeholder('-')
                             ->label(__('Powertrain'))
                             ->formatStateUsing(fn (string $state) => $fuelTypes[$state] ?? $state),
                     ]),
-                Infolists\Components\Fieldset::make(__('Ownership'))
+                Infolists\Components\Fieldset::make('ownership')
+                    ->label(__('Ownership'))
                     ->schema([
-                        TextEntry::make(__('license_plate'))
+                        TextEntry::make('license_plate')
                             ->badge()
-                            ->color('warning'),
-                        TextEntry::make(__('mileage_start'))
+                            ->color('warning')
+                            ->label(__('License plate')),
+                        TextEntry::make('mileage_start')
                             ->icon('gmdi-route')
                             ->suffix(' km')
                             ->placeholder('-')
@@ -75,15 +79,16 @@ class ViewVehicle extends ViewRecord
                             ->placeholder('-')
                             ->label(__('Mileage'))
                             ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
-                        TextEntry::make(__('purchase_date'))
+                        TextEntry::make('purchase_date')
                             ->icon('gmdi-calendar-month-r')
                             ->date()
                             ->placeholder('-')
                             ->label(__('Purchase date')),
                     ]),
-                Infolists\Components\Fieldset::make(__('Privacy'))
+                Infolists\Components\Fieldset::make('Privacy')
+                    ->label(__('Privacy'))
                     ->schema([
-                        TextEntry::make(__('is_private'))
+                        TextEntry::make('is_private')
                             ->icon(fn (Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
                             ->badge()
                             ->default('OK')

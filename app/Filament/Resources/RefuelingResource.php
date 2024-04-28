@@ -51,7 +51,8 @@ class RefuelingResource extends Resource
 
         return $form
             ->schema([
-                Fieldset::make(__('Refueling'))
+                Fieldset::make('Refueling')
+                    ->label(__('Refueling'))
                     ->schema([
                         Select::make('vehicle_id')
                             ->label(__('Vehicle'))
@@ -79,13 +80,14 @@ class RefuelingResource extends Resource
                             ->required()
                             ->maxLength(100),
                         ]),
-                Fieldset::make(__('Fuel'))
+                Fieldset::make('fuel')
+                    ->label(__('Fuel'))
                     ->schema([
                         Select::make('fuel_type')
                             ->label(__('Fuel type'))
                             ->required()
                             ->native(false)
-                            ->options(config('cars.fuel_types')),
+                            ->options(trans('fuel_types')),
                         TextInput::make('amount')
                             ->label(__('Amount'))
                             ->numeric()
@@ -109,7 +111,8 @@ class RefuelingResource extends Resource
                             ->prefix('€')
                             ->step(0.01),
                         ]),
-                Fieldset::make(__('Car'))
+                Fieldset::make('car')
+                    ->label(__('Car'))
                     ->schema([
                         TextInput::make('mileage_begin')
                             ->label(__('Mileage begin'))
@@ -126,7 +129,8 @@ class RefuelingResource extends Resource
                             ->suffix(' l/100km')
                             ->numeric(),
                         ]),
-                Fieldset::make(__('Circumstances'))
+                Fieldset::make('circumstances')
+                    ->label(__('Circumstances'))
                     ->schema([
                         Forms\Components\ToggleButtons::make('tyres')
                             ->label(__('Tyres'))
@@ -153,17 +157,17 @@ class RefuelingResource extends Resource
                             ->inline()
                             ->grouped()
                             ->options([
-                                'auto' => __('Auto'),
+                                'automatically' => __('Automatically'),
                                 'airco' => __('Airco'),
                                 'heater' => __('Heater'),
                             ])
                             ->icons([
-                                'auto' => 'fas-temperature-high',
+                                'automatically' => 'fas-temperature-high',
                                 'airco' => 'mdi-air-conditioner',
                                 'heater' => 'mdi-heat-wave',
                             ])
                             ->colors([
-                                'auto' => 'warning',
+                                'automatically' => 'warning',
                                 'airco' => 'info',
                                 'heater' => 'primary',
                             ]),
@@ -173,17 +177,17 @@ class RefuelingResource extends Resource
                             ->multiple()
                             ->grouped()
                             ->options([
-                                'highway' => __('Highway'),
+                                'motorway' => __('Motorway'),
                                 'country_road' => __('Country road'),
                                 'city' => __('City'),
                             ])
                             ->icons([
-                                'highway' => 'mdi-highway',
+                                'motorway' => 'mdi-highway',
                                 'country_road' => 'gmdi-landscape-s',
                                 'city' => 'gmdi-location-city-r',
                             ])
                             ->colors([
-                                'highway' => 'info',
+                                'motorway' => 'info',
                                 'country_road' => 'success',
                                 'city' => 'warning',
                             ]),
@@ -214,8 +218,9 @@ class RefuelingResource extends Resource
 
     public static function table(Table $table): Table
     {
+
         $brands = config('cars.brands');
-        $fuelTypes = config('cars.fuel_types');
+        $fuelTypes = trans('fuel_types');
 
         return $table
             ->modifyQueryUsing(function ($query) {
@@ -326,37 +331,37 @@ class RefuelingResource extends Resource
                         TextColumn::make('climate_control')
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
-                                'auto' => 'warning',
+                                'automatically' => 'warning',
                                 'airco' => 'info',
                                 'heater' => 'primary',
                             })
                             ->icon(fn (string $state): string => match ($state) {
-                                'auto' => 'fas-temperature-high',
+                                'automatically' => 'fas-temperature-high',
                                 'airco' => 'mdi-air-conditioner',
                                 'heater' => 'mdi-heat-wave',
                             })
                             ->formatStateUsing(fn (string $state) => match ($state) {
-                                'auto' => __('Auto'),
+                                'automatically' => __('Automatically'),
                                 'airco' => __('Airco'),
                                 'heater' => __('Heater'),
                             }),
                         TextColumn::make('routes')
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
-                                'highway' => 'info',
+                                'motorway' => 'info',
                                 'country_road' => 'success',
                                 'city' => 'warning',
 
                             })
                             ->icon(fn (string $state): string => match ($state) {
-                                'highway' => 'mdi-highway',
+                                'motorway' => 'mdi-highway',
                                 'country_road' => 'gmdi-landscape-s',
                                 'city' => 'gmdi-location-city-r',
 
                             })
                             ->listWithLineBreaks()
                             ->formatStateUsing(fn (string $state) => match ($state) {
-                                'highway' => __('Highway'),
+                                'motorway' => __('Motorway'),
                                 'country_road' => __('Country road'),
                                 'city' => __('City'),
 
