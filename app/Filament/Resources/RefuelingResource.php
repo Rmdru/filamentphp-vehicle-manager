@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Auth;
 
 class RefuelingResource extends Resource
 {
-
     protected static ?string $model = Refueling::class;
 
     protected static ?string $navigationIcon = 'gmdi-local-gas-station';
