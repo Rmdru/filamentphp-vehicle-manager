@@ -22,13 +22,15 @@ class Maintenance extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'vehicle_id',
         'date',
         'garage',
         'type_maintenance',
         'apk',
         'apk_date',
-        'washed',
+        'airco_check',
         'description',
+        'tasks',
         'total_price',
         'mileage_begin',
         'mileage_end',
