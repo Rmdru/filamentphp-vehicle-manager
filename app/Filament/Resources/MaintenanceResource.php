@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MaintenanceResource\Pages;
 use App\Filament\Resources\MaintenanceResource\RelationManagers;
 use App\Models\Maintenance;
+use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -16,6 +17,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -115,9 +117,46 @@ class MaintenanceResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $brands = config('cars.brands');
+
         return $table
             ->columns([
-                //
+                Tables\Columns\Layout\Split::make([
+                    TextColumn::make('date')
+                        ->label(__('Vehicle'))
+                        ->icon(fn (Maintenance $maintenance) => 'si-' . strtolower(str_replace(' ', '', $brands[$maintenance->vehicle->brand])))
+                        ->formatStateUsing(fn (Maintenance $maintenance) => $brands[$maintenance->vehicle->brand] . " " . $maintenance->vehicle->model),
+                    TextColumn::make('date')
+                        ->label(__('Date'))
+                        ->date()
+                        ->icon('gmdi-calendar-month-r'),
+                    TextColumn::make('type_maintenance')
+                        ->label(__('Type maintenance'))
+                        ->badge()
+                        ->default('')
+                        ->formatStateUsing(fn (string $state) => match ($state) {
+                            'maintenance' => __('Maintenance'),
+                            'small_maintenance' => __('Small maintenance'),
+                            'Big maintenance' => __('Big maintenance'),
+                            default => __('No maintenance'),
+                        })
+                        ->icon(fn (string $state): string => match ($state) {
+                            'maintenance' => 'mdi-car-wrench',
+                            'small_maintenance' => 'mdi-oil',
+                            'big_maintenance' => 'mdi-engine',
+                            default => 'gmdi-close-r',
+                        })
+                        ->color('gray'),
+                    TextColumn::make('apk')
+                        ->icon(fn (Maintenance $maintenance) => $maintenance->apk ? 'gmdi-security' : 'gmdi-close-r')
+                        ->badge()
+                        ->color('gray')
+                        ->formatStateUsing(fn (Maintenance $maintenance) => $maintenance->apk ? __('MOT') : __('No MOT'))
+                        ->label(__('MOT')),
+                    TextColumn::make('mileage_begin')
+                        ->label(__('Mileage'))
+                        ->icon('gmdi-route'),
+                ]),
             ])
             ->filters([
                 //

@@ -22,6 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 
 class RefuelingResource extends Resource
 {
@@ -100,7 +101,7 @@ class RefuelingResource extends Resource
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
-                            ->step(0.01),
+                            ->step(0.001),
                         TextInput::make('total_price')
                             ->label(__('Total price'))
                             ->numeric()
@@ -217,8 +218,8 @@ class RefuelingResource extends Resource
 
     public static function table(Table $table): Table
     {
-
         $brands = config('cars.brands');
+        $gasStationLogos = config('cars.gas_station_logos');
         $fuelTypes = trans('fuel_types');
 
         return $table
@@ -229,9 +230,19 @@ class RefuelingResource extends Resource
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
+                    TextColumn::make('gas_station')
+                        ->formatStateUsing(
+                            function (Refueling $refueling) use ($gasStationLogos) {
+                                $gasStationBrand = str($refueling->gas_station)->lower()->explode(' ')[0];
+
+                                $logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
+
+                                return new HtmlString('<div class="p-3 rounded-full bg-white w-5/12 min-h-16 flex items-center"><img src="' . $logo . '" /></div>');
+                            }
+                        ),
                     Stack::make([
                         TextColumn::make('date')
-                            ->label(__('Car'))
+                            ->label(__('Vehicle'))
                             ->icon(fn (Refueling $refueling) => 'si-' . strtolower(str_replace(' ', '', $brands[$refueling->vehicle->brand])))
                             ->formatStateUsing(fn (Refueling $refueling) => $brands[$refueling->vehicle->brand] . " " . $refueling->vehicle->model),
                         TextColumn::make('date')
