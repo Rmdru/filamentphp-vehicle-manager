@@ -97,6 +97,13 @@ return [
         'kuster' => 'https://intermontage.nl/wp-content/uploads/Kuster_logo.png',
         'jet' => 'https://1000logos.net/wp-content/uploads/2022/07/Jet-Logo-2003.png',
         'makro' => 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Makro_Europe_logo.png',
+        'tinq' => 'https://www.tinq.nl/sites/default/files/logo_0.png',
+        'omv' => 'https://w7.pngwing.com/pngs/5/80/png-transparent-omv-hd-logo-thumbnail.png',
+        'cirklek' => 'https://1000logos.net/wp-content/uploads/2020/11/Circle-K-Logo.png',
+        'repsol' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Repsol_logo.svg/2560px-Repsol_logo.svg.png',
+        'avia' => 'https://cdn.freebiesupply.com/logos/large/2x/avia-5-logo-png-transparent.png',
+        'texaco' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Texaco_logo.svg/2560px-Texaco_logo.svg.png',
+        'argos' => 'https://w7.pngwing.com/pngs/405/567/png-transparent-argos-energies-texaco-filling-station-tamoil-service-in-place-blue-text-trademark-thumbnail.png',
         'default' => 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_gas_station_48px-512.png',
 
     ],
