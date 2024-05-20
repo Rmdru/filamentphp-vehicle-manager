@@ -79,6 +79,11 @@ class MaintenanceResource extends Resource
                             ->label(__('Garage'))
                             ->required()
                             ->maxLength(100),
+                        TextInput::make('mileage_begin')
+                            ->label(__('Mileage'))
+                            ->required()
+                            ->suffix(' km')
+                            ->numeric(),
                     ]),
                 Fieldset::make('tasks')
                     ->label(__('Tasks'))
@@ -106,11 +111,6 @@ class MaintenanceResource extends Resource
                             ->required()
                             ->prefix('€')
                             ->step(0.01),
-                        TextInput::make('mileage_begin')
-                            ->label(__('Mileage'))
-                            ->required()
-                            ->suffix(' km')
-                            ->numeric(),
                     ]),
             ]);
     }
@@ -122,7 +122,7 @@ class MaintenanceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\Layout\Split::make([
-                    TextColumn::make('date')
+                    TextColumn::make('vehicle_id')
                         ->label(__('Vehicle'))
                         ->icon(fn (Maintenance $maintenance) => 'si-' . strtolower(str_replace(' ', '', $brands[$maintenance->vehicle->brand])))
                         ->formatStateUsing(fn (Maintenance $maintenance) => $brands[$maintenance->vehicle->brand] . " " . $maintenance->vehicle->model),
@@ -156,12 +156,17 @@ class MaintenanceResource extends Resource
                     TextColumn::make('mileage_begin')
                         ->label(__('Mileage'))
                         ->icon('gmdi-route'),
+                    TextColumn::make('total_price')
+                        ->label(__('Total price'))
+                        ->icon('mdi-hand-coin-outline')
+                        ->money('EUR'),
                 ]),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -176,6 +181,7 @@ class MaintenanceResource extends Resource
         return [
             'index' => Pages\ListMaintenances::route('/'),
             'create' => Pages\CreateMaintenance::route('/create'),
+            'view' => Pages\ViewMaintenance::route('/{record}'),
             'edit' => Pages\EditMaintenance::route('/{record}/edit'),
         ];
     }
