@@ -219,7 +219,7 @@ class RefuelingResource extends Resource
     public static function table(Table $table): Table
     {
         $brands = config('cars.brands');
-        $gasStationLogos = config('cars.gas_station_logos');
+        $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
 
         return $table
