@@ -5,14 +5,11 @@ namespace App\Filament\Pages;
 use App\Filament\Resources\DashboardResource\Widgets\DashboardOverview;
 use App\Models\Vehicle;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
-use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
@@ -34,7 +31,8 @@ class Dashboard extends \Filament\Pages\Dashboard
         return [
             FilterAction::make()
                 ->form([
-                    Select::make('vehicle_id')
+                    Select::make('vehicleId')
+                        ->native(false)
                         ->label(__('Vehicle'))
                         ->options(function(Vehicle $vehicle) {
                             $vehicles = Vehicle::where('user_id', Auth::user()->id)->get();
@@ -45,16 +43,22 @@ class Dashboard extends \Filament\Pages\Dashboard
 
                             return $vehicles->pluck('car', 'id');
                         }),
-                    DatePicker::make('startDate'),
-                    DatePicker::make('endDate'),
-                ]),
+                    DatePicker::make('startDate')
+                        ->native(false)
+                        ->maxDate(now()),
+                    DatePicker::make('endDate')
+                        ->native(false)
+                        ->maxDate(now()),
+                ])
         ];
     }
 
     protected function getHeaderWidgets(): array
     {
         return [
-            DashboardOverview::class,
+            DashboardOverview::make([
+                'filters' => $this->filters,
+            ]),
         ];
     }
 }

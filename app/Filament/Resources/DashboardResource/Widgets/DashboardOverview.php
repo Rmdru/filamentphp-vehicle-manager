@@ -14,26 +14,41 @@ class DashboardOverview extends BaseWidget
 
     protected function getStats(): array
     {
+
         $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
+        $startDate = $this->filters['startDate'] ?? null;
+        $endDate = $this->filters['endDate'] ?? null;
 
-        $averageMonthlyCost = Vehicle::where('id', $vehicleId)
+        $vehicle = Vehicle::where('id', $vehicleId)
             ->with(['maintenances', 'refuelings'])
-            ->get()
-            ->map(function ($vehicle) {
-                $maintenances = $vehicle->maintenances();
-                $refuelings = $vehicle->refuelings();
-
-                $totalCosts = $maintenances->get()->sum('total_price') + $refuelings->get()->sum('total_price');
-
-                $months = $maintenances->get()->groupBy(function ($maintenance) {
-                        return $maintenance->date->format('Y-m');
-                    })->count() + $refuelings->get()->groupBy(function ($refueling) {
-                        return $refueling->date->format('Y-m');
-                    })->count();
-
-                return $totalCosts / $months;
-            })
             ->first();
+
+        if ($vehicle) {
+            $maintenances = $vehicle->maintenances;
+            $refuelings = $vehicle->refuelings;
+
+            if ($startDate) {
+                $maintenances = $maintenances->where('date', '>=', $startDate);
+                $refuelings = $refuelings->where('date', '>=', $startDate);
+            }
+
+            if ($endDate) {
+                $maintenances = $maintenances->where('date', '<=', $endDate);
+                $refuelings = $refuelings->where('date', '<=', $endDate);
+            }
+
+            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price');
+
+            $uniqueMonths = $maintenances->groupBy(function ($maintenance) {
+                    return $maintenance->date->format('Y-m');
+                })->count() + $refuelings->groupBy(function ($refueling) {
+                    return $refueling->date->format('Y-m');
+                })->count();
+
+            $averageMonthlyCost = $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
+        } else {
+            $averageMonthlyCost = 0;
+        }
 
         return [
             Stat::make(__('Average costs'), '€ ' . $averageMonthlyCost),
