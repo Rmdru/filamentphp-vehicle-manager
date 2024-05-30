@@ -4,12 +4,15 @@ namespace App\Filament\Pages;
 
 use App\Filament\Resources\DashboardResource\Widgets\DashboardOverview;
 use App\Models\Vehicle;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
+use Filament\Forms\Set;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Session;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
@@ -31,6 +34,20 @@ class Dashboard extends \Filament\Pages\Dashboard
         return [
             FilterAction::make()
                 ->form([
+                    Actions::make([
+                        Actions\Action::make('resetFilters')
+                            ->label(__('Reset Filters'))
+                            ->button()
+                            ->action(function (Set $set) {
+                                $this->filters = [];
+                                $set('vehicleId', null);
+                                $set('startDate', null);
+                                $set('endDate', null);
+
+                                Session::forget('Dashboard_filters');
+                            })
+                            ->color('gray'),
+                    ]),
                     Select::make('vehicleId')
                         ->native(false)
                         ->label(__('Vehicle'))

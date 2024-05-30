@@ -14,7 +14,6 @@ class DashboardOverview extends BaseWidget
 
     protected function getStats(): array
     {
-
         $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
