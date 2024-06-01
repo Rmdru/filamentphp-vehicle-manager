@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\DashboardResource\Widgets;
 
+use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -13,6 +14,14 @@ class DashboardOverview extends BaseWidget
     use InteractsWithPageFilters;
 
     protected function getStats(): array
+    {
+        return [
+            Stat::make(__('Average monthly costs'), '€ ' . $this->calculateAverageMonthlyCosts()),
+            Stat::make(__('Average costs per kilometer'), '€ ' . round($this->calculateAverageMonthlyCosts() / $this->calculateAverageMonthlyDistance(), 2)),
+        ];
+    }
+
+    private function calculateAverageMonthlyCosts(): int
     {
         $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
         $startDate = $this->filters['startDate'] ?? null;
@@ -44,13 +53,47 @@ class DashboardOverview extends BaseWidget
                     return $refueling->date->format('Y-m');
                 })->count();
 
-            $averageMonthlyCost = $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
+            return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
         } else {
-            $averageMonthlyCost = 0;
+            return 0;
+        }
+    }
+
+    private function calculateAverageMonthlyDistance(): int
+    {
+        $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
+        $startDate = $this->filters['startDate'] ?? null;
+        $endDate = $this->filters['endDate'] ?? null;
+
+        $query = Refueling::query()
+            ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(mileage_end - mileage_begin) as total_distance')
+            ->where('vehicle_id', $vehicleId);
+
+        if ($startDate) {
+            $query->whereDate('date', '>=', $startDate);
         }
 
-        return [
-            Stat::make(__('Average costs'), '€ ' . $averageMonthlyCost),
-        ];
+        if ($endDate) {
+            $query->whereDate('date', '<=', $endDate);
+        }
+
+        $query->groupBy('year', 'month');
+
+        $results = $query->get();
+
+        $totalDistance = 0;
+        $monthsCount = $results->count();
+
+        foreach ($results as $result) {
+            $totalDistance += $result->total_distance;
+        }
+
+        if ($monthsCount === 0) {
+            return 0;
+        }
+
+        $averageMonthlyDistance = $totalDistance / $monthsCount;
+
+        return round($averageMonthlyDistance);
     }
 }
