@@ -9,6 +9,7 @@ use App\Livewire\Auth\Passwords\Reset;
 use App\Livewire\Auth\Register;
 use App\Livewire\Auth\Verify;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VehicleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,4 +54,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', LogoutController::class)
         ->name('logout');
+
+    Route::get('/account/switch-vehicle/{vehicleId}', VehicleController::class)
+        ->name('switch-vehicle');
 });

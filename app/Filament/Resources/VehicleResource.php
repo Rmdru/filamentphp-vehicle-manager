@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\Vehicle;
 use Filament\Forms\Components\Fieldset;
@@ -113,8 +114,8 @@ class VehicleResource extends Resource
                             ->sortable()
                             ->searchable()
                             ->label(__('Vehicle'))
-                            ->icon(fn (Vehicle $vehicle) => 'si-' . strtolower(str_replace(' ', '', $brands[$vehicle->brand])))
-                            ->formatStateUsing(fn (Vehicle $vehicle) => $brands[$vehicle->brand] . " " . $vehicle->model),
+                            ->icon(fn (Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower())
+                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->full_name),
                         TextColumn::make('mileage_start')
                             ->sortable()
                             ->searchable()

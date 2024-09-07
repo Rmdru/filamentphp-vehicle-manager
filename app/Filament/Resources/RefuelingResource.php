@@ -43,8 +43,6 @@ class RefuelingResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $brands = config('cars.brands');
-
         return $form
             ->schema([
                 Fieldset::make('Refueling')
@@ -56,11 +54,11 @@ class RefuelingResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->relationship('vehicle')
-                            ->options(function (Vehicle $vehicle) use ($brands) {
+                            ->options(function (Vehicle $vehicle) {
                                 $vehicles = Vehicle::get();
 
-                                $vehicles->car = $vehicles->map(function ($index) use ($brands) {
-                                    return $index->car = $brands[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
+                                $vehicles->car = $vehicles->map(function ($index) {
+                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
                                 });
 
                                 return $vehicles->pluck('car', 'id');
@@ -239,7 +237,7 @@ class RefuelingResource extends Resource
                     Stack::make([
                         TextColumn::make('date')
                             ->label(__('Vehicle'))
-                            ->icon(fn (Refueling $refueling) => 'si-' . strtolower(str_replace(' ', '', $brands[$refueling->vehicle->brand])))
+                            ->icon(fn (Refueling $refueling) => 'si-' . str($brands[$refueling->vehicle->brand])->replace(' ', '')->lower())
                             ->formatStateUsing(fn (Refueling $refueling) => $brands[$refueling->vehicle->brand] . " " . $refueling->vehicle->model),
                         TextColumn::make('date')
                             ->label(__('Date'))

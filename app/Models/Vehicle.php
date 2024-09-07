@@ -48,7 +48,7 @@ class Vehicle extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope('vehicle', function (Builder $builder) {
+        static::addGlobalScope('ownVehicles', function (Builder $builder) {
             $builder->where('user_id', Auth::id());
         });
     }
@@ -79,6 +79,13 @@ class Vehicle extends Model
     }
 
     protected $appends = ['fuel_status', 'maintenance_status', 'apk_status', 'airco_check_status'];
+
+    public function getFullNameAttribute(): string
+    {
+        $brands = config('cars.brands');
+
+        return $brands[$this->brand] . ' ' . $this->model;
+    }
 
     public function getFuelStatusAttribute(): ?int
     {
@@ -181,21 +188,46 @@ class Vehicle extends Model
         $timeTillApk = $selectedVehicle->apk_status['time'] ?? null;
         $timeTillAircoCheck = $selectedVehicle->airco_check_status['time'] ?? null;
 
+        $count = 0;
+
+        if (! is_null($timeTillRefueling) && $timeTillRefueling < 40) {
+            $count++;
+        }
+
+        if ($maintenanceStatus['time'] < 62) {
+            $count++;
+        }
+
+        if ($maintenanceStatus['distance'] < 3000) {
+            $count++;
+        }
+
+        if ($timeTillApk < 62) {
+            $count++;
+        }
+
+        if (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 62) {
+            $count++;
+        }
+
         $priorities = [
             'success' => [
                 'color' => 'success',
                 'icon' => 'gmdi-check-r',
                 'text' => __('OK'),
+                'count' => $count,
             ],
             'warning' => [
                 'color' => 'warning',
                 'icon' => 'gmdi-warning-r',
                 'text' => __('Attention recommended'),
+                'count' => $count,
             ],
             'critical' => [
                 'color' => 'danger',
                 'icon' => 'gmdi-warning-r',
                 'text' => __('Attention required'),
+                'count' => $count,
             ],
         ];
 
@@ -204,7 +236,7 @@ class Vehicle extends Model
             || $maintenanceStatus['time'] < 31
             || $maintenanceStatus['distance'] < 1500
             || $timeTillApk < 31
-            || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 20)
+            || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 31)
         ) {
             return ! empty($item) ? $priorities['critical'][$item] : $priorities['critical'];
         }

@@ -129,7 +129,7 @@ class MaintenanceResource extends Resource
                 Tables\Columns\Layout\Split::make([
                     TextColumn::make('vehicle_id')
                         ->label(__('Vehicle'))
-                        ->icon(fn (Maintenance $maintenance) => 'si-' . strtolower(str_replace(' ', '', $brands[$maintenance->vehicle->brand])))
+                        ->icon(fn (Maintenance $maintenance) => 'si-' . str($brands[$maintenance->vehicle->brand])->replace(' ', '')->lower())
                         ->formatStateUsing(fn (Maintenance $maintenance) => $brands[$maintenance->vehicle->brand] . " " . $maintenance->vehicle->model),
                     TextColumn::make('date')
                         ->label(__('Date'))

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Vehicle;
+use Filament\Actions\Concerns\InteractsWithRecord;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Session;
 class Dashboard extends Page
 {
     use HasFiltersAction;
+    use InteractsWithRecord;
 
     protected static ?string $navigationIcon = 'gmdi-bar-chart-r';
 
@@ -37,7 +39,7 @@ class Dashboard extends Page
                 ->form([
                     Actions::make([
                         Actions\Action::make('resetFilters')
-                            ->label(__('Reset Filters'))
+                            ->label(__('Reset filters'))
                             ->button()
                             ->action(function (Set $set) {
                                 $this->filters = [];
