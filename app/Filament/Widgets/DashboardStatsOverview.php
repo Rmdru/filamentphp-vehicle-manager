@@ -1,42 +1,62 @@
 <?php
 
-namespace App\Filament\Resources\DashboardResource\Widgets;
+namespace App\Filament\Widgets;
 
 use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
 
-class DashboardOverview extends BaseWidget
+class DashboardStatsOverview extends BaseWidget
 {
     use InteractsWithPageFilters;
 
     protected function getStats(): array
     {
         return [
-            Stat::make(__('Average monthly costs'), '€ ' . $this->calculateAverageMonthlyCosts())
-                ->icon('mdi-hand-coin-outline')
-                ->description('Laatste: ' . $this->calculateAverageMonthlyCosts(true))
-                ->descriptionColor((min($this->calculateAverageMonthlyCosts(), $this->calculateAverageMonthlyCosts(true)) == $this->calculateAverageMonthlyCosts(true)) ? 'success' : 'danger')
-                ->descriptionIcon((min($this->calculateAverageMonthlyCosts(), $this->calculateAverageMonthlyCosts(true)) == $this->calculateAverageMonthlyCosts(true)) ? 'gmdi-trending-down-r' : 'gmdi-trending-up-r'),
-            Stat::make(__('Average costs per kilometer'), '€ ' . $this->calculateCostsPerKilometer())
-                ->icon('uni-euro-circle-o')
-                ->description('Laatste: ' . $this->calculateCostsPerKilometer(true))
-                ->descriptionColor((min($this->calculateCostsPerKilometer(), $this->calculateCostsPerKilometer(true)) == $this->calculateCostsPerKilometer(true)) ? 'success' : 'danger')
-                ->descriptionIcon((min($this->calculateCostsPerKilometer(), $this->calculateCostsPerKilometer(true)) == $this->calculateCostsPerKilometer(true)) ? 'gmdi-trending-down-r' : 'gmdi-trending-up-r'),
-            Stat::make(__('Average fuel usage'), $this->calculateAverageFuelConsumption() . ' l/100km')
-                ->icon('gmdi-local-gas-station-r')
-                ->description('Laatste: ' . $this->getLatestFuelConsumption() . ' l/100km')
-                ->descriptionColor((min($this->calculateAverageFuelConsumption(), $this->getLatestFuelConsumption()) == $this->getLatestFuelConsumption()) ? 'success' : 'danger')
-                ->descriptionIcon((min($this->calculateAverageFuelConsumption(), $this->getLatestFuelConsumption()) == $this->getLatestFuelConsumption()) ? 'gmdi-trending-down-r' : 'gmdi-trending-up-r'),
+            $this->buildStat(
+                __('Average monthly costs'),
+                '€ ' . $this->calculateAverageMonthlyCosts(),
+                'mdi-hand-coin-outline',
+                $this->calculateAverageMonthlyCosts(true),
+            ),
+            $this->buildStat(
+                __('Average costs per kilometer'),
+                '€ ' . $this->calculateCostsPerKilometer() . '/km',
+                'uni-euro-circle-o',
+                $this->calculateCostsPerKilometer(true),
+            ),
+            $this->buildStat(
+                __('Average fuel usage'),
+                $this->calculateAverageFuelConsumption() . ' l/100km',
+                'gmdi-local-gas-station-r',
+                $this->getLatestFuelConsumption(),
+            ),
+            $this->buildStat(
+                __('Average monthly distance'),
+                $this->calculateAverageMonthlyDistance() . ' km',
+                'gmdi-route-r',
+                $this->calculateAverageMonthlyDistance(true),
+            ),
         ];
     }
 
-    private function calculateAverageMonthlyCosts($thisMonth = false): int
+    private function buildStat(string $title, string $value, string $icon, $latestValue): Stat
     {
-        $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
+        $descriptionColor = ($latestValue <= $value) ? 'success' : 'danger';
+        $descriptionIcon = ($latestValue <= $value) ? 'gmdi-trending-down-r' : 'gmdi-trending-up-r';
+
+        return Stat::make($title, $value)
+            ->icon($icon)
+            ->description(__('Latest:') . ' ' . $latestValue)
+            ->descriptionColor($descriptionColor)
+            ->descriptionIcon($descriptionIcon);
+    }
+
+    private function calculateAverageMonthlyCosts(bool $thisMonth = false): int
+    {
+        $vehicleId = Vehicle::selected()->latest()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -77,9 +97,9 @@ class DashboardOverview extends BaseWidget
         }
     }
 
-    private function calculateAverageMonthlyDistance($thisMonth = false): int
+    private function calculateAverageMonthlyDistance(bool $thisMonth = false): int
     {
-        $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
+        $vehicleId = Vehicle::selected()->latest()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -120,7 +140,7 @@ class DashboardOverview extends BaseWidget
         return round($averageMonthlyDistance);
     }
 
-    private function calculateCostsPerKilometer($thisMonth = false): float
+    private function calculateCostsPerKilometer(bool $thisMonth = false): float
     {
         $averageMonthlyCosts = $this->calculateAverageMonthlyCosts();
         $currentMonthlyCosts = $this->calculateAverageMonthlyCosts(true);
@@ -148,43 +168,49 @@ class DashboardOverview extends BaseWidget
 
     private function calculateAverageFuelConsumption(): float
     {
-        $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
+        $vehicleId = Vehicle::selected()->latest()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
-        $query = Refueling::query()
+        $refuelings = Refueling::query()
             ->where('vehicle_id', $vehicleId);
 
+        if (! $refuelings->count()) {
+            return 0;
+        }
+
         if ($startDate) {
-            $query->whereDate('date', '>=', $startDate);
+            $refuelings->whereDate('date', '>=', $startDate);
         }
 
         if ($endDate) {
-            $query->whereDate('date', '<=', $endDate);
+            $refuelings->whereDate('date', '<=', $endDate);
         }
 
-        return round($query->get()->avg('fuel_consumption'), 1);
+        return round($refuelings->get()->avg('fuel_consumption'), 1);
     }
 
     private function getLatestFuelConsumption(): float
     {
-        $vehicleId = $this->filters['vehicle_id'] ?? Vehicle::first()->id;
+        $vehicleId = Vehicle::selected()->latest()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
-        $query = Refueling::query()
-            ->where('vehicle_id', $vehicleId)
+        $refueling = Refueling::where('vehicle_id', $vehicleId)
             ->orderByDesc('date');
 
+        if (! $refueling->count()) {
+            return 0;
+        }
+
         if ($startDate) {
-            $query->whereDate('date', '>=', $startDate);
-            $query->whereDate('date', '>=', $startDate);
+            $refueling->whereDate('date', '>=', $startDate);
         }
 
         if ($endDate) {
-            $query->whereDate('date', '<=', $endDate);
+            $refueling->whereDate('date', '<=', $endDate);
         }
 
-        return round($query->first()->fuel_consumption, 1);
+        return round($refueling->first()->fuel_consumption, 1);
     }
 }

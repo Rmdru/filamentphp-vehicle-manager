@@ -3,8 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\RefuelingResource\Pages;
-use App\Filament\Resources\RefuelingResource\RelationManagers;
-use App\HasVehicleName;
 use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Forms;
@@ -14,14 +12,12 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\Alignment;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
 class RefuelingResource extends Resource
@@ -61,7 +57,7 @@ class RefuelingResource extends Resource
                             ->native(false)
                             ->relationship('vehicle')
                             ->options(function (Vehicle $vehicle) use ($brands) {
-                                $vehicles = Vehicle::where('user_id', Auth::user()->id)->get();
+                                $vehicles = Vehicle::get();
 
                                 $vehicles->car = $vehicles->map(function ($index) use ($brands) {
                                     return $index->car = $brands[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
@@ -223,10 +219,10 @@ class RefuelingResource extends Resource
         $fuelTypes = trans('fuel_types');
 
         return $table
-            ->modifyQueryUsing(function ($query) {
+            ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
-                    $query->where('user_id', Auth::user()->id);
-                })->orderBy('date', 'desc');
+                    $query->selected();
+                })->latest();
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
@@ -398,19 +394,6 @@ class RefuelingResource extends Resource
                         ->space(1),
                 ])
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('vehicle_id')
-                    ->label(__('Vehicle'))
-                    ->options(function(Vehicle $vehicle) {
-                        $vehicles = Vehicle::where('user_id', Auth::user()->id)->get();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = config('cars.brands')[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
-                        });
-
-                        return $vehicles->pluck('car', 'id');
-                    })
-            ], layout: Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

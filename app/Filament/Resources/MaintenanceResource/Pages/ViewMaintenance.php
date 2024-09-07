@@ -63,6 +63,10 @@ class ViewMaintenance extends ViewRecord
                             ->color('gray')
                             ->formatStateUsing(fn (Maintenance $maintenance) => $maintenance->apk ? __('MOT') : __('No MOT'))
                             ->label(__('MOT')),
+                        TextEntry::make('apk_date')
+                            ->label(__('MOT date'))
+                            ->date()
+                            ->icon('gmdi-security'),
                         TextEntry::make('airco_check')
                             ->icon(fn (Maintenance $maintenance) => $maintenance->airco_check ? 'mdi-air-conditioner' : 'gmdi-close-r')
                             ->badge()

@@ -39,6 +39,7 @@ class Maintenance extends Model
     protected $casts = [
         'date' => 'date:Y-m-d',
         'apk' => 'boolean',
+        'apk_date' => 'date:Y-m-d',
     ];
 
     /**

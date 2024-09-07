@@ -19,6 +19,7 @@
         "laravel-frontend-presets/tall": "^8.0",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
+        "livewire/livewire": "^3.5",
         "owenvoke/blade-fontawesome": "^2.6",
         "postare/blade-mdi": "^1.0",
         "thiagocordeiro/laravel-translator": "^1.2"

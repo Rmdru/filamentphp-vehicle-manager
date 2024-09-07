@@ -8,7 +8,6 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
@@ -16,8 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Builder;
+use Livewire\Livewire;
 
 class VehicleResource extends Resource
 {
@@ -108,7 +106,6 @@ class VehicleResource extends Resource
         $fuelTypes = trans('powertrains');
 
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', Auth::user()->id))
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     Stack::make([
@@ -136,15 +133,18 @@ class VehicleResource extends Resource
                     Stack::make([
                         TextColumn::make('license_plate')
                             ->sortable()
-                            ->badge()
-                            ->color('warning')
                             ->searchable()
+                            ->formatStateUsing(function ($record) {
+                                return Livewire::mount('license-plate', ['vehicleId' => $record->id]);
+                            })
+                            ->html()
                             ->label(__('License plate')),
                         TextColumn::make('status')
-                            ->icon('gmdi-check')
+                            ->icon(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'icon'))
                             ->badge()
                             ->default('OK')
-                            ->color('success')
+                            ->formatStateUsing(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'text'))
+                            ->color(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
                             ->label(__('Status')),
                         TextColumn::make('is_private')
                             ->icon(fn (Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')

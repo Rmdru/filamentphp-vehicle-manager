@@ -3,9 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MaintenanceResource\Pages;
-use App\Filament\Resources\MaintenanceResource\RelationManagers;
 use App\Models\Maintenance;
-use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -20,9 +18,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Auth;
-use Symfony\Component\Console\Input\Input;
 
 class MaintenanceResource extends Resource
 {
@@ -61,7 +56,7 @@ class MaintenanceResource extends Resource
                             ->native(false)
                             ->relationship('vehicle')
                             ->options(function (Vehicle $vehicle) use ($brands) {
-                                $vehicles = Vehicle::where('user_id', Auth::user()->id)->get();
+                                $vehicles = Vehicle::get();
 
                                 $vehicles->car = $vehicles->map(function ($index) use ($brands) {
                                     return $index->car = $brands[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
@@ -99,6 +94,11 @@ class MaintenanceResource extends Resource
                             ]),
                         Toggle::make('apk')
                             ->label(__('MOT')),
+                        DatePicker::make('apk_date')
+                            ->label(__('MOT date'))
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d-m-Y'),
                         Toggle::make('airco_check')
                             ->label(__('Airco check')),
                         Forms\Components\Textarea::make('description')
@@ -120,6 +120,11 @@ class MaintenanceResource extends Resource
         $brands = config('cars.brands');
 
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->whereHas('vehicle', function ($query) {
+                    $query->selected();
+                })->latest();
+            })
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     TextColumn::make('vehicle_id')
@@ -161,9 +166,6 @@ class MaintenanceResource extends Resource
                         ->icon('mdi-hand-coin-outline')
                         ->money('EUR'),
                 ]),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

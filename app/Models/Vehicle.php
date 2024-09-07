@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class Vehicle extends Model
 {
@@ -41,6 +45,182 @@ class Vehicle extends Model
         'purchase_date' => 'date:Y-m-d',
         'private' => 'boolean',
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('vehicle', function (Builder $builder) {
+            $builder->where('user_id', Auth::id());
+        });
+    }
+
+    public function scopeSelected(Builder $query): void
+    {
+        $vehicleId = Session::get('Dashboard_filters', '')['vehicleId'] ?? null;
+
+        if ($vehicleId) {
+            Session::put('vehicle_id', $vehicleId);
+
+            $query->where([
+                'id' => Session::get('vehicle_id'),
+                'user_id' => Auth::id(),
+            ]);
+            return;
+        }
+
+        $lastVehicle = Vehicle::latest()->first();
+        if ($lastVehicle) {
+            Session::put('vehicle_id', $lastVehicle->id);
+        }
+
+        $query->where([
+            'id' => Session::get('vehicle_id'),
+            'user_id' => Auth::id(),
+        ]);
+    }
+
+    protected $appends = ['fuel_status', 'maintenance_status', 'apk_status', 'airco_check_status'];
+
+    public function getFuelStatusAttribute(): ?int
+    {
+        if ($this->refuelings->isNotEmpty() && $this->refuelings->count() > 0) {
+            $latestRefueling = $this->refuelings->where('fuel_type', 'Premium Unleaded')->sortByDesc('date')->first();
+
+            if ($latestRefueling) {
+                $diff = Carbon::parse($latestRefueling->date)->addMonths(2)->diffInDays(now());
+                return (int) max(0, $diff - ($diff * 2));
+            }
+        }
+
+        return null;
+    }
+
+    public function getMaintenanceStatusAttribute(): array
+    {
+        $maintenanceTypes = ['small_maintenance', 'maintenance', 'big_maintenance'];
+
+        if ($this->maintenances->isNotEmpty()) {
+            $latestMaintenance = $this->maintenances->whereIn('type_maintenance', $maintenanceTypes)->sortByDesc('date')->first();
+
+            $maintenanceDate = Carbon::parse($latestMaintenance->date ?? now())->addYear();
+            $maintenanceDiff = $maintenanceDate->diffInDays(now());
+            $timeDiffHumans = $maintenanceDate->diffForHumans();
+
+            $timeTillMaintenance = max(0, $maintenanceDiff - ($maintenanceDiff * 2));
+
+            $distanceTillMaintenance = 15000 + $latestMaintenance->mileage_begin - $this->mileage_latest;
+        }
+
+        if ($this->maintenances->isEmpty()) {
+            $maintenanceDate = now()->addYear();
+            $maintenanceDiff = $maintenanceDate->diffInDays(now());
+            $timeTillMaintenance = max(0, $maintenanceDiff - ($maintenanceDiff * 2));
+            $timeDiffHumans = $maintenanceDate->diffForHumans();
+            $distanceTillMaintenance = 15000;
+        }
+
+        return [
+            'time' => $timeTillMaintenance,
+            'timeDiffHumans' => $timeDiffHumans,
+            'distance' => $distanceTillMaintenance,
+        ];
+    }
+
+    public function getApkStatusAttribute(): array
+    {
+        if ($this->maintenances->isNotEmpty()) {
+            $latestApk = $this->maintenances->where('apk', true)->sortByDesc('date')->first();
+
+            $apkDate = Carbon::parse($latestApk->date ?? now())->addYear();
+            $apkDiff = $apkDate->diffInDays(now());
+            $timeDiffHumans = $apkDate->diffForHumans();
+
+            $timeTillApk = max(0, $apkDiff - ($apkDiff * 2));
+        }
+
+        if ($this->maintenances->isEmpty()) {
+            $apkDiff = now()->addYear()->diffInDays(now());
+            $timeTillApk = max(0, $apkDiff - ($apkDiff * 2));
+            $timeDiffHumans = now()->addYear()->diffForHumans();
+        }
+
+        return [
+            'time' => $timeTillApk,
+            'timeDiffHumans' => $timeDiffHumans,
+        ];
+    }
+
+    public function getAircoCheckStatusAttribute(): array
+    {
+        if ($this->maintenances->isNotEmpty()) {
+            $latestAircoCheck = $this->maintenances->where('airco_check', true)->sortByDesc('date')->first();
+
+            $aircoCheckDate = Carbon::parse($latestAircoCheck->date)->addYears(2);
+            $timeTillAircoCheckDiff = $aircoCheckDate->diffInDays(now());
+            $timeTillAircoCheck = max(0, $timeTillAircoCheckDiff - ($timeTillAircoCheckDiff * 2));
+            $timeDiffHumans = $aircoCheckDate->diffForHumans();
+
+            return [
+                'time' => $timeTillAircoCheck,
+                'timeDiffHumans' => $timeDiffHumans,
+            ];
+        }
+
+        return [];
+    }
+
+    public function getStatusBadge(string $vehicleId = '', string $item = '')
+    {
+        $selectedVehicle = Vehicle::selected()->latest()->first();
+
+        if ($vehicleId) {
+            $selectedVehicle = Vehicle::where('id', $vehicleId)->latest()->first();
+        }
+
+        $timeTillRefueling = $selectedVehicle->fuel_status ?? null;
+        $maintenanceStatus = $selectedVehicle->maintenance_status ?? null;
+        $timeTillApk = $selectedVehicle->apk_status['time'] ?? null;
+        $timeTillAircoCheck = $selectedVehicle->airco_check_status['time'] ?? null;
+
+        $priorities = [
+            'success' => [
+                'color' => 'success',
+                'icon' => 'gmdi-check-r',
+                'text' => __('OK'),
+            ],
+            'warning' => [
+                'color' => 'warning',
+                'icon' => 'gmdi-warning-r',
+                'text' => __('Attention recommended'),
+            ],
+            'critical' => [
+                'color' => 'danger',
+                'icon' => 'gmdi-warning-r',
+                'text' => __('Attention required'),
+            ],
+        ];
+
+        if (
+            (! is_null($timeTillRefueling) && $timeTillRefueling < 20)
+            || $maintenanceStatus['time'] < 31
+            || $maintenanceStatus['distance'] < 1500
+            || $timeTillApk < 31
+            || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 20)
+        ) {
+            return ! empty($item) ? $priorities['critical'][$item] : $priorities['critical'];
+        }
+
+        if (
+            (! is_null($timeTillRefueling) && $timeTillRefueling < 40)
+            || $maintenanceStatus['time'] < 62
+            || $maintenanceStatus['distance'] < 3000
+            || $timeTillApk < 62
+            || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 62)
+        ) {
+            return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
+        }
+
+        return ! empty($item) ? $priorities['success'][$item] : $priorities['success'];
+    }
 
     /**
      * Get the user that owns the vehicle.

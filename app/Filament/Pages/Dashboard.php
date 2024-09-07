@@ -2,28 +2,29 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Resources\DashboardResource\Widgets\DashboardOverview;
 use App\Models\Vehicle;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Set;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
-use Filament\Forms\Set;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
+use Filament\Pages\Page;
 use Illuminate\Support\Facades\Session;
 
-class Dashboard extends \Filament\Pages\Dashboard
+class Dashboard extends Page
 {
     use HasFiltersAction;
 
     protected static ?string $navigationIcon = 'gmdi-bar-chart-r';
 
+    protected static string $view = 'filament.pages.dashboard';
+
     public static function getNavigationLabel(): string
     {
         return __('Dashboard');
     }
+
     public static function getModelLabel(): string
     {
         return __('Dashboard');
@@ -51,8 +52,8 @@ class Dashboard extends \Filament\Pages\Dashboard
                     Select::make('vehicleId')
                         ->native(false)
                         ->label(__('Vehicle'))
-                        ->options(function(Vehicle $vehicle) {
-                            $vehicles = Vehicle::where('user_id', Auth::user()->id)->get();
+                        ->options(function (Vehicle $vehicle) {
+                            $vehicles = Vehicle::get();
 
                             $vehicles->car = $vehicles->map(function ($index) {
                                 return $index->car = config('cars.brands')[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
@@ -70,12 +71,14 @@ class Dashboard extends \Filament\Pages\Dashboard
         ];
     }
 
-    protected function getHeaderWidgets(): array
+    protected function getViewData(): array
     {
+        $vehicle = Vehicle::selected()->latest()->first();
+        $brands = config('cars.brands');
+        $vehicle->brand = $brands[$vehicle->brand];
+
         return [
-            DashboardOverview::make([
-                'filters' => $this->filters,
-            ]),
+            'vehicle' => $vehicle,
         ];
     }
 }

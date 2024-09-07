@@ -17,7 +17,9 @@ class EditRefueling extends EditRecord
         $data['fuel_consumption'] = round($data['amount'] / $distance * 100, 2);
         $data['costs_per_kilometer'] = round($data['amount'] / $distance, 2);
 
-        Vehicle::where('id', $data['vehicle_id'])->update(['mileage_latest' => $data['mileage_end']]);
+        $newLatestVehicleMileage = max(Vehicle::where('id', $data['vehicle_id'])->first()->mileage_latest, $data['mileage_end']);
+
+        Vehicle::where('id', $data['vehicle_id'])->update(['mileage_latest' => $newLatestVehicleMileage]);
 
         return $data;
     }

@@ -3,17 +3,18 @@
 namespace App\Filament\Resources\VehicleResource\Pages;
 
 use App\Filament\Resources\VehicleResource;
+use Livewire\Livewire;
 use App\Models\Vehicle;
-use Filament\Actions;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Tables\Columns\TextColumn;
 
 class ViewVehicle extends ViewRecord
 {
     protected static string $resource = VehicleResource::class;
+
+    protected static string $view = 'filament.resources.vehicles.pages.view-vehicle';
 
     public function infolist(Infolist $infolist): Infolist
     {
@@ -22,17 +23,6 @@ class ViewVehicle extends ViewRecord
 
         return $infolist
             ->schema([
-                Infolists\Components\Fieldset::make('status')
-                    ->label(__('Status'))
-                    ->schema([
-                        TextEntry::make('status')
-                            ->icon('gmdi-check')
-                            ->badge()
-                            ->default('OK')
-                            ->color('success')
-                            ->columnSpan(2)
-                            ->label(__('Status')),
-                    ]),
                 Infolists\Components\Fieldset::make('car_specifications')
                     ->label(__('Car specifications'))
                     ->schema([
@@ -65,8 +55,10 @@ class ViewVehicle extends ViewRecord
                     ->label(__('Ownership'))
                     ->schema([
                         TextEntry::make('license_plate')
-                            ->badge()
-                            ->color('warning')
+                            ->formatStateUsing(function ($record) {
+                                return Livewire::mount('license-plate', ['vehicleId' => $record->id]);
+                            })
+                            ->html()
                             ->label(__('License plate')),
                         TextEntry::make('mileage_start')
                             ->icon('gmdi-route')
@@ -91,7 +83,7 @@ class ViewVehicle extends ViewRecord
                         TextEntry::make('is_private')
                             ->icon(fn (Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
                             ->badge()
-                            ->default('OK')
+                            ->default(__('Public'))
                             ->color('gray')
                             ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
                             ->label(__('Privacy')),
