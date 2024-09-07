@@ -99,7 +99,7 @@ class StatusNotification extends Component
         }
 
         if ($timeTillApk < 1) {
-            $this->createNotification('critical', __('MOT expired! Your are currently not allowed to drive with the car!'), 'gmdi-security');
+            $this->createNotification('critical', __('MOT expired! Your are currently not allowed to drive with the vehicle!'), 'gmdi-security');
             return null;
         }
 
