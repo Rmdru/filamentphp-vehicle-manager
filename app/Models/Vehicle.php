@@ -55,22 +55,9 @@ class Vehicle extends Model
 
     public function scopeSelected(Builder $query): void
     {
-        $vehicleId = Session::get('Dashboard_filters', '')['vehicleId'] ?? null;
+        $vehicleId = Session::get('Dashboard_filters', '')['vehicleId'] ?? Vehicle::latest()->first();
 
-        if ($vehicleId) {
-            Session::put('vehicle_id', $vehicleId);
-
-            $query->where([
-                'id' => Session::get('vehicle_id'),
-                'user_id' => Auth::id(),
-            ]);
-            return;
-        }
-
-        $lastVehicle = Vehicle::latest()->first();
-        if ($lastVehicle) {
-            Session::put('vehicle_id', $lastVehicle->id);
-        }
+        Session::put('vehicle_id', $vehicleId);
 
         $query->where([
             'id' => Session::get('vehicle_id'),
@@ -188,46 +175,21 @@ class Vehicle extends Model
         $timeTillApk = $selectedVehicle->apk_status['time'] ?? null;
         $timeTillAircoCheck = $selectedVehicle->airco_check_status['time'] ?? null;
 
-        $count = 0;
-
-        if (! is_null($timeTillRefueling) && $timeTillRefueling < 40) {
-            $count++;
-        }
-
-        if ($maintenanceStatus['time'] < 62) {
-            $count++;
-        }
-
-        if ($maintenanceStatus['distance'] < 3000) {
-            $count++;
-        }
-
-        if ($timeTillApk < 62) {
-            $count++;
-        }
-
-        if (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 62) {
-            $count++;
-        }
-
         $priorities = [
             'success' => [
                 'color' => 'success',
                 'icon' => 'gmdi-check-r',
                 'text' => __('OK'),
-                'count' => $count,
             ],
             'warning' => [
                 'color' => 'warning',
                 'icon' => 'gmdi-warning-r',
                 'text' => __('Attention recommended'),
-                'count' => $count,
             ],
             'critical' => [
                 'color' => 'danger',
                 'icon' => 'gmdi-warning-r',
                 'text' => __('Attention required'),
-                'count' => $count,
             ],
         ];
 

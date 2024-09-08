@@ -3,10 +3,10 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\Timeline;
 use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\VehicleResource;
-use App\Http\Middleware\EnsureAuthenticated;
 use App\Models\Vehicle;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -23,7 +23,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
@@ -38,9 +37,9 @@ class AccountPanelProvider extends PanelProvider
 
         foreach ($vehicles as $vehicle) {
             $menuItems[] = NavigationItem::make($vehicle->full_name)
-                ->label($vehicle->full_name . ' (' . $vehicle->license_plate . ')')
+                ->label($vehicle->full_name)
                 ->group('My Vehicles')
-                ->badge($vehicle->getStatusBadge($vehicle->id)['count'] ?: null, $vehicle->getStatusBadge($vehicle->id)['color'])
+                ->badge($vehicle->license_plate, 'warning')
                 ->url(fn (): string => route('switch-vehicle', ['vehicleId' => $vehicle->id]))
                 ->isActiveWhen(fn (): bool => Session::get('vehicle_id') === $vehicle->id)
                 ->icon('si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower());
@@ -87,6 +86,7 @@ class AccountPanelProvider extends PanelProvider
                             ...VehicleResource::getNavigationItems(),
                             ...MaintenanceResource::getNavigationItems(),
                             ...RefuelingResource::getNavigationItems(),
+                            ...Timeline::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))

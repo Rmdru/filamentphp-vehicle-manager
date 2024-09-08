@@ -66,6 +66,7 @@
     "No MOT": "Kein TÜV",
     "No airco check": "Kein Check der Klimaanlage",
     "No maintenance": "Keine Wartung",
+    "Nothing to show": "Nichts zu zeigen",
     "Notifications": "Benachrichtigungen",
     "OK": "OK",
     "Ownership": "Eigentum",
@@ -78,6 +79,7 @@
     "Refuelings": "Tankvorgänge",
     "Reset filters": "Filter zurücksetzen",
     "Routes": "Strecken",
+    "Show": "Zeigen",
     "Slow": "Langsam",
     "Small maintenance": "Kleine Wartung",
     "Statistics": "Statistiken",
@@ -85,6 +87,7 @@
     "Summer": "Sommer",
     "Summer tyres": "Sommerreifen",
     "Tasks": "Aufgaben",
+    "Timeline": "Zeitleiste",
     "Total price": "Gesamtpreis",
     "Type maintenance": "Typpflege",
     "Tyres": "Reifen",
@@ -95,7 +98,10 @@
     "Version": "Version",
     "Winter": "Winter",
     "Winter tyres": "Winterreifen",
-    "pagination.goto_page": "Zur Seite gehen",
-    "pagination.next": "Nächste",
-    "pagination.previous": "Vorherige"
+    "auth.failed": "auth.failed",
+    "pagination.goto_page": "pagination.goto_page",
+    "pagination.next": "pagination.next",
+    "pagination.previous": "pagination.previous",
+    "powertrain": "powertrain",
+    "status": "status"
 }

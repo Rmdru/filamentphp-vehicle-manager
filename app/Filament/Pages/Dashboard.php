@@ -58,7 +58,7 @@ class Dashboard extends Page
                             $vehicles = Vehicle::get();
 
                             $vehicles->car = $vehicles->map(function ($index) {
-                                return $index->car = config('cars.brands')[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
+                                return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
                             });
 
                             return $vehicles->pluck('car', 'id');
