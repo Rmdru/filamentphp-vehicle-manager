@@ -6,7 +6,7 @@
         </x-filament::badge>
         <livewire:license-plate :vehicleId="$vehicle->id" />
     </div>
-    <x-filament::section icon="gmdi-notifications-r" collapsible="">
+    <x-filament::section icon="gmdi-notifications-r" collapsible>
         <x-slot name="heading">
             <span class="flex gap-2">
                 {{ __('Notifications') }}
@@ -14,7 +14,7 @@
         </x-slot>
         <livewire:status-notification :vehicleId="$vehicle->id" />
     </x-filament::section>
-    <x-filament::section icon="mdi-list-status" collapsible="">
+    <x-filament::section icon="mdi-list-status" collapsible>
         <x-slot name="heading">
             <span class="flex gap-2">
                 {{ __('Status') }}
@@ -22,7 +22,7 @@
         </x-slot>
         @livewire(\App\Filament\Widgets\DashboardStatusOverview::class)
     </x-filament::section>
-    <x-filament::section icon="gmdi-show-chart-r" collapsible="">
+    <x-filament::section icon="gmdi-show-chart-r" collapsible>
         <x-slot name="heading">
             <span class="flex gap-2">
                 {{ __('Statistics') }}

@@ -55,7 +55,7 @@ class Vehicle extends Model
 
     public function scopeSelected(Builder $query): void
     {
-        $vehicleId = Session::get('Dashboard_filters', '')['vehicleId'] ?? Vehicle::latest()->first();
+        $vehicleId = Session::get('Dashboard_filters', '')['vehicleId'] ?? Vehicle::latest()->first()->id;
 
         Session::put('vehicle_id', $vehicleId);
 

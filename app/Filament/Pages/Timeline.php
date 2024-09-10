@@ -2,9 +2,12 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Maintenance;
+use App\Models\Refueling;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Pages\Page;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
 
 class Timeline extends Page
@@ -24,6 +27,17 @@ class Timeline extends Page
     }
 
     protected function getViewData(): array
+    {
+        $historyItems = $this->getHistoryItems();
+        $predictions = $this->getPredictions();
+
+        return [
+            'historyItems' => $historyItems,
+            'predictions' => $predictions,
+        ];
+    }
+
+    private function getHistoryItems(): Collection
     {
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
@@ -53,9 +67,42 @@ class Timeline extends Page
             return Carbon::createFromFormat('Y-m', $item->date->format('Y-m'))->isoFormat('MMMM Y');
         });
 
-        return [
-            'items' => $items,
-            'groupedItems' => $groupedItems,
-        ];
+        return $groupedItems;
+    }
+
+    public function getPredictions(): \Illuminate\Support\Collection
+    {
+        $vehicle = Vehicle::selected()
+            ->addSelect([
+                'apk' => Maintenance::select('id')
+                    ->whereColumn('vehicle_id', 'vehicles.id')
+                    ->where('apk', 1)
+                    ->latest()
+                    ->limit(1),
+                'maintenance' => Maintenance::select('id')
+                    ->whereColumn('vehicle_id', 'vehicles.id')
+                    ->whereNotNull('type_maintenance')
+                    ->latest()
+                    ->limit(1),
+            ])
+            ->latest()
+            ->first();
+
+        $items = collect();
+        $apk = Maintenance::find($vehicle->apk);
+        $maintenance = Maintenance::find($vehicle->maintenance);
+
+        $apk->icon = 'gmdi-security';
+        $apk->date = $apk->date->addYear();
+        $maintenance->icon = 'mdi-car-wrench';
+        $maintenance->date = $maintenance->date->addYear();
+
+        $items->push($apk, $maintenance);
+
+        $groupedItems = $items->groupBy(function($item) {
+            return Carbon::createFromFormat('Y-m', $item->date->format('Y-m'))->isoFormat('MMMM Y');
+        });
+
+        return $groupedItems;
     }
 }
