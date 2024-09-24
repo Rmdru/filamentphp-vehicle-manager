@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\Timeline;
+use App\Filament\Resources\InsuranceResource;
 use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\VehicleResource;
@@ -33,7 +34,7 @@ class AccountPanelProvider extends PanelProvider
         $menuItems = [];
 
         $vehicles = Vehicle::all();
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
 
         foreach ($vehicles as $vehicle) {
             $menuItems[] = NavigationItem::make($vehicle->full_name)
@@ -83,10 +84,11 @@ class AccountPanelProvider extends PanelProvider
                         ->label(__('Management'))
                         ->items([
                             ...Dashboard::getNavigationItems(),
+                            ...Timeline::getNavigationItems(),
                             ...VehicleResource::getNavigationItems(),
                             ...MaintenanceResource::getNavigationItems(),
                             ...RefuelingResource::getNavigationItems(),
-                            ...Timeline::getNavigationItems(),
+                            ...InsuranceResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))

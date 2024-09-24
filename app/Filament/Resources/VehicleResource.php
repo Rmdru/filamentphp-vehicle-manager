@@ -51,7 +51,7 @@ class VehicleResource extends Resource
                             ->required()
                             ->native(false)
                             ->searchable()
-                            ->options(config('cars.brands')),
+                            ->options(config('vehicles.brands')),
                         TextInput::make('model')
                             ->label(__('Model'))
                             ->required()
@@ -103,7 +103,7 @@ class VehicleResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
         $fuelTypes = trans('powertrains');
 
         return $table

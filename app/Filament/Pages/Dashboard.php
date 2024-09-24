@@ -11,6 +11,7 @@ use Filament\Forms\Set;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
 use Filament\Pages\Page;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Session;
 
 class Dashboard extends Page
@@ -28,6 +29,11 @@ class Dashboard extends Page
     }
 
     public static function getModelLabel(): string
+    {
+        return __('Dashboard');
+    }
+
+    public function getTitle(): string | Htmlable
     {
         return __('Dashboard');
     }
@@ -76,7 +82,7 @@ class Dashboard extends Page
     protected function getViewData(): array
     {
         $vehicle = Vehicle::selected()->latest()->first();
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
         $vehicle->brand = $brands[$vehicle->brand];
 
         return [

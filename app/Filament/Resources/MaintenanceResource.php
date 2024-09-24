@@ -42,7 +42,7 @@ class MaintenanceResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
 
         return $form
             ->schema([
@@ -55,6 +55,7 @@ class MaintenanceResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->relationship('vehicle')
+                            ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->id)
                             ->options(function (Vehicle $vehicle) use ($brands) {
                                 $vehicles = Vehicle::get();
 
@@ -117,7 +118,7 @@ class MaintenanceResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
 
         return $table
             ->modifyQueryUsing(function (Builder $query) {

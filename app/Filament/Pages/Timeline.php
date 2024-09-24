@@ -3,12 +3,11 @@
 namespace App\Filament\Pages;
 
 use App\Models\Maintenance;
-use App\Models\Refueling;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Pages\Page;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\View\View;
 
 class Timeline extends Page
 {
@@ -22,6 +21,11 @@ class Timeline extends Page
     }
 
     public static function getModelLabel(): string
+    {
+        return __('Timeline');
+    }
+
+    public function getTitle(): string | Htmlable
     {
         return __('Timeline');
     }
@@ -92,17 +96,25 @@ class Timeline extends Page
         $apk = Maintenance::find($vehicle->apk);
         $maintenance = Maintenance::find($vehicle->maintenance);
 
-        $apk->icon = 'gmdi-security';
-        $apk->date = $apk->date->addYear();
-        $maintenance->icon = 'mdi-car-wrench';
-        $maintenance->date = $maintenance->date->addYear();
+        if (! empty($apk)) {
+            $apk->icon = 'gmdi-security';
+            $apk->date = $apk->date->addYear();
+        }
 
-        $items->push($apk, $maintenance);
+        if (! empty($maintenance)) {
+            $maintenance->icon = 'mdi-car-wrench';
+            $maintenance->date = $maintenance->date->addYear();
+        }
 
-        $groupedItems = $items->groupBy(function($item) {
-            return Carbon::createFromFormat('Y-m', $item->date->format('Y-m'))->isoFormat('MMMM Y');
-        });
+        if (! empty($apk) && ! empty($maintenance)) {
 
-        return $groupedItems;
+            $items->push($apk, $maintenance);
+
+            $groupedItems = $items->groupBy(function($item) {
+                return Carbon::createFromFormat('Y-m', $item->date->format('Y-m'))->isoFormat('MMMM Y');
+            });
+        }
+
+        return $groupedItems ?? collect();
     }
 }

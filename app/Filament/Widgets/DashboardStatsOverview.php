@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Insurance;
 use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -66,35 +67,82 @@ class DashboardStatsOverview extends BaseWidget
         }
 
         $vehicle = Vehicle::where('id', $vehicleId)
-            ->with(['maintenances', 'refuelings'])
+            ->with([
+                'maintenances',
+                'refuelings',
+                'insurances',
+            ])
             ->first();
 
         if ($vehicle) {
             $maintenances = $vehicle->maintenances;
             $refuelings = $vehicle->refuelings;
+            $insurances = $vehicle->insurances;
 
             if ($startDate) {
                 $maintenances = $maintenances->where('date', '>=', $startDate);
                 $refuelings = $refuelings->where('date', '>=', $startDate);
+                $insurances = $insurances->where('start_date', '>=', $startDate);
             }
 
             if ($endDate) {
                 $maintenances = $maintenances->where('date', '<=', $endDate);
                 $refuelings = $refuelings->where('date', '<=', $endDate);
+                $insurances = $insurances->where('end_date', '<=', $endDate);
             }
 
-            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price');
+            $totalInsurancePrice = 0;
+            $totalInsuranceMonths = 0;
 
-            $uniqueMonths = $maintenances->groupBy(function ($maintenance) {
-                    return $maintenance->date->format('Y-m');
-                })->count() + $refuelings->groupBy(function ($refueling) {
-                    return $refueling->date->format('Y-m');
-                })->count();
+            foreach ($insurances as $insurance) {
+                if (! $insurance) {
+                    $insurance = new Insurance();
+
+                    $insurance->months = 0;
+                    $insurance->price = 0;
+                }
+
+                $totalInsuranceMonths += $insurance->months;
+                $totalInsurancePrice += $insurance->months * $insurance->price;
+            }
+
+            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price') + $totalInsurancePrice;
+
+            $uniqueMonths = $maintenances->merge($refuelings)
+                    ->groupBy(function ($maintenance) {
+                        return $maintenance->date->format('Y-m');
+                    })->count() + $totalInsuranceMonths;
 
             return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
         } else {
             return 0;
         }
+    }
+
+    private function calculateCostsPerKilometer(bool $thisMonth = false): float
+    {
+        $averageMonthlyCosts = $this->calculateAverageMonthlyCosts();
+        $currentMonthlyCosts = $this->calculateAverageMonthlyCosts(true);
+        $averageMonthlyDistance = $this->calculateAverageMonthlyDistance();
+        $currentMonthlyDistance = $this->calculateAverageMonthlyDistance(true);
+
+        if ($thisMonth) {
+            $rawCostsPerKilometerCurrentMonth = 0;
+
+            if ($currentMonthlyDistance > 0) {
+                $rawCostsPerKilometerCurrentMonth = $currentMonthlyCosts / $currentMonthlyDistance;
+            }
+
+            return round($rawCostsPerKilometerCurrentMonth, 3);
+        }
+
+        $rawCostsPerKilometer = 0;
+
+        if ($averageMonthlyDistance > 0) {
+            $rawCostsPerKilometer = $averageMonthlyCosts / $averageMonthlyDistance;
+        }
+
+        return round($rawCostsPerKilometer, 3);
     }
 
     private function calculateAverageMonthlyDistance(bool $thisMonth = false): int
@@ -138,32 +186,6 @@ class DashboardStatsOverview extends BaseWidget
         $averageMonthlyDistance = $totalDistance / $monthsCount;
 
         return round($averageMonthlyDistance);
-    }
-
-    private function calculateCostsPerKilometer(bool $thisMonth = false): float
-    {
-        $averageMonthlyCosts = $this->calculateAverageMonthlyCosts();
-        $currentMonthlyCosts = $this->calculateAverageMonthlyCosts(true);
-        $averageMonthlyDistance = $this->calculateAverageMonthlyDistance();
-        $currentMonthlyDistance = $this->calculateAverageMonthlyDistance(true);
-
-        if ($thisMonth) {
-            $rawCostsPerKilometerCurrentMonth = 0;
-
-            if ($currentMonthlyDistance > 0) {
-                $rawCostsPerKilometerCurrentMonth = $currentMonthlyCosts / $currentMonthlyDistance;
-            }
-
-            return round($rawCostsPerKilometerCurrentMonth,3);
-        }
-
-        $rawCostsPerKilometer = 0;
-
-        if ($averageMonthlyDistance > 0) {
-            $rawCostsPerKilometer = $averageMonthlyCosts / $averageMonthlyDistance;
-        }
-
-        return round($rawCostsPerKilometer,3);
     }
 
     private function calculateAverageFuelConsumption(): float

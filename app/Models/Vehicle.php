@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -45,6 +45,7 @@ class Vehicle extends Model
         'purchase_date' => 'date:Y-m-d',
         'private' => 'boolean',
     ];
+    protected $appends = ['fuel_status', 'maintenance_status', 'apk_status', 'airco_check_status'];
 
     protected static function booted()
     {
@@ -65,11 +66,9 @@ class Vehicle extends Model
         ]);
     }
 
-    protected $appends = ['fuel_status', 'maintenance_status', 'apk_status', 'airco_check_status'];
-
     public function getFullNameAttribute(): string
     {
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
 
         return $brands[$this->brand] . ' ' . $this->model;
     }
@@ -81,7 +80,7 @@ class Vehicle extends Model
 
             if ($latestRefueling) {
                 $diff = Carbon::parse($latestRefueling->date)->addMonths(2)->diffInDays(now());
-                return (int) max(0, $diff - ($diff * 2));
+                return (int)max(0, $diff - ($diff * 2));
             }
         }
 
@@ -162,6 +161,24 @@ class Vehicle extends Model
         return [];
     }
 
+    public function getInsuranceStatusAttribute(): array
+    {
+        if ($this->insurances->isNotEmpty()) {
+            $insurance = $this->insurances->where('start_date', '<', today())->first();
+
+            $timeTillInsuranceDiff = $insurance->end_date->diffInDays(now());
+            $timeTillInsuranceEndDate = max(0, $timeTillInsuranceDiff - ($timeTillInsuranceDiff * 2));
+            $timeDiffHumans = $insurance->end_date->diffForHumans();
+
+            return [
+                'time' => $timeTillInsuranceEndDate,
+                'timeDiffHumans' => $timeDiffHumans,
+            ];
+        }
+
+        return [];
+    }
+
     public function getStatusBadge(string $vehicleId = '', string $item = '')
     {
         $selectedVehicle = Vehicle::selected()->latest()->first();
@@ -174,6 +191,7 @@ class Vehicle extends Model
         $maintenanceStatus = $selectedVehicle->maintenance_status ?? null;
         $timeTillApk = $selectedVehicle->apk_status['time'] ?? null;
         $timeTillAircoCheck = $selectedVehicle->airco_check_status['time'] ?? null;
+        $timeTillInsuranceEndDate = $selectedVehicle->insurance_status['time'] ?? null;
 
         $priorities = [
             'success' => [
@@ -199,6 +217,7 @@ class Vehicle extends Model
             || $maintenanceStatus['distance'] < 1500
             || $timeTillApk < 31
             || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 31)
+            || $timeTillInsuranceEndDate < 31
         ) {
             return ! empty($item) ? $priorities['critical'][$item] : $priorities['critical'];
         }
@@ -209,6 +228,7 @@ class Vehicle extends Model
             || $maintenanceStatus['distance'] < 3000
             || $timeTillApk < 62
             || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 62)
+            || $timeTillInsuranceEndDate < 62
         ) {
             return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
         }
@@ -238,5 +258,13 @@ class Vehicle extends Model
     public function maintenances(): HasMany
     {
         return $this->hasMany(Maintenance::class);
+    }
+
+    /**
+     * Get the maintenances that the vehicle has
+     */
+    public function insurances(): HasMany
+    {
+        return $this->hasMany(Insurance::class);
     }
 }

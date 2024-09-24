@@ -18,7 +18,7 @@ class ViewVehicle extends ViewRecord
 
     public function infolist(Infolist $infolist): Infolist
     {
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
         $fuelTypes = trans('powertrains');
 
         return $infolist

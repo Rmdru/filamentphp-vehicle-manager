@@ -9,7 +9,7 @@
                     @svg($notification['categoryIcon'], ['class' => 'w-6 h-6'])
                 @endif
                 @if ($notification['text'] !== '')
-                    <h3 class="font-medium">{{ $notification['text'] }}</h3>
+                    &nbsp;<h3 class="font-medium">{{ $notification['text'] }}</h3>
                 @endif
             </div>
         </div>

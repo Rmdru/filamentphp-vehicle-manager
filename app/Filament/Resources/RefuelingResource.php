@@ -54,6 +54,7 @@ class RefuelingResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->relationship('vehicle')
+                            ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->id)
                             ->options(function (Vehicle $vehicle) {
                                 $vehicles = Vehicle::get();
 
@@ -112,7 +113,8 @@ class RefuelingResource extends Resource
                             ->label(__('Mileage begin'))
                             ->required()
                             ->suffix(' km')
-                            ->numeric(),
+                            ->numeric()
+                            ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->mileage_latest),
                         TextInput::make('mileage_end')
                             ->label(__('Mileage end'))
                             ->required()
@@ -212,7 +214,7 @@ class RefuelingResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
 

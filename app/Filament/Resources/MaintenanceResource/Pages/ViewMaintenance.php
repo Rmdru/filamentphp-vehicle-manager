@@ -17,7 +17,7 @@ class ViewMaintenance extends ViewRecord
 
     public function infolist(Infolist $infolist): Infolist
     {
-        $brands = config('cars.brands');
+        $brands = config('vehicles.brands');
 
         return $infolist
             ->schema([
