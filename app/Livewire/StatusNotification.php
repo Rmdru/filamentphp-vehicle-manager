@@ -18,11 +18,43 @@ class StatusNotification extends Component
         $this->vehicleId = $vehicleId;
 
         $this->getInsuranceNotification();
+        $this->getTaxNotification();
         $this->getApkNotification();
         $this->getMaintenanceNotification();
         $this->getAircoCheckNotification();
         $this->getRefuelingNotification();
         $this->getEverythingOkNotification();
+    }
+
+    private function createNotification(string $type = '', string $text = '', string $categoryIcon = ''): void
+    {
+        $types = [
+            'critical' => [
+                'textColor' => 'text-red-500',
+                'borderColor' => 'border-red-800',
+                'icon' => 'gmdi-warning-r',
+            ],
+            'warning' => [
+                'textColor' => 'text-orange-400',
+                'borderColor' => 'border-orange-500',
+                'icon' => 'gmdi-warning-r',
+            ],
+            'info' => [
+                'textColor' => 'text-blue-400',
+                'borderColor' => 'border-blue-500',
+                'icon' => 'gmdi-info-r',
+            ],
+            'success' => [
+                'textColor' => 'text-green-500',
+                'borderColor' => 'border-green-800',
+                'icon' => 'gmdi-check-r',
+            ],
+        ];
+
+        $this->notifications[] = array_merge($types[$type], [
+            'categoryIcon' => $categoryIcon,
+            'text' => $text,
+        ]);
     }
 
     public function getInsuranceNotification()
@@ -39,40 +71,24 @@ class StatusNotification extends Component
         }
 
         if ($timeTillInsurance < 31) {
-            $this->createNotification('critical', __('Insurance expires within 1 month!'), 'fas-hands-holding-circle');
+            $this->createNotification('warning', __('Insurance expires within 1 month!'), 'fas-hands-holding-circle');
             return null;
         }
 
         if ($timeTillInsurance < 62) {
-            $this->createNotification('warning', __('Insurance expires within 2 months!'), 'fas-hands-holding-circle');
+            $this->createNotification('info', __('Insurance expires within 2 months!'), 'fas-hands-holding-circle');
             return null;
         }
     }
 
-    private function createNotification(string $type = '', string $text = '', string $categoryIcon = ''): void
+    public function getTaxNotification()
     {
-        $types = [
-            'critical' => [
-                'textColor' => 'text-red-500',
-                'borderColor' => 'border-red-800',
-                'icon' => 'gmdi-warning-r',
-            ],
-            'warning' => [
-                'textColor' => 'text-orange-400',
-                'borderColor' => 'border-orange-500',
-                'icon' => 'gmdi-warning-r',
-            ],
-            'success' => [
-                'textColor' => 'text-green-500',
-                'borderColor' => 'border-green-800',
-                'icon' => 'gmdi-check-r',
-            ],
-        ];
+        $timeTillTax = Vehicle::selected()->latest()->first()->tax_status['time'] ?? null;
 
-        $this->notifications[] = array_merge($types[$type], [
-            'categoryIcon' => $categoryIcon,
-            'text' => $text,
-        ]);
+        if ($timeTillTax > 0 && $timeTillTax < 31) {
+            $this->createNotification('info', __('New tax period within 1 month!'), 'fas-file-invoice-dollar');
+            return null;
+        }
     }
 
     private function getApkNotification()

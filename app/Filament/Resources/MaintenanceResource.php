@@ -27,12 +27,12 @@ class MaintenanceResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Maintenances');
+        return __('Maintenance');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('Maintenances');
+        return __('Maintenance');
     }
 
     public static function getModelLabel(): string

@@ -179,6 +179,24 @@ class Vehicle extends Model
         return [];
     }
 
+    public function getTaxStatusAttribute(): array
+    {
+        if ($this->taxes->isNotEmpty()) {
+            $tax = $this->taxes->where('start_date', '<', today())->first();
+
+            $timeTillTaxDiff = $tax->end_date->diffInDays(now());
+            $timeTillTaxEndDate = max(0, $timeTillTaxDiff - ($timeTillTaxDiff * 2));
+            $timeDiffHumans = $tax->end_date->diffForHumans();
+
+            return [
+                'time' => $timeTillTaxEndDate,
+                'timeDiffHumans' => $timeDiffHumans,
+            ];
+        }
+
+        return [];
+    }
+
     public function getStatusBadge(string $vehicleId = '', string $item = '')
     {
         $selectedVehicle = Vehicle::selected()->latest()->first();
@@ -192,12 +210,18 @@ class Vehicle extends Model
         $timeTillApk = $selectedVehicle->apk_status['time'] ?? null;
         $timeTillAircoCheck = $selectedVehicle->airco_check_status['time'] ?? null;
         $timeTillInsuranceEndDate = $selectedVehicle->insurance_status['time'] ?? null;
+        $timeTillTaxEndDate = $selectedVehicle->tax_status['time'] ?? null;
 
         $priorities = [
             'success' => [
                 'color' => 'success',
                 'icon' => 'gmdi-check-r',
                 'text' => __('OK'),
+            ],
+            'info' => [
+                'color' => 'info',
+                'icon' => 'gmdi-info-r',
+                'text' => __('Notification'),
             ],
             'warning' => [
                 'color' => 'warning',
@@ -233,6 +257,13 @@ class Vehicle extends Model
             return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
         }
 
+        if (
+            $timeTillInsuranceEndDate < 62
+            || ($timeTillTaxEndDate > 0 && $timeTillTaxEndDate < 31)
+        ) {
+            return ! empty($item) ? $priorities['info'][$item] : $priorities['info'];
+        }
+
         return ! empty($item) ? $priorities['success'][$item] : $priorities['success'];
     }
 
@@ -261,10 +292,18 @@ class Vehicle extends Model
     }
 
     /**
-     * Get the maintenances that the vehicle has
+     * Get the insurances that the vehicle has
      */
     public function insurances(): HasMany
     {
         return $this->hasMany(Insurance::class);
+    }
+
+    /**
+     * Get the taxes that the vehicle has
+     */
+    public function taxes(): HasMany
+    {
+        return $this->hasMany(Tax::class);
     }
 }

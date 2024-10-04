@@ -7,6 +7,7 @@ use App\Filament\Pages\Timeline;
 use App\Filament\Resources\InsuranceResource;
 use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\RefuelingResource;
+use App\Filament\Resources\TaxResource;
 use App\Filament\Resources\VehicleResource;
 use App\Models\Vehicle;
 use Filament\Http\Middleware\Authenticate;
@@ -89,6 +90,7 @@ class AccountPanelProvider extends PanelProvider
                             ...MaintenanceResource::getNavigationItems(),
                             ...RefuelingResource::getNavigationItems(),
                             ...InsuranceResource::getNavigationItems(),
+                            ...TaxResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))

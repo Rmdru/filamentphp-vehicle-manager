@@ -71,6 +71,7 @@ class DashboardStatsOverview extends BaseWidget
                 'maintenances',
                 'refuelings',
                 'insurances',
+                'taxes',
             ])
             ->first();
 
@@ -78,21 +79,26 @@ class DashboardStatsOverview extends BaseWidget
             $maintenances = $vehicle->maintenances;
             $refuelings = $vehicle->refuelings;
             $insurances = $vehicle->insurances;
+            $taxes = $vehicle->taxes;
 
             if ($startDate) {
                 $maintenances = $maintenances->where('date', '>=', $startDate);
                 $refuelings = $refuelings->where('date', '>=', $startDate);
                 $insurances = $insurances->where('start_date', '>=', $startDate);
+                $taxes = $taxes->where('start_date', '>=', $startDate);
             }
 
             if ($endDate) {
                 $maintenances = $maintenances->where('date', '<=', $endDate);
                 $refuelings = $refuelings->where('date', '<=', $endDate);
                 $insurances = $insurances->where('end_date', '<=', $endDate);
+                $taxes = $insurances->where('end_date', '<=', $endDate);
             }
 
             $totalInsurancePrice = 0;
             $totalInsuranceMonths = 0;
+            $totalTaxPrice = 0;
+            $totalTaxMonths = 0;
 
             foreach ($insurances as $insurance) {
                 if (! $insurance) {
@@ -106,12 +112,24 @@ class DashboardStatsOverview extends BaseWidget
                 $totalInsurancePrice += $insurance->months * $insurance->price;
             }
 
-            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price') + $totalInsurancePrice;
+            foreach ($taxes as $tax) {
+                if (! $tax) {
+                    $tax = new Insurance();
+
+                    $tax->months = 0;
+                    $tax->price = 0;
+                }
+
+                $totalTaxMonths += $tax->months;
+                $totalTaxPrice += $tax->months * $tax->price;
+            }
+
+            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price') + $totalInsurancePrice + $totalTaxPrice;
 
             $uniqueMonths = $maintenances->merge($refuelings)
                     ->groupBy(function ($maintenance) {
                         return $maintenance->date->format('Y-m');
-                    })->count() + $totalInsuranceMonths;
+                    })->count() + $totalInsuranceMonths + $totalTaxMonths;
 
             return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
         } else {

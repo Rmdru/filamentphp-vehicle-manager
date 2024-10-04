@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\InsuranceResource\Pages;
-use App\Filament\Resources\InsuranceResource\RelationManagers;
+use App\Filament\Resources\TaxResource\Pages;
+use App\Filament\Resources\TaxResource\RelationManagers;
 use App\Models\Insurance;
+use App\Models\Tax;
 use App\Models\Vehicle;
+use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,26 +18,27 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class InsuranceResource extends Resource
+class TaxResource extends Resource
 {
-    protected static ?string $model = Insurance::class;
+    protected static ?string $model = Tax::class;
 
-    protected static ?string $navigationIcon = 'fas-hands-holding-circle';
+    protected static ?string $navigationIcon = 'fas-file-invoice-dollar';
 
     public static function getNavigationLabel(): string
     {
-        return __('Insurances');
+        return __('Taxes');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('Insurances');
+        return __('Taxes');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Insurance');
+        return __('Tax');
     }
 
     public static function form(Form $form): Form
@@ -58,16 +61,6 @@ class InsuranceResource extends Resource
 
                         return $vehicles->pluck('car', 'id');
                     }),
-                TextInput::make('insurance_company')
-                    ->label(__('Insurance company'))
-                    ->required()
-                    ->maxLength(50),
-                Select::make('type')
-                    ->label(__('Type'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->options(config('insurances.types')),
                 DatePicker::make('start_date')
                     ->label(__('Start date'))
                     ->required()
@@ -93,7 +86,6 @@ class InsuranceResource extends Resource
     public static function table(Table $table): Table
     {
         $brands = config('vehicles.brands');
-        $insuranceTypes = config('insurances.types');
 
         return $table
             ->modifyQueryUsing(function (Builder $query) {
@@ -105,34 +97,19 @@ class InsuranceResource extends Resource
                 Tables\Columns\Layout\Split::make([
                     TextColumn::make('vehicle_id')
                         ->label(__('Vehicle'))
-                        ->icon(fn (Insurance $insurance) => 'si-' . str($brands[$insurance->vehicle->brand])->replace(' ', '')->lower())
-                        ->formatStateUsing(fn (Insurance $insurance) => $brands[$insurance->vehicle->brand] . " " . $insurance->vehicle->model),
+                        ->icon(fn (Tax $tax) => 'si-' . str($brands[$tax->vehicle->brand])->replace(' ', '')->lower())
+                        ->formatStateUsing(fn (Tax $tax) => $brands[$tax->vehicle->brand] . " " . $tax->vehicle->model),
                     TextColumn::make('start_date')
                         ->label(__('Start date'))
                         ->date()
-                        ->formatStateUsing(function (Insurance $insurance) {
-                            if (empty($insurance->end_date)) {
-                                $insurance->end_date = __('Unknown');
+                        ->formatStateUsing(function (Tax $tax) {
+                            if (empty($tax->end_date)) {
+                                $tax->end_date = __('Unknown');
                             }
 
-                            return $insurance->start_date->isoFormat('MMM D, Y') . ' t/m ' . $insurance->end_date->isoFormat('MMM D, Y');
+                            return $tax->start_date->isoFormat('MMM D, Y') . ' t/m ' . $tax->end_date->isoFormat('MMM D, Y');
                         })
                         ->icon('gmdi-calendar-month-r'),
-                    TextColumn::make('type')
-                        ->label(__('Type'))
-                        ->badge()
-                        ->default('')
-                        ->formatStateUsing(fn (string $state): string => $insuranceTypes[$state] ?? __('Unknown'))
-                        ->icon(fn (string $state): string => match ($state) {
-                            '0' => 'mdi-shield-outline',
-                            '1' => 'mdi-shield-plus',
-                            '2' => 'mdi-shield-star',
-                            default => 'gmdi-warning-r',
-                        })
-                        ->color('gray'),
-                    TextColumn::make('insurance_company')
-                        ->label(__('Insurance company'))
-                        ->icon('mdi-office-building'),
                     TextColumn::make('price')
                         ->label(__('Price per month'))
                         ->icon('mdi-hand-coin-outline')
@@ -162,9 +139,9 @@ class InsuranceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInsurances::route('/'),
-            'create' => Pages\CreateInsurance::route('/create'),
-            'edit' => Pages\EditInsurance::route('/{record}/edit'),
+            'index' => Pages\ListTaxes::route('/'),
+            'create' => Pages\CreateTax::route('/create'),
+            'edit' => Pages\EditTax::route('/{record}/edit'),
         ];
     }
 }
