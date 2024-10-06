@@ -77,7 +77,7 @@ class DashboardStatsOverview extends BaseWidget
         }
 
         if ($latestValue === $value) {
-            $descriptionColor = 'warning';
+            $descriptionColor = 'gray';
             $descriptionIcon = 'mdi-approximately-equal';
         }
 
@@ -278,6 +278,10 @@ class DashboardStatsOverview extends BaseWidget
     private function calculateAvgSpeed(bool $latest = false): int
     {
         $refuelings = $this->getRefuelings();
+
+        if (empty($refuelings)) {
+            return 0;
+        }
 
         if ($latest) {
             return round($refuelings->latest()->first()->avg_speed, 1);
