@@ -38,6 +38,7 @@ class Refueling extends Model
         'climate_control',
         'routes',
         'driving_style',
+        'avg_speed',
         'comments',
     ];
 

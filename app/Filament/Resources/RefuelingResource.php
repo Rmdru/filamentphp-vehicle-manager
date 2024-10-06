@@ -202,10 +202,14 @@ class RefuelingResource extends Resource
                                 'fast' => 'mdi-speedometer',
                             ])
                             ->colors([
-                                'slow' => 'success',
-                                'average' => 'warning',
+                                'slow' => 'warning',
+                                'average' => 'success',
                                 'fast' => 'primary',
                             ]),
+                        TextInput::make('avg_speed')
+                            ->label(__('Average speed'))
+                            ->numeric()
+                            ->suffix('km/h'),
                         Forms\Components\Textarea::make('comments')
                             ->label(__('Comments'))
                     ]),
@@ -280,6 +284,10 @@ class RefuelingResource extends Resource
                             ->icon('gmdi-add')
                             ->suffix(' km')
                             ->formatStateUsing(fn (Refueling $refueling) => $refueling->mileage_end - $refueling->mileage_begin),
+                        TextColumn::make('avg_speed')
+                            ->label(__('Average speed'))
+                            ->icon('mdi-speedometer')
+                            ->suffix(' km/h'),
                     ])
                         ->space(1),
                     Stack::make([
@@ -375,8 +383,8 @@ class RefuelingResource extends Resource
                         TextColumn::make('driving_style')
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
-                                'slow' => 'success',
-                                'average' => 'warning',
+                                'slow' => 'warning',
+                                'average' => 'success',
                                 'fast' => 'primary',
                             })
                             ->icon(fn (string $state): string => match ($state) {
