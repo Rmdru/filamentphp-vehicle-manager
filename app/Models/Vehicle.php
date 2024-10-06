@@ -164,7 +164,7 @@ class Vehicle extends Model
     public function getInsuranceStatusAttribute(): array
     {
         if ($this->insurances->isNotEmpty()) {
-            $insurance = $this->insurances->where('start_date', '<', today())->first();
+            $insurance = $this->insurances->where('start_date', '<=', today())->sortByDesc('start_date')->first();
 
             $timeTillInsuranceDiff = $insurance->end_date->diffInDays(now());
             $timeTillInsuranceEndDate = max(0, $timeTillInsuranceDiff - ($timeTillInsuranceDiff * 2));
@@ -182,7 +182,7 @@ class Vehicle extends Model
     public function getTaxStatusAttribute(): array
     {
         if ($this->taxes->isNotEmpty()) {
-            $tax = $this->taxes->where('start_date', '<', today())->first();
+            $tax = $this->taxes->where('start_date', '<=', today())->sortByDesc('start_date')->first();
 
             $timeTillTaxDiff = $tax->end_date->diffInDays(now());
             $timeTillTaxEndDate = max(0, $timeTillTaxDiff - ($timeTillTaxDiff * 2));

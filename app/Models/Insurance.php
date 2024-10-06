@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 class Insurance extends Model
 {
@@ -31,16 +32,35 @@ class Insurance extends Model
         'end_date' => 'date:Y-m-d',
     ];
 
-    public function getMonthsAttribute(): float
+    public function getMonthsBetweenDates(Carbon $startDate, Carbon $endDate): Collection
+    {
+        $start = Carbon::parse($startDate)->startOfMonth();
+        $end = Carbon::parse($endDate)->startOfMonth();
+
+        $months = new Collection();
+
+        while ($start <= $end) {
+            $months->push($start->format('Y-m'));
+            $start->addMonth();
+        }
+
+        return $months;
+    }
+
+    public function getMonthsAttribute(): Collection
     {
         if (! $this->start_date || ! $this->end_date) {
-            return 0;
+            return collect();
         }
 
         $start = Carbon::parse($this->start_date);
         $end = Carbon::parse($this->end_date);
 
-        return $start->diffInMonths($end);
+        if ($this->start_date <= today() && $this->end_date > today()) {
+            $end = today();
+        }
+
+        return $this->getMonthsBetweenDates($start, $end);
     }
 
     public function vehicle(): BelongsTo

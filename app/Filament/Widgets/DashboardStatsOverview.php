@@ -8,6 +8,7 @@ use App\Models\Vehicle;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Carbon;
 
 class DashboardStatsOverview extends BaseWidget
 {
@@ -96,40 +97,45 @@ class DashboardStatsOverview extends BaseWidget
             }
 
             $totalInsurancePrice = 0;
-            $totalInsuranceMonths = 0;
+            $totalInsuranceMonths = collect();
             $totalTaxPrice = 0;
-            $totalTaxMonths = 0;
+            $totalTaxMonths = collect();
 
             foreach ($insurances as $insurance) {
                 if (! $insurance) {
                     $insurance = new Insurance();
 
-                    $insurance->months = 0;
+                    $insurance->months = collect();
                     $insurance->price = 0;
                 }
 
-                $totalInsuranceMonths += $insurance->months;
-                $totalInsurancePrice += $insurance->months * $insurance->price;
+                $totalInsuranceMonths = $totalInsuranceMonths->merge($insurance->months);
+                $totalInsurancePrice += $insurance->months->count() * $insurance->price;
             }
 
             foreach ($taxes as $tax) {
                 if (! $tax) {
                     $tax = new Insurance();
 
-                    $tax->months = 0;
+                    $tax->months = collect();
                     $tax->price = 0;
                 }
 
-                $totalTaxMonths += $tax->months;
-                $totalTaxPrice += $tax->months * $tax->price;
+                $totalTaxMonths = $totalTaxMonths->merge($tax->months);
+                $totalTaxPrice += $tax->months->count() * $tax->price;
             }
 
             $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price') + $totalInsurancePrice + $totalTaxPrice;
 
-            $uniqueMonths = $maintenances->merge($refuelings)
-                    ->groupBy(function ($maintenance) {
-                        return $maintenance->date->format('Y-m');
-                    })->count() + $totalInsuranceMonths + $totalTaxMonths;
+            $maintenanceMonths = $maintenances->pluck('date');
+            $refuelingMonths = $refuelings->pluck('date');
+
+            $uniqueMonths = $maintenanceMonths->merge($refuelingMonths)
+                ->merge($totalTaxMonths)
+                ->merge($totalInsuranceMonths)
+                ->groupBy(function ($month) {
+                    return Carbon::parse($month)->format('Y-m');
+                })->count();
 
             return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
         } else {

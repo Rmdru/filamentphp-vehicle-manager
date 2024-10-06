@@ -77,8 +77,7 @@ class InsuranceResource extends Resource
                 DatePicker::make('end_date')
                     ->label(__('End date'))
                     ->native(false)
-                    ->displayFormat('d-m-Y')
-                    ->minDate(now()),
+                    ->displayFormat('d-m-Y'),
                 TextInput::make('price')
                     ->label(__('Price per month'))
                     ->numeric()

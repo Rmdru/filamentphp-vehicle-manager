@@ -9,6 +9,7 @@ use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\TaxResource;
 use App\Filament\Resources\VehicleResource;
+use App\Http\Middleware\CreateFirstVehicle;
 use App\Models\Vehicle;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -73,6 +74,7 @@ class AccountPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                CreateFirstVehicle::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -82,20 +84,38 @@ class AccountPanelProvider extends PanelProvider
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->groups([
                     NavigationGroup::make()
-                        ->label(__('Management'))
+                        ->label(__('Statistics'))
                         ->items([
                             ...Dashboard::getNavigationItems(),
                             ...Timeline::getNavigationItems(),
-                            ...VehicleResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make()
+                        ->label(__('Maintenance'))
+                        ->items([
                             ...MaintenanceResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make()
+                        ->label(__('Fuel'))
+                        ->items([
                             ...RefuelingResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make()
+                        ->label(__('Insurance'))
+                        ->items([
                             ...InsuranceResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make()
+                        ->label(__('Tax'))
+                        ->items([
                             ...TaxResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))
                         ->collapsed()
-                        ->items($this->getVehicleMenuItems()),
+                        ->items([
+                            ...VehicleResource::getNavigationItems(),
+                            ...$this->getVehicleMenuItems(),
+                        ]),
                 ]);
             });
     }
