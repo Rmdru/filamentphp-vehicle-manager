@@ -7,6 +7,7 @@ use App\Filament\Resources\TaxResource\RelationManagers;
 use App\Models\Insurance;
 use App\Models\Tax;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -15,7 +16,10 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Average;
+use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -84,20 +88,14 @@ class TaxResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $brands = config('vehicles.brands');
-
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->latest();
+                })->orderByDesc('start_date');
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
-                    TextColumn::make('vehicle_id')
-                        ->label(__('Vehicle'))
-                        ->icon(fn (Tax $tax) => 'si-' . str($brands[$tax->vehicle->brand])->replace(' ', '')->lower())
-                        ->formatStateUsing(fn (Tax $tax) => $brands[$tax->vehicle->brand] . " " . $tax->vehicle->model),
                     TextColumn::make('start_date')
                         ->label(__('Start date'))
                         ->date()
@@ -112,11 +110,55 @@ class TaxResource extends Resource
                     TextColumn::make('price')
                         ->label(__('Price per month'))
                         ->icon('mdi-hand-coin-outline')
-                        ->money('EUR'),
+                        ->money('EUR')
+                        ->summarize([
+                            Average::make()->label(__('Total price average')),
+                            Range::make()->label(__('Total price range')),
+                        ]),
                 ])
             ])
             ->filters([
-                //
+                Filter::make('date')
+                    ->label(__('Date'))
+                    ->form([
+                        DatePicker::make('start_date')
+                            ->label(__('Start date'))
+                            ->native(false),
+                        DatePicker::make('end_date')
+                            ->label(__('End date'))
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['start_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['end_date'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['start_date'] && $data['end_date']) {
+                            $indicators['date'] = __('Date from :start until :end', [
+                                'start' => Carbon::parse($data['start_date'])->isoFormat('MMM D, Y'),
+                                'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } elseif ($data['start_date']) {
+                            $indicators['date'] = __('Date from :start', [
+                                'start' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } elseif ($data['end_date']) {
+                            $indicators['date'] = __('Date until :end', [
+                                'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
+                            ]);
+                        }
+
+                        return $indicators;
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

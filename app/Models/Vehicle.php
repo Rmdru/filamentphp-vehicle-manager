@@ -76,9 +76,9 @@ class Vehicle extends Model
     public function getFuelStatusAttribute(): ?int
     {
         if ($this->refuelings->isNotEmpty() && $this->refuelings->count() > 0) {
-            $latestRefueling = $this->refuelings->where('fuel_type', 'Premium Unleaded')->sortByDesc('date')->first();
+            $latestRefueling = $this->refuelings->sortByDesc('date')->first();
 
-            if ($latestRefueling) {
+            if (! empty($latestRefueling) && $latestRefueling->fuel_type = 'Premium Unleaded') {
                 $diff = Carbon::parse($latestRefueling->date)->addMonths(2)->diffInDays(now());
                 return (int)max(0, $diff - ($diff * 2));
             }

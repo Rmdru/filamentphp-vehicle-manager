@@ -158,6 +158,7 @@ class VehicleResource extends Resource
                         ->space(1),
                 ])
             ])
+            ->defaultSort('purchase_date', 'desc')
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,

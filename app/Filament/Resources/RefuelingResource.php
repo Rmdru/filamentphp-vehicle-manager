@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\RefuelingResource\Pages;
 use App\Models\Refueling;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -16,9 +17,15 @@ use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as BuilderQuery;
 use Illuminate\Support\HtmlString;
+use Filament\Tables\Columns\Summarizers\Range;
+use Filament\Tables\Columns\Summarizers\Average;
+use Filament\Tables\Columns\Summarizers\Summarizer;
+use Filament\Tables\Filters\Filter;
 
 class RefuelingResource extends Resource
 {
@@ -218,7 +225,6 @@ class RefuelingResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $brands = config('vehicles.brands');
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
 
@@ -226,7 +232,7 @@ class RefuelingResource extends Resource
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->latest();
+                })->orderByDesc('date');
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
@@ -242,34 +248,54 @@ class RefuelingResource extends Resource
                         ),
                     Stack::make([
                         TextColumn::make('date')
-                            ->label(__('Vehicle'))
-                            ->icon(fn (Refueling $refueling) => 'si-' . str($brands[$refueling->vehicle->brand])->replace(' ', '')->lower())
-                            ->formatStateUsing(fn (Refueling $refueling) => $brands[$refueling->vehicle->brand] . " " . $refueling->vehicle->model),
-                        TextColumn::make('date')
                             ->label(__('Date'))
                             ->date()
                             ->icon('gmdi-calendar-month-r'),
                         TextColumn::make('gas_station')
                             ->label(__('Gas station'))
-                            ->icon('gmdi-location-on-s'),
-
+                            ->icon('gmdi-location-on-s')
+                            ->searchable()
+                            ->summarize(Summarizer::make()
+                                ->label(__('Most visited gas station'))
+                                ->using(function (BuilderQuery $query): string {
+                                    return $query->select('gas_station')
+                                        ->selectRaw('COUNT(*) as count')
+                                        ->groupBy('gas_station')
+                                        ->orderByDesc('count')
+                                        ->limit(1)
+                                        ->pluck('gas_station')
+                                        ->first();
+                                })
+                            ),
                     ])
                         ->space(1),
                     Stack::make([
                         TextColumn::make('total_price')
                             ->label(__('Total price'))
                             ->icon('mdi-hand-coin-outline')
-                            ->money('EUR'),
+                            ->money('EUR')
+                            ->summarize([
+                                Average::make()->label(__('Total price average')),
+                                Range::make()->label(__('Total price range')),
+                            ]),
                         TextColumn::make('unit_price')
                             ->label(__('Unit price'))
                             ->icon('gmdi-local-offer')
                             ->money('EUR')
-                            ->suffix('/l'),
+                            ->suffix('/l')
+                            ->summarize([
+                                Average::make()->label(__('Unit price average')),
+                                Range::make()->label(__('Unit price range')),
+                            ]),
                         TextColumn::make('costs_per_kilometer')
                             ->label(__('Costs per kilometer'))
                             ->icon('uni-euro-circle-o')
                             ->money('EUR')
-                            ->suffix('/km'),
+                            ->suffix('/km')
+                            ->summarize([
+                                Average::make()->label(__('Costs per kilomenter average')),
+                                Range::make()->label(__('Costs per kilomenter range')),
+                            ]),
 
                     ])
                         ->space(1),
@@ -307,11 +333,19 @@ class RefuelingResource extends Resource
                                     return 'warning';
                                 }
                             })
-                            ->suffix(' l/100km'),
+                            ->suffix(' l/100km')
+                            ->summarize([
+                                Average::make()->label(__('Fuel consumption average')),
+                                Range::make()->label(__('Fuel consumption range')),
+                            ]),
                         TextColumn::make('amount')
                             ->label(__('Amount'))
                             ->icon('gmdi-water-drop-r')
-                            ->suffix(' l'),
+                            ->suffix(' l')
+                            ->summarize([
+                                Average::make()->label(__('Amount average')),
+                                Range::make()->label(__('Amount range')),
+                            ]),
                         TextColumn::make('fuel_type')
                             ->label(__('Fuel type'))
                             ->icon('gmdi-local-gas-station-r')
@@ -401,6 +435,51 @@ class RefuelingResource extends Resource
                     ])
                         ->space(1),
                 ])
+            ])
+            ->filters([
+                Filter::make('date')
+                    ->label(__('Date'))
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->label(__('Date from'))
+                            ->native(false),
+                        DatePicker::make('date_until')
+                            ->label(__('Date until'))
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['date_from'] && $data['date_until']) {
+                            $indicators['date'] = __('Date from :from until :until', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } elseif ($data['date_from']) {
+                            $indicators['date'] = __('Date from :from', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } elseif ($data['date_until']) {
+                            $indicators['date'] = __('Date until :until', [
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        }
+
+                        return $indicators;
+                    }),
+                SelectFilter::make('fuel_type')
+                    ->options($fuelTypes)
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

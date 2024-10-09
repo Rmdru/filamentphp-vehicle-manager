@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MaintenanceResource\Pages;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -15,7 +16,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Average;
+use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -111,31 +116,29 @@ class MaintenanceResource extends Resource
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
-                            ->step(0.01),
+                            ->step(0.01)
                     ]),
             ]);
     }
 
     public static function table(Table $table): Table
     {
-        $brands = config('vehicles.brands');
-
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->latest();
+                })->orderByDesc('date');
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
-                    TextColumn::make('vehicle_id')
-                        ->label(__('Vehicle'))
-                        ->icon(fn (Maintenance $maintenance) => 'si-' . str($brands[$maintenance->vehicle->brand])->replace(' ', '')->lower())
-                        ->formatStateUsing(fn (Maintenance $maintenance) => $brands[$maintenance->vehicle->brand] . " " . $maintenance->vehicle->model),
                     TextColumn::make('date')
                         ->label(__('Date'))
                         ->date()
                         ->icon('gmdi-calendar-month-r'),
+                    TextColumn::make('garage')
+                        ->label(__('Garage'))
+                        ->icon('mdi-garage')
+                        ->searchable(),
                     TextColumn::make('type_maintenance')
                         ->label(__('Type maintenance'))
                         ->badge()
@@ -165,8 +168,55 @@ class MaintenanceResource extends Resource
                     TextColumn::make('total_price')
                         ->label(__('Total price'))
                         ->icon('mdi-hand-coin-outline')
-                        ->money('EUR'),
+                        ->money('EUR')
+                        ->summarize([
+                            Average::make()->label(__('Total price average')),
+                            Range::make()->label(__('Total price range')),
+                        ]),
                 ]),
+            ])
+            ->filters([
+                Filter::make('date')
+                    ->label(__('Date'))
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->label(__('Date from'))
+                            ->native(false),
+                        DatePicker::make('date_until')
+                            ->label(__('Date until'))
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['date_from'] && $data['date_until']) {
+                            $indicators['date'] = __('Date from :from until :until', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } elseif ($data['date_from']) {
+                            $indicators['date'] = __('Date from :from', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } elseif ($data['date_until']) {
+                            $indicators['date'] = __('Date until :until', [
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -18,7 +18,11 @@ class CreateFirstVehicle
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! Vehicle::count() && ! $request->routeIs('filament.account.resources.vehicles.create')) {
+        if (
+            auth()->user()
+            && ! Vehicle::count()
+            && ! $request->routeIs('filament.account.resources.vehicles.create')
+        ) {
             return redirect()->route('filament.account.resources.vehicles.create');
         }
 
