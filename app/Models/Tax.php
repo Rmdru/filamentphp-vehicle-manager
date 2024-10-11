@@ -23,27 +23,13 @@ class Tax extends Model
         'start_date',
         'end_date',
         'price',
+        'invoice_day',
     ];
 
     protected $casts = [
         'start_date' => 'date:Y-m-d',
         'end_date' => 'date:Y-m-d',
     ];
-
-    public function getMonthsBetweenDates(Carbon $startDate, Carbon $endDate): Collection
-    {
-        $start = Carbon::parse($startDate)->startOfMonth();
-        $end = Carbon::parse($endDate)->startOfMonth();
-
-        $months = new Collection();
-
-        while ($start <= $end) {
-            $months->push($start->format('Y-m'));
-            $start->addMonth();
-        }
-
-        return $months;
-    }
 
     public function getMonthsAttribute(): Collection
     {
@@ -61,8 +47,51 @@ class Tax extends Model
         return $this->getMonthsBetweenDates($start, $end);
     }
 
+    public function getMonthsBetweenDates(Carbon $startDate, Carbon $endDate): Collection
+    {
+        $start = Carbon::parse($startDate)->startOfMonth();
+        $end = Carbon::parse($endDate)->startOfMonth();
+
+        $months = new Collection();
+
+        while ($start <= $end) {
+            $months->push($start->format('Y-m'));
+            $start->addMonth();
+        }
+
+        return $months;
+    }
+
+    public function getNextInvoiceDate($startDate, $endDate, $invoiceDay)
+    {
+        $today = Carbon::today();
+
+        if (Carbon::parse($startDate)->greaterThan($today) || Carbon::parse($endDate)->lessThan($today)) {
+            return null;
+        }
+
+        $nextInvoiceDate = Carbon::createFromDate($today->year, $today->month, $invoiceDay);
+
+        if ($nextInvoiceDate->lessThan($today)) {
+            $nextInvoiceDate->addMonth();
+        }
+
+        if ($nextInvoiceDate->greaterThan(Carbon::parse($endDate))) {
+            return null;
+        }
+
+        return $nextInvoiceDate;
+    }
+
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    public function rules(): array
+    {
+        return [
+            'invoice_day' => 'required|integer|min:1|max:31',
+        ];
     }
 }

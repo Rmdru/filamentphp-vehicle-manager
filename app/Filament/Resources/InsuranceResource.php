@@ -25,7 +25,7 @@ class InsuranceResource extends Resource
 {
     protected static ?string $model = Insurance::class;
 
-    protected static ?string $navigationIcon = 'fas-hands-holding-circle';
+    protected static ?string $navigationIcon = 'mdi-shield-car';
 
     public static function getNavigationLabel(): string
     {
@@ -40,57 +40,6 @@ class InsuranceResource extends Resource
     public static function getModelLabel(): string
     {
         return __('Insurance');
-    }
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Select::make('vehicle_id')
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->relationship('vehicle')
-                    ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->id)
-                    ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::get();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
-                        });
-
-                        return $vehicles->pluck('car', 'id');
-                    }),
-                TextInput::make('insurance_company')
-                    ->label(__('Insurance company'))
-                    ->required()
-                    ->maxLength(50),
-                Select::make('type')
-                    ->label(__('Type'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->options(config('insurances.types')),
-                DatePicker::make('start_date')
-                    ->label(__('Start date'))
-                    ->required()
-                    ->native(false)
-                    ->displayFormat('d-m-Y')
-                    ->maxDate(now()),
-                DatePicker::make('end_date')
-                    ->label(__('End date'))
-                    ->native(false)
-                    ->displayFormat('d-m-Y'),
-                TextInput::make('price')
-                    ->label(__('Price per month'))
-                    ->numeric()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->required()
-                    ->prefix('€')
-                    ->step(0.01),
-            ]);
     }
 
     public static function table(Table $table): Table
@@ -139,6 +88,10 @@ class InsuranceResource extends Resource
                             Average::make()->label(__('Total price average')),
                             Range::make()->label(__('Total price range')),
                         ]),
+                    TextColumn::make('invoice_day')
+                        ->label(__('Invoice day'))
+                        ->icon('gmdi-calendar-month-r')
+                        ->suffix(__('th of the month')),
                 ])
             ])
             ->filters([
@@ -191,6 +144,64 @@ class InsuranceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Select::make('vehicle_id')
+                    ->label(__('Vehicle'))
+                    ->required()
+                    ->searchable()
+                    ->native(false)
+                    ->relationship('vehicle')
+                    ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->id)
+                    ->options(function (Vehicle $vehicle) {
+                        $vehicles = Vehicle::get();
+
+                        $vehicles->car = $vehicles->map(function ($index) {
+                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                        });
+
+                        return $vehicles->pluck('car', 'id');
+                    }),
+                TextInput::make('insurance_company')
+                    ->label(__('Insurance company'))
+                    ->required()
+                    ->maxLength(50),
+                Select::make('type')
+                    ->label(__('Type'))
+                    ->required()
+                    ->searchable()
+                    ->native(false)
+                    ->options(config('insurances.types')),
+                DatePicker::make('start_date')
+                    ->label(__('Start date'))
+                    ->required()
+                    ->native(false)
+                    ->displayFormat('d-m-Y')
+                    ->maxDate(now()),
+                DatePicker::make('end_date')
+                    ->label(__('End date'))
+                    ->native(false)
+                    ->displayFormat('d-m-Y'),
+                TextInput::make('price')
+                    ->label(__('Price per month'))
+                    ->numeric()
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters(',')
+                    ->required()
+                    ->prefix('€')
+                    ->step(0.01),
+                TextInput::make('invoice_day')
+                    ->label(__('Invoice day'))
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(31)
+                    ->required()
+                    ->suffix(__('th of the month')),
             ]);
     }
 

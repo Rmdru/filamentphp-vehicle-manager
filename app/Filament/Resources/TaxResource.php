@@ -83,6 +83,13 @@ class TaxResource extends Resource
                     ->required()
                     ->prefix('€')
                     ->step(0.01),
+                TextInput::make('invoice_day')
+                    ->label(__('Invoice day'))
+                    ->numeric()
+                    ->required()
+                    ->minValue(1)
+                    ->maxValue(31)
+                    ->suffix(__('th of the month')),
             ]);
     }
 
@@ -115,6 +122,10 @@ class TaxResource extends Resource
                             Average::make()->label(__('Total price average')),
                             Range::make()->label(__('Total price range')),
                         ]),
+                    TextColumn::make('invoice_day')
+                        ->label(__('Invoice day'))
+                        ->icon('gmdi-calendar-month-r')
+                        ->suffix(__('th of the month')),
                 ])
             ])
             ->filters([

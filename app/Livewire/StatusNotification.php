@@ -66,17 +66,17 @@ class StatusNotification extends Component
         }
 
         if (! $timeTillInsurance) {
-            $this->createNotification('critical', __('No insurance found! Your are currently not allowed to drive with the vehicle!'), 'fas-hands-holding-circle');
+            $this->createNotification('critical', __('No insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
             return null;
         }
 
         if ($timeTillInsurance < 31) {
-            $this->createNotification('warning', __('Insurance expires within 1 month!'), 'fas-hands-holding-circle');
+            $this->createNotification('warning', __('Insurance expires within 1 month!'), 'mdi-shield-car');
             return null;
         }
 
         if ($timeTillInsurance < 62) {
-            $this->createNotification('info', __('Insurance expires within 2 months!'), 'fas-hands-holding-circle');
+            $this->createNotification('info', __('Insurance expires within 2 months!'), 'mdi-shield-car');
             return null;
         }
     }
