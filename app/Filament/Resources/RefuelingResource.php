@@ -99,7 +99,7 @@ class RefuelingResource extends Resource
                         TextInput::make('unit_price')
                             ->label(__('Unit price'))
                             ->numeric()
-                            ->mask(RawJs::make('$money($input)'))
+                            ->mask(RawJs::make('$money($input, '.', ',', 3)'))
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
@@ -281,7 +281,7 @@ class RefuelingResource extends Resource
                         TextColumn::make('unit_price')
                             ->label(__('Unit price'))
                             ->icon('gmdi-local-offer')
-                            ->money('EUR')
+                            ->prefix('€ ')
                             ->suffix('/l')
                             ->summarize([
                                 Average::make()->label(__('Unit price average')),

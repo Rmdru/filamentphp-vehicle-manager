@@ -143,6 +143,7 @@ class ParkingResource extends Resource
                         Range::make()->label(__('Price range')),
                     ]),
                 TextColumn::make('type')
+                    ->label(__('Type'))
                     ->badge()
                     ->color('gray')
                     ->icon(fn (string $state): string => match ($state) {
@@ -155,6 +156,7 @@ class ParkingResource extends Resource
                         'garage' => __('Parking garage'),
                     }),
                 TextColumn::make('payment_method')
+                    ->label(__('Payment method'))
                     ->badge()
                     ->color('gray')
                     ->icon(fn (string $state): string => match ($state) {
