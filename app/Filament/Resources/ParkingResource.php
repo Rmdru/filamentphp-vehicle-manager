@@ -77,7 +77,7 @@ class ParkingResource extends Resource
                         'garage' => 'maki-parking-garage',
                     ]),
                 TextInput::make('location')
-                    ->label(__('Locatie'))
+                    ->label(__('Location'))
                     ->required()
                     ->maxLength(100),
                 DateTimePicker::make('start_time')
