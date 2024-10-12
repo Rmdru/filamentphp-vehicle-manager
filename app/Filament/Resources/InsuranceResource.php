@@ -69,13 +69,8 @@ class InsuranceResource extends Resource
                         ->label(__('Type'))
                         ->badge()
                         ->default('')
-                        ->formatStateUsing(fn (string $state): string => $insuranceTypes[$state] ?? __('Unknown'))
-                        ->icon(fn (string $state): string => match ($state) {
-                            '0' => 'mdi-shield-outline',
-                            '1' => 'mdi-shield-plus',
-                            '2' => 'mdi-shield-star',
-                            default => 'gmdi-warning-r',
-                        })
+                        ->formatStateUsing(fn (string $state): string => $insuranceTypes[$state]['name'] ?? __('Unknown'))
+                        ->icon(fn (string $state): string => $insuranceTypes[$state]['icon'])
                         ->color('gray'),
                     TextColumn::make('insurance_company')
                         ->label(__('Insurance company'))
@@ -176,7 +171,7 @@ class InsuranceResource extends Resource
                     ->required()
                     ->searchable()
                     ->native(false)
-                    ->options(config('insurances.types')),
+                    ->options(array_column(config('insurances.types'), 'name')),
                 DatePicker::make('start_date')
                     ->label(__('Start date'))
                     ->required()

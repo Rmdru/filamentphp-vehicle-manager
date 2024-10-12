@@ -32,17 +32,17 @@ class TaxResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Taxes');
+        return __('Road taxes');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('Taxes');
+        return __('Road taxes');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Tax');
+        return __('Road tax');
     }
 
     public static function form(Form $form): Form

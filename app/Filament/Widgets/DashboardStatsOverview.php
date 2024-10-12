@@ -108,6 +108,7 @@ class DashboardStatsOverview extends BaseWidget
                 'refuelings',
                 'insurances',
                 'taxes',
+                'parkings',
             ])
             ->first();
 
@@ -116,12 +117,14 @@ class DashboardStatsOverview extends BaseWidget
             $refuelings = $vehicle->refuelings;
             $insurances = $vehicle->insurances;
             $taxes = $vehicle->taxes;
+            $parkings = $vehicle->parkings;
 
             if ($startDate) {
                 $maintenances = $maintenances->where('date', '>=', $startDate);
                 $refuelings = $refuelings->where('date', '>=', $startDate);
                 $insurances = $insurances->where('start_date', '>=', $startDate);
                 $taxes = $taxes->where('start_date', '>=', $startDate);
+                $parkings = $parkings->where('end_time', '>=', $endDate);
             }
 
             if ($endDate) {
@@ -129,6 +132,7 @@ class DashboardStatsOverview extends BaseWidget
                 $refuelings = $refuelings->where('date', '<=', $endDate);
                 $insurances = $insurances->where('end_date', '<=', $endDate);
                 $taxes = $insurances->where('end_date', '<=', $endDate);
+                $parkings = $parkings->where('end_time', '<=', $endDate);
             }
 
             $totalInsurancePrice = 0;
@@ -160,14 +164,17 @@ class DashboardStatsOverview extends BaseWidget
                 $totalTaxPrice += $tax->months->count() * $tax->price;
             }
 
-            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price') + $totalInsurancePrice + $totalTaxPrice;
+            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price')
+                + $totalInsurancePrice + $totalTaxPrice + $parkings->sum('price');
 
             $maintenanceMonths = $maintenances->pluck('date');
             $refuelingMonths = $refuelings->pluck('date');
+            $parkingMonths = $parkings->pluck('end_time');
 
             $uniqueMonths = $maintenanceMonths->merge($refuelingMonths)
                 ->merge($totalTaxMonths)
                 ->merge($totalInsuranceMonths)
+                ->merge($parkingMonths)
                 ->groupBy(function ($month) {
                     return Carbon::parse($month)->format('Y-m');
                 })->count();

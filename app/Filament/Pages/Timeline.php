@@ -52,6 +52,7 @@ class Timeline extends Page
                 'refuelings',
                 'insurances',
                 'taxes',
+                'parkings',
             ])
             ->latest()
             ->first();
@@ -68,17 +69,14 @@ class Timeline extends Page
         }
 
         foreach ($vehicle->insurances as $insurance) {
+            $insuranceType = config('insurances.types');
+
             foreach ($insurance->months as $month) {
                 $insuranceClone = clone $insurance;
                 $insuranceClone->date = Carbon::parse($month . '-' . $insuranceClone->invoice_day);
-                $insuranceClone->icon = 'mdi-shield-car';
-                $insuranceClone->typeIcon = match ($insurance->type) {
-                    '0' => 'mdi-shield-outline',
-                    '1' => 'mdi-shield-plus',
-                    '2' => 'mdi-shield-star',
-                    default => 'mdi-shield-car',
-                };
-                $insuranceClone->type = config('insurances.types')[$insurance->type];
+                $insuranceClone->icon = $insuranceType[$insurance->type]['icon'];
+                $insuranceClone->typeIcon = $insuranceType[$insurance->type]['icon'];
+                $insuranceClone->type = $insuranceType[$insurance->type]['name'];
                 $vehicle->maintenances->push($insuranceClone);
             }
         }
@@ -92,6 +90,23 @@ class Timeline extends Page
             }
         }
 
+        foreach ($vehicle->parkings as $parking) {
+            $typeIcon = match ($parking->type) {
+                'street' => 'maki-parking-paid',
+                'garage' => 'maki-parking-garage',
+                default => '',
+            };
+            $parking->icon = $typeIcon;
+            $parking->typeIcon = $typeIcon;
+            $parking->date = $parking->end_time;
+            $parking->type = match ($parking->type) {
+                'street' => __('Street'),
+                'garage' => __('Parking garage'),
+            };
+
+            $vehicle->maintenances->push($parking);
+        }
+
         $items = $vehicle->maintenances->merge($vehicle->refuelings)
             ->sortByDesc(function ($item) {
                 return $item->date;
@@ -100,7 +115,6 @@ class Timeline extends Page
         $groupedItems = $items->groupBy(function ($item) {
             return $item->date->isoFormat('MMMM Y');
         });
-
 
         return $groupedItems;
     }
@@ -135,7 +149,8 @@ class Timeline extends Page
             $apk->title = __('MOT');
             $apk->categoryIcon = 'gmdi-security';
             $apk->date = $apk->date->addYear();
-            $items->push($maintenance);
+
+            $items->push($apk);
         }
 
         if (! empty($maintenance)) {
@@ -165,23 +180,20 @@ class Timeline extends Page
 
         foreach ($vehicle->insurances as $insurance) {
             $nextInvoiceDate = $insurance->getNextInvoiceDate($insurance->start_date, $insurance->end_date, $insurance->invoice_day);
+            $insuranceType = config('insurances.types');
 
             if ($nextInvoiceDate) {
                 $insurance->date = $nextInvoiceDate;
                 $insurance->title = __('Insurance');
                 $insurance->categoryIcon = 'mdi-shield-car';
+                $insurance->icon = $insuranceType[$insurance->type]['icon'];
                 $insurance->badges = collect();
 
                 if ($insurance->type) {
                     $insurance->badges->push([
                         'color' => 'gray',
-                        'title' => config('insurances.types')[$insurance->type],
-                        'icon' => match ($insurance->type) {
-                            '0' => 'mdi-shield-outline',
-                            '1' => 'mdi-shield-plus',
-                            '2' => 'mdi-shield-star',
-                            default => 'mdi-shield-car',
-                        },
+                        'title' => $insuranceType[$insurance->type]['name'],
+                        'icon' => $insuranceType[$insurance->type]['icon'],
                     ]);
                 }
 
@@ -194,7 +206,7 @@ class Timeline extends Page
 
             if ($nextInvoiceDate) {
                 $tax->date = $nextInvoiceDate;
-                $tax->title = __('Tax');
+                $tax->title = __('Road tax');
                 $tax->categoryIcon = 'fas-file-invoice-dollar';
                 $items->push($tax);
             }

@@ -6,6 +6,7 @@ use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\Timeline;
 use App\Filament\Resources\InsuranceResource;
 use App\Filament\Resources\MaintenanceResource;
+use App\Filament\Resources\ParkingResource;
 use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\TaxResource;
 use App\Filament\Resources\VehicleResource;
@@ -90,7 +91,7 @@ class AccountPanelProvider extends PanelProvider
                             ...Timeline::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
-                        ->label(__('Maintenance'))
+                        ->label(__('Garage'))
                         ->items([
                             ...MaintenanceResource::getNavigationItems(),
                         ]),
@@ -108,6 +109,7 @@ class AccountPanelProvider extends PanelProvider
                         ->label(__('Tax'))
                         ->items([
                             ...TaxResource::getNavigationItems(),
+                            ...ParkingResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))

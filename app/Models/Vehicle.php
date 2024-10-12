@@ -306,4 +306,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Tax::class);
     }
+
+    public function parkings(): HasMany
+    {
+        return $this->hasMany(Parking::class);
+    }
 }

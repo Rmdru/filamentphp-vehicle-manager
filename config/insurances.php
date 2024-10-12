@@ -4,8 +4,17 @@ declare(strict_types=1);
 
 return [
     'types' => [
-        'WA',
-        'WA+',
-        'WA volledig casco',
+        [
+            'name' => 'WA',
+            'icon' => 'mdi-shield-outline'
+        ],
+        [
+            'name' => 'WA+',
+            'icon' => 'mdi-shield-plus'
+        ],
+        [
+            'name' => 'WA volledig casco',
+            'icon' => 'mdi-shield-star'
+        ],
     ],
 ];
