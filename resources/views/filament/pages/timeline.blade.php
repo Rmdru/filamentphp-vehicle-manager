@@ -18,11 +18,11 @@
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->date->isoFormat('MMM D, Y') }}
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-notifications-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-notifications-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ str($item->date->diffForHumans())->ucfirst() }}
                                 </div>
                             </div>
@@ -57,21 +57,21 @@
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->date->isoFormat('MMM D, Y') }}
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
                                     € {{ $item->total_price }}
                                 </div>
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-route-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-route-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->mileage_begin }} km
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->garage }}
                                 </div>
                             </div>
@@ -100,24 +100,24 @@
                         </x-slot>
                         <div class="flex gap-8 items-center">
                             <div class="p-2 rounded-full bg-white w-5/12 max-w-12 h-12 flex items-center"><img
-                                    src="{{ $item->icon }}"/></div>
+                                    src="{{ $item->icon }}" /></div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->date->isoFormat('MMM D, Y') }}
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
                                     € {{ $item->total_price }}
                                 </div>
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-route-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-route-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->mileage_end }} km
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->gas_station }}
                                 </div>
                             </div>
@@ -144,17 +144,17 @@
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->date->isoFormat('MMM D, Y') }}
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
                                     € {{ $item->price }}
                                 </div>
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-mdi-office-building class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-mdi-office-building class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->insurance_company }}
                                 </div>
                             </div>
@@ -170,7 +170,7 @@
                         </div>
                     </x-filament::section>
                 @elseif($item instanceof App\Models\Tax)
-                    <x-filament::section icon="fas-file-invoice-dollar" class="mt-6" collapsible>
+                    <x-filament::section icon="mdi-highway" class="mt-6" collapsible>
                         <x-slot name="heading">
                             {{ __('Road tax') }}
                         </x-slot>
@@ -181,11 +181,11 @@
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->date->isoFormat('MMM D, Y') }}
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
                                     € {{ $item->price }}
                                 </div>
                             </div>
@@ -207,11 +207,11 @@
                             </div>
                             <div class="flex gap-2 flex-col">
                                 <div class="flex gap-2 items-center">
-                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
                                     {{ $item->start_time->isoFormat('MMM D, Y  H:mm') . ' t/m ' . $item->end_time->isoFormat('MMM D, Y H:mm') }}
                                 </div>
                                 <div class="flex gap-2 items-center">
-                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500"/>
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
                                     € {{ $item->price }}
                                 </div>
                             </div>

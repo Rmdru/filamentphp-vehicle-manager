@@ -33,7 +33,7 @@ class Dashboard extends Page
         return __('Dashboard');
     }
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         return __('Dashboard');
     }
@@ -75,13 +75,13 @@ class Dashboard extends Page
                     DatePicker::make('endDate')
                         ->native(false)
                         ->maxDate(now()),
-                ])
+                ]),
         ];
     }
 
     protected function getViewData(): array
     {
-        $vehicle = Vehicle::selected()->latest()->first();
+        $vehicle = Vehicle::selected()->first();
         $brands = config('vehicles.brands');
         $vehicle->brand = $brands[$vehicle->brand];
 

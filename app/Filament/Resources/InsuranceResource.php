@@ -69,8 +69,8 @@ class InsuranceResource extends Resource
                         ->label(__('Type'))
                         ->badge()
                         ->default('')
-                        ->formatStateUsing(fn (string $state): string => $insuranceTypes[$state]['name'] ?? __('Unknown'))
-                        ->icon(fn (string $state): string => $insuranceTypes[$state]['icon'])
+                        ->formatStateUsing(fn(string $state): string => $insuranceTypes[$state]['name'] ?? __('Unknown'))
+                        ->icon(fn(string $state): string => $insuranceTypes[$state]['icon'])
                         ->color('gray'),
                     TextColumn::make('insurance_company')
                         ->label(__('Insurance company'))
@@ -87,7 +87,7 @@ class InsuranceResource extends Resource
                         ->label(__('Invoice day'))
                         ->icon('gmdi-calendar-month-r')
                         ->suffix(__('th of the month')),
-                ])
+                ]),
             ])
             ->filters([
                 Filter::make('date')
@@ -104,11 +104,11 @@ class InsuranceResource extends Resource
                         return $query
                             ->when(
                                 $data['start_date'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date),
                             )
                             ->when(
                                 $data['end_date'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
@@ -119,18 +119,18 @@ class InsuranceResource extends Resource
                                 'start' => Carbon::parse($data['start_date'])->isoFormat('MMM D, Y'),
                                 'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
                             ]);
-                        } elseif ($data['start_date']) {
+                        } else if ($data['start_date']) {
                             $indicators['date'] = __('Date from :start', [
                                 'start' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
                             ]);
-                        } elseif ($data['end_date']) {
+                        } else if ($data['end_date']) {
                             $indicators['date'] = __('Date until :end', [
                                 'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
                             ]);
                         }
 
                         return $indicators;
-                    })
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -152,7 +152,7 @@ class InsuranceResource extends Resource
                     ->searchable()
                     ->native(false)
                     ->relationship('vehicle')
-                    ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->id)
+                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id)
                     ->options(function (Vehicle $vehicle) {
                         $vehicles = Vehicle::get();
 

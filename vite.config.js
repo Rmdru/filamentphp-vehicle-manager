@@ -13,6 +13,7 @@ export default defineConfig({
                 'app/Infolists/Components/**',
                 'app/Providers/Filament/**',
                 'app/Tables/Columns/**',
+                'config/**',
             ],
         }),
     ],

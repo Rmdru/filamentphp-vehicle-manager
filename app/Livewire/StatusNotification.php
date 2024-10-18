@@ -26,6 +26,30 @@ class StatusNotification extends Component
         $this->getEverythingOkNotification();
     }
 
+    public function getInsuranceNotification()
+    {
+        $timeTillInsurance = Vehicle::selected()->first()->insurance_status['time'] ?? null;
+
+        if ($this->vehicleId) {
+            $timeTillInsurance = Vehicle::where('id', $this->vehicleId)->latest()->first()->insurance_status['time'] ?? null;
+        }
+
+        if (! $timeTillInsurance) {
+            $this->createNotification('critical', __('No insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
+            return null;
+        }
+
+        if ($timeTillInsurance < 31) {
+            $this->createNotification('warning', __('Insurance expires within 1 month!'), 'mdi-shield-car');
+            return null;
+        }
+
+        if ($timeTillInsurance < 62) {
+            $this->createNotification('info', __('Insurance expires within 2 months!'), 'mdi-shield-car');
+            return null;
+        }
+    }
+
     private function createNotification(string $type = '', string $text = '', string $categoryIcon = ''): void
     {
         $types = [
@@ -57,43 +81,19 @@ class StatusNotification extends Component
         ]);
     }
 
-    public function getInsuranceNotification()
-    {
-        $timeTillInsurance = Vehicle::selected()->latest()->first()->insurance_status['time'] ?? null;
-
-        if ($this->vehicleId) {
-            $timeTillInsurance = Vehicle::where('id', $this->vehicleId)->latest()->first()->insurance_status['time'] ?? null;
-        }
-
-        if (! $timeTillInsurance) {
-            $this->createNotification('critical', __('No insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
-            return null;
-        }
-
-        if ($timeTillInsurance < 31) {
-            $this->createNotification('warning', __('Insurance expires within 1 month!'), 'mdi-shield-car');
-            return null;
-        }
-
-        if ($timeTillInsurance < 62) {
-            $this->createNotification('info', __('Insurance expires within 2 months!'), 'mdi-shield-car');
-            return null;
-        }
-    }
-
     public function getTaxNotification()
     {
-        $timeTillTax = Vehicle::selected()->latest()->first()->tax_status['time'] ?? null;
+        $timeTillTax = Vehicle::selected()->first()->tax_status['time'] ?? null;
 
         if ($timeTillTax > 0 && $timeTillTax < 31) {
-            $this->createNotification('info', __('New tax period within 1 month!'), 'fas-file-invoice-dollar');
+            $this->createNotification('info', __('New tax period within 1 month!'), 'mdi-highway');
             return null;
         }
     }
 
     private function getApkNotification()
     {
-        $timeTillApk = Vehicle::selected()->latest()->first()->apk_status['time'] ?? null;
+        $timeTillApk = Vehicle::selected()->first()->apk_status['time'] ?? null;
 
         if ($this->vehicleId) {
             $timeTillApk = Vehicle::where('id', $this->vehicleId)->latest()->first()->apk_status['time'] ?? null;
@@ -123,7 +123,7 @@ class StatusNotification extends Component
 
     private function getMaintenanceNotification(): null
     {
-        $maintenanceStatus = Vehicle::selected()->latest()->first()->maintenance_status;
+        $maintenanceStatus = Vehicle::selected()->first()->maintenance_status;
 
         if ($this->vehicleId) {
             $maintenanceStatus = Vehicle::where('id', $this->vehicleId)->latest()->first()->maintenance_status;
@@ -148,7 +148,7 @@ class StatusNotification extends Component
 
     private function getAircoCheckNotification()
     {
-        $timeTillAiroCheck = Vehicle::selected()->latest()->first()->airco_check_status['time'] ?? null;
+        $timeTillAiroCheck = Vehicle::selected()->first()->airco_check_status['time'] ?? null;
 
         if ($this->vehicleId) {
             $timeTillAiroCheck = Vehicle::where('id', $this->vehicleId)->latest()->first()->airco_check_status['time'] ?? null;
@@ -171,7 +171,7 @@ class StatusNotification extends Component
 
     private function getRefuelingNotification(): null
     {
-        $selectedVehicle = Vehicle::selected()->latest()->first();
+        $selectedVehicle = Vehicle::selected()->first();
 
         if ($this->vehicleId) {
             $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();

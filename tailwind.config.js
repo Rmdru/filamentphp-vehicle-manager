@@ -7,5 +7,6 @@ export default {
         './app/Livewire/**/*.php',
         './resources/views/**/*.blade.php',
         './vendor/filament/**/*.blade.php',
+        './config/**/*.php',
     ],
 }

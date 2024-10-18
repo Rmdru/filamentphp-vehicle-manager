@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Livewire;
+
+use Illuminate\View\View;
+use Livewire\Component;
+
+class RoadBadge extends Component
+{
+    public $roadType;
+    public $road;
+    public $country;
+
+    public function mount($roadType, $road, $country): void
+    {
+        $this->roadType = $roadType;
+        $this->road = $road;
+        $this->country = $country;
+    }
+
+    public function render(): View
+    {
+        $config = $this->getRoadConfig();
+        $roadTypeConfig = $config['roadTypeConfig'];
+        $road = $config['road'];
+
+        return view('livewire.road-badge', [
+            'roadTypeConfig' => $roadTypeConfig,
+            'roadNumber' => $road,
+        ]);
+    }
+
+    private function getRoadConfig(): array
+    {
+        $country = $this->getCountryConfig();
+
+        $roadTypeConfig = $country['road_types'][$this->roadType] ?? null;
+
+        if (empty($roadTypeConfig)) {
+            $roadTypeConfig = [
+                'color' => 'text-black',
+                'backgroundColor' => 'bg-white',
+            ];
+
+            $road = $this->road;
+
+            return [
+                'roadTypeConfig' => $roadTypeConfig,
+                'road' => $road,
+            ];
+        }
+
+        $roadComponents = $this->getRoadComponents($this->road);
+
+        $road = $roadTypeConfig['prefix'] . $roadComponents['road'];
+
+        return [
+            'roadTypeConfig' => $roadTypeConfig,
+            'road' => $road,
+        ];
+    }
+
+    private function getCountryConfig(): array
+    {
+        $countries = config('countries');
+
+        return $countries[$this->country];
+    }
+
+    private function getRoadComponents(string $string): array
+    {
+        $position = strcspn($string, '0123456789');
+
+        $prefix = substr($string, 0, $position);
+        $road = substr($string, $position);
+
+        return [
+            'prefix' => $prefix,
+            'road' => $road,
+        ];
+    }
+}

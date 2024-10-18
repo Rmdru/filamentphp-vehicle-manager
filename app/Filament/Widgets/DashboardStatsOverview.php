@@ -66,7 +66,8 @@ class DashboardStatsOverview extends BaseWidget
         string $prefix = '',
         string $suffix = '',
         string $operator = '<'
-    ): Stat {
+    ): Stat
+    {
         if ($operator === '<') {
             $descriptionColor = ($latestValue < $value) ? 'success' : 'danger';
             $descriptionIcon = ($latestValue < $value) ? 'gmdi-trending-down-r' : 'gmdi-trending-up-r';
@@ -93,7 +94,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAverageMonthlyCosts(bool $thisMonth = false): int
     {
-        $vehicleId = Vehicle::selected()->latest()->first()->id;
+        $vehicleId = Vehicle::selected()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -109,6 +110,7 @@ class DashboardStatsOverview extends BaseWidget
                 'insurances',
                 'taxes',
                 'parkings',
+                'tolls',
             ])
             ->first();
 
@@ -118,13 +120,15 @@ class DashboardStatsOverview extends BaseWidget
             $insurances = $vehicle->insurances;
             $taxes = $vehicle->taxes;
             $parkings = $vehicle->parkings;
+            $tolls = $vehicle->tolls;
 
             if ($startDate) {
                 $maintenances = $maintenances->where('date', '>=', $startDate);
                 $refuelings = $refuelings->where('date', '>=', $startDate);
                 $insurances = $insurances->where('start_date', '>=', $startDate);
                 $taxes = $taxes->where('start_date', '>=', $startDate);
-                $parkings = $parkings->where('end_time', '>=', $endDate);
+                $parkings = $parkings->where('end_time', '>=', $startDate);
+                $tolls = $tolls->where('date', '>=', $startDate);
             }
 
             if ($endDate) {
@@ -133,6 +137,7 @@ class DashboardStatsOverview extends BaseWidget
                 $insurances = $insurances->where('end_date', '<=', $endDate);
                 $taxes = $insurances->where('end_date', '<=', $endDate);
                 $parkings = $parkings->where('end_time', '<=', $endDate);
+                $tolls = $tolls->where('date', '<=', $endDate);
             }
 
             $totalInsurancePrice = 0;
@@ -165,16 +170,18 @@ class DashboardStatsOverview extends BaseWidget
             }
 
             $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price')
-                + $totalInsurancePrice + $totalTaxPrice + $parkings->sum('price');
+                + $totalInsurancePrice + $totalTaxPrice + $parkings->sum('price') + $tolls->sum('price');
 
             $maintenanceMonths = $maintenances->pluck('date');
             $refuelingMonths = $refuelings->pluck('date');
             $parkingMonths = $parkings->pluck('end_time');
+            $tollMonths = $tolls->pluck('date');
 
             $uniqueMonths = $maintenanceMonths->merge($refuelingMonths)
                 ->merge($totalTaxMonths)
                 ->merge($totalInsuranceMonths)
                 ->merge($parkingMonths)
+                ->merge($tollMonths)
                 ->groupBy(function ($month) {
                     return Carbon::parse($month)->format('Y-m');
                 })->count();
@@ -213,7 +220,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAverageMonthlyDistance(bool $thisMonth = false): int
     {
-        $vehicleId = Vehicle::selected()->latest()->first()->id;
+        $vehicleId = Vehicle::selected()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -256,7 +263,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAverageFuelConsumption(bool $latest = false): float
     {
-        $vehicleId = Vehicle::selected()->latest()->first()->id;
+        $vehicleId = Vehicle::selected()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -299,7 +306,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function getRefuelings(): ?Builder
     {
-        $vehicleId = Vehicle::selected()->latest()->first()->id;
+        $vehicleId = Vehicle::selected()->first()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 

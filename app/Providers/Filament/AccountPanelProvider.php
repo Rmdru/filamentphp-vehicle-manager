@@ -9,6 +9,7 @@ use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\ParkingResource;
 use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\TaxResource;
+use App\Filament\Resources\TollResource;
 use App\Filament\Resources\VehicleResource;
 use App\Http\Middleware\CreateFirstVehicle;
 use App\Models\Vehicle;
@@ -32,26 +33,6 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AccountPanelProvider extends PanelProvider
 {
-    private function getVehicleMenuItems(): array
-    {
-        $menuItems = [];
-
-        $vehicles = Vehicle::all();
-        $brands = config('vehicles.brands');
-
-        foreach ($vehicles as $vehicle) {
-            $menuItems[] = NavigationItem::make($vehicle->full_name)
-                ->label($vehicle->full_name)
-                ->group('My Vehicles')
-                ->badge($vehicle->license_plate, 'warning')
-                ->url(fn (): string => route('switch-vehicle', ['vehicleId' => $vehicle->id]))
-                ->isActiveWhen(fn (): bool => Session::get('vehicle_id') === $vehicle->id)
-                ->icon('si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower());
-        }
-
-        return $menuItems;
-    }
-
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -110,6 +91,7 @@ class AccountPanelProvider extends PanelProvider
                         ->items([
                             ...TaxResource::getNavigationItems(),
                             ...ParkingResource::getNavigationItems(),
+                            ...TollResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))
@@ -120,5 +102,25 @@ class AccountPanelProvider extends PanelProvider
                         ]),
                 ]);
             });
+    }
+
+    private function getVehicleMenuItems(): array
+    {
+        $menuItems = [];
+
+        $vehicles = Vehicle::all();
+        $brands = config('vehicles.brands');
+
+        foreach ($vehicles as $vehicle) {
+            $menuItems[] = NavigationItem::make($vehicle->full_name)
+                ->label($vehicle->full_name)
+                ->group('My Vehicles')
+                ->badge($vehicle->license_plate, 'warning')
+                ->url(fn(): string => route('switch-vehicle', ['vehicleId' => $vehicle->id]))
+                ->isActiveWhen(fn(): bool => Session::get('vehicle_id') === $vehicle->id)
+                ->icon('si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower());
+        }
+
+        return $menuItems;
     }
 }

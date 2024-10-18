@@ -2,14 +2,10 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Refueling;
 use App\Models\Vehicle;
-use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class DashboardStatusOverview extends BaseWidget
 {
@@ -40,7 +36,7 @@ class DashboardStatusOverview extends BaseWidget
 
     private function getMaintenanceStatus(): array
     {
-        $maintenanceStatus = Vehicle::selected()->latest()->first()->maintenance_status;
+        $maintenanceStatus = Vehicle::selected()->first()->maintenance_status;
 
         if (! $maintenanceStatus) {
             return [];
@@ -52,11 +48,9 @@ class DashboardStatusOverview extends BaseWidget
         ];
     }
 
-
-
     private function getApkStatus(): array
     {
-        $timeTillApk = Vehicle::selected()->latest()->first()->apk_status;
+        $timeTillApk = Vehicle::selected()->first()->apk_status;
 
         if (! $timeTillApk) {
             return [];

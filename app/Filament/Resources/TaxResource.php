@@ -4,11 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TaxResource\Pages;
 use App\Filament\Resources\TaxResource\RelationManagers;
-use App\Models\Insurance;
 use App\Models\Tax;
 use App\Models\Vehicle;
 use Carbon\Carbon;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,13 +20,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TaxResource extends Resource
 {
     protected static ?string $model = Tax::class;
 
-    protected static ?string $navigationIcon = 'fas-file-invoice-dollar';
+    protected static ?string $navigationIcon = 'mdi-highway';
 
     public static function getNavigationLabel(): string
     {
@@ -43,54 +40,6 @@ class TaxResource extends Resource
     public static function getModelLabel(): string
     {
         return __('Road tax');
-    }
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Select::make('vehicle_id')
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->relationship('vehicle')
-                    ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->id)
-                    ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::get();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
-                        });
-
-                        return $vehicles->pluck('car', 'id');
-                    }),
-                DatePicker::make('start_date')
-                    ->label(__('Start date'))
-                    ->required()
-                    ->native(false)
-                    ->displayFormat('d-m-Y')
-                    ->maxDate(now()),
-                DatePicker::make('end_date')
-                    ->label(__('End date'))
-                    ->native(false)
-                    ->displayFormat('d-m-Y'),
-                TextInput::make('price')
-                    ->label(__('Price per month'))
-                    ->numeric()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->required()
-                    ->prefix('€')
-                    ->step(0.01),
-                TextInput::make('invoice_day')
-                    ->label(__('Invoice day'))
-                    ->numeric()
-                    ->required()
-                    ->minValue(1)
-                    ->maxValue(31)
-                    ->suffix(__('th of the month')),
-            ]);
     }
 
     public static function table(Table $table): Table
@@ -126,7 +75,7 @@ class TaxResource extends Resource
                         ->label(__('Invoice day'))
                         ->icon('gmdi-calendar-month-r')
                         ->suffix(__('th of the month')),
-                ])
+                ]),
             ])
             ->filters([
                 Filter::make('date')
@@ -143,11 +92,11 @@ class TaxResource extends Resource
                         return $query
                             ->when(
                                 $data['start_date'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date),
                             )
                             ->when(
                                 $data['end_date'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
@@ -158,18 +107,18 @@ class TaxResource extends Resource
                                 'start' => Carbon::parse($data['start_date'])->isoFormat('MMM D, Y'),
                                 'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
                             ]);
-                        } elseif ($data['start_date']) {
+                        } else if ($data['start_date']) {
                             $indicators['date'] = __('Date from :start', [
                                 'start' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
                             ]);
-                        } elseif ($data['end_date']) {
+                        } else if ($data['end_date']) {
                             $indicators['date'] = __('Date until :end', [
                                 'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
                             ]);
                         }
 
                         return $indicators;
-                    })
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -178,6 +127,54 @@ class TaxResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Select::make('vehicle_id')
+                    ->label(__('Vehicle'))
+                    ->required()
+                    ->searchable()
+                    ->native(false)
+                    ->relationship('vehicle')
+                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id)
+                    ->options(function (Vehicle $vehicle) {
+                        $vehicles = Vehicle::get();
+
+                        $vehicles->car = $vehicles->map(function ($index) {
+                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                        });
+
+                        return $vehicles->pluck('car', 'id');
+                    }),
+                DatePicker::make('start_date')
+                    ->label(__('Start date'))
+                    ->required()
+                    ->native(false)
+                    ->displayFormat('d-m-Y')
+                    ->maxDate(now()),
+                DatePicker::make('end_date')
+                    ->label(__('End date'))
+                    ->native(false)
+                    ->displayFormat('d-m-Y'),
+                TextInput::make('price')
+                    ->label(__('Price per month'))
+                    ->numeric()
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters(',')
+                    ->required()
+                    ->prefix('€')
+                    ->step(0.01),
+                TextInput::make('invoice_day')
+                    ->label(__('Invoice day'))
+                    ->numeric()
+                    ->required()
+                    ->minValue(1)
+                    ->maxValue(31)
+                    ->suffix(__('th of the month')),
             ]);
     }
 

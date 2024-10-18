@@ -20,7 +20,6 @@ use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -45,82 +44,6 @@ class MaintenanceResource extends Resource
         return __('Maintenance');
     }
 
-    public static function form(Form $form): Form
-    {
-        $brands = config('vehicles.brands');
-
-        return $form
-            ->schema([
-                Fieldset::make('maintenance')
-                    ->label(__('Maintenance'))
-                    ->schema([
-                        Select::make('vehicle_id')
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native(false)
-                            ->relationship('vehicle')
-                            ->default(fn (Vehicle $vehicle) => $vehicle->selected()->latest()->first()->id)
-                            ->options(function (Vehicle $vehicle) use ($brands) {
-                                $vehicles = Vehicle::get();
-
-                                $vehicles->car = $vehicles->map(function ($index) use ($brands) {
-                                    return $index->car = $brands[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
-                                });
-
-                                return $vehicles->pluck('car', 'id');
-                            }),
-                        DatePicker::make('date')
-                            ->label(__('Date'))
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('d-m-Y')
-                            ->maxDate(now()),
-                        TextInput::make('garage')
-                            ->label(__('Garage'))
-                            ->required()
-                            ->maxLength(100),
-                        TextInput::make('mileage_begin')
-                            ->label(__('Mileage'))
-                            ->required()
-                            ->suffix(' km')
-                            ->numeric(),
-                    ]),
-                Fieldset::make('tasks')
-                    ->label(__('Tasks'))
-                    ->schema([
-                        Forms\Components\ToggleButtons::make('type_maintenance')
-                            ->label(__('Type maintenance'))
-                            ->inline()
-                            ->grouped()
-                            ->options([
-                                'maintenance' => __('Maintenance'),
-                                'small_maintenance' => __('Small maintenance'),
-                                'big_maintenance' => __('Big maintenance'),
-                            ]),
-                        Toggle::make('apk')
-                            ->label(__('MOT')),
-                        DatePicker::make('apk_date')
-                            ->label(__('MOT date'))
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('d-m-Y'),
-                        Toggle::make('airco_check')
-                            ->label(__('Airco check')),
-                        Forms\Components\Textarea::make('description')
-                            ->label(__('Description')),
-                        TextInput::make('total_price')
-                            ->label(__('Total price'))
-                            ->numeric()
-                            ->mask(RawJs::make('$money($input)'))
-                            ->stripCharacters(',')
-                            ->required()
-                            ->prefix('€')
-                            ->step(0.01)
-                    ]),
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -143,13 +66,13 @@ class MaintenanceResource extends Resource
                         ->label(__('Type maintenance'))
                         ->badge()
                         ->default('')
-                        ->formatStateUsing(fn (string $state) => match ($state) {
+                        ->formatStateUsing(fn(string $state) => match ($state) {
                             'maintenance' => __('Maintenance'),
                             'small_maintenance' => __('Small maintenance'),
                             'Big maintenance' => __('Big maintenance'),
                             default => __('No maintenance'),
                         })
-                        ->icon(fn (string $state): string => match ($state) {
+                        ->icon(fn(string $state): string => match ($state) {
                             'maintenance' => 'mdi-car-wrench',
                             'small_maintenance' => 'mdi-oil',
                             'big_maintenance' => 'mdi-engine',
@@ -157,14 +80,15 @@ class MaintenanceResource extends Resource
                         })
                         ->color('gray'),
                     TextColumn::make('apk')
-                        ->icon(fn (Maintenance $maintenance) => $maintenance->apk ? 'gmdi-security' : 'gmdi-close-r')
+                        ->icon(fn(Maintenance $maintenance) => $maintenance->apk ? 'gmdi-security' : 'gmdi-close-r')
                         ->badge()
                         ->color('gray')
-                        ->formatStateUsing(fn (Maintenance $maintenance) => $maintenance->apk ? __('MOT') : __('No MOT'))
+                        ->formatStateUsing(fn(Maintenance $maintenance) => $maintenance->apk ? __('MOT') : __('No MOT'))
                         ->label(__('MOT')),
-                    TextColumn::make('mileage_begin')
+                    TextColumn::make('mileage')
                         ->label(__('Mileage'))
-                        ->icon('gmdi-route'),
+                        ->icon('gmdi-route')
+                        ->suffix(' km'),
                     TextColumn::make('total_price')
                         ->label(__('Total price'))
                         ->icon('mdi-hand-coin-outline')
@@ -190,11 +114,11 @@ class MaintenanceResource extends Resource
                         return $query
                             ->when(
                                 $data['date_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
                             )
                             ->when(
                                 $data['date_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
@@ -205,11 +129,11 @@ class MaintenanceResource extends Resource
                                 'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
                                 'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
                             ]);
-                        } elseif ($data['date_from']) {
+                        } else if ($data['date_from']) {
                             $indicators['date'] = __('Date from :from', [
                                 'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
                             ]);
-                        } elseif ($data['date_until']) {
+                        } else if ($data['date_until']) {
                             $indicators['date'] = __('Date until :until', [
                                 'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
                             ]);
@@ -226,6 +150,81 @@ class MaintenanceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function form(Form $form): Form
+    {
+        $brands = config('vehicles.brands');
+
+        return $form
+            ->schema([
+                Fieldset::make('maintenance')
+                    ->label(__('Maintenance'))
+                    ->schema([
+                        Select::make('vehicle_id')
+                            ->label(__('Vehicle'))
+                            ->required()
+                            ->searchable()
+                            ->native(false)
+                            ->relationship('vehicle')
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id)
+                            ->options(function (Vehicle $vehicle) use ($brands) {
+                                $vehicles = Vehicle::get();
+
+                                $vehicles->car = $vehicles->map(function ($index) use ($brands) {
+                                    return $index->car = $brands[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
+                                });
+
+                                return $vehicles->pluck('car', 'id');
+                            }),
+                        DatePicker::make('date')
+                            ->label(__('Date'))
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d-m-Y')
+                            ->maxDate(now()),
+                        TextInput::make('garage')
+                            ->label(__('Garage'))
+                            ->required()
+                            ->maxLength(100),
+                        TextInput::make('mileage')
+                            ->label(__('Mileage'))
+                            ->required()
+                            ->suffix(' km')
+                            ->numeric(),
+                    ]),
+                Fieldset::make('tasks')
+                    ->label(__('Tasks'))
+                    ->schema([
+                        Forms\Components\ToggleButtons::make('type_maintenance')
+                            ->label(__('Type maintenance'))
+                            ->inline()
+                            ->grouped()
+                            ->options([
+                                'maintenance' => __('Maintenance'),
+                                'small_maintenance' => __('Small maintenance'),
+                                'big_maintenance' => __('Big maintenance'),
+                            ]),
+                        Toggle::make('apk')
+                            ->label(__('MOT')),
+                        DatePicker::make('apk_date')
+                            ->label(__('MOT date'))
+                            ->native(false)
+                            ->displayFormat('d-m-Y'),
+                        Toggle::make('airco_check')
+                            ->label(__('Airco check')),
+                        Forms\Components\Textarea::make('description')
+                            ->label(__('Description')),
+                        TextInput::make('total_price')
+                            ->label(__('Total price'))
+                            ->numeric()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->required()
+                            ->prefix('€')
+                            ->step(0.01),
+                    ]),
             ]);
     }
 

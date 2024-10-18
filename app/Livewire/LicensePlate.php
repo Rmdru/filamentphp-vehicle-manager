@@ -19,7 +19,7 @@ class LicensePlate extends Component
 
     public function render(): View
     {
-        $licensePlate = Vehicle::selected()->latest()->first()->license_plate;
+        $licensePlate = Vehicle::selected()->first()->license_plate;
 
         if ($this->vehicleId) {
             $licensePlate = Vehicle::where('id', $this->vehicleId)->latest()->first()->license_plate;

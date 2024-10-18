@@ -85,7 +85,7 @@ class Timeline extends Page
             foreach ($tax->months as $month) {
                 $taxClone = clone $tax;
                 $taxClone->date = Carbon::parse($month . '-' . $taxClone->invoice_day);
-                $taxClone->icon = 'fas-file-invoice-dollar';
+                $taxClone->icon = 'mdi-highway';
                 $vehicle->maintenances->push($taxClone);
             }
         }
@@ -125,20 +125,19 @@ class Timeline extends Page
             ->addSelect([
                 'apk' => Maintenance::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')
-                    ->where('apk', 1)
-                    ->latest()
+                    ->where('apk', true)
+                    ->orderByDesc('date')
                     ->limit(1),
                 'maintenance' => Maintenance::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')
                     ->whereNotNull('type_maintenance')
-                    ->latest()
+                    ->orderByDesc('date')
                     ->limit(1),
             ])
             ->with([
                 'insurances',
                 'taxes',
             ])
-            ->latest()
             ->first();
 
         $items = collect();
@@ -207,12 +206,12 @@ class Timeline extends Page
             if ($nextInvoiceDate) {
                 $tax->date = $nextInvoiceDate;
                 $tax->title = __('Road tax');
-                $tax->categoryIcon = 'fas-file-invoice-dollar';
+                $tax->categoryIcon = 'mdi-highway';
                 $items->push($tax);
             }
         }
 
-        $groupedItems = $items->sortBy(function ($item) {
+        $groupedItems = $items->sortByDesc(function ($item) {
             return $item->date;
         })->groupBy(function ($item) {
             return Carbon::parse($item->date)->isoFormat('MMMM Y');

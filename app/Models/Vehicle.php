@@ -45,7 +45,13 @@ class Vehicle extends Model
         'purchase_date' => 'date:Y-m-d',
         'private' => 'boolean',
     ];
-    protected $appends = ['fuel_status', 'maintenance_status', 'apk_status', 'airco_check_status'];
+    
+    protected $appends = [
+        'fuel_status',
+        'maintenance_status',
+        'apk_status',
+        'airco_check_status',
+    ];
 
     protected static function booted()
     {
@@ -80,7 +86,7 @@ class Vehicle extends Model
 
             if (! empty($latestRefueling) && $latestRefueling->fuel_type = 'Premium Unleaded') {
                 $diff = Carbon::parse($latestRefueling->date)->addMonths(2)->diffInDays(now());
-                return (int)max(0, $diff - ($diff * 2));
+                return (int) max(0, $diff - ($diff * 2));
             }
         }
 
@@ -199,7 +205,7 @@ class Vehicle extends Model
 
     public function getStatusBadge(string $vehicleId = '', string $item = '')
     {
-        $selectedVehicle = Vehicle::selected()->latest()->first();
+        $selectedVehicle = Vehicle::selected()->first();
 
         if ($vehicleId) {
             $selectedVehicle = Vehicle::where('id', $vehicleId)->latest()->first();
@@ -310,5 +316,10 @@ class Vehicle extends Model
     public function parkings(): HasMany
     {
         return $this->hasMany(Parking::class);
+    }
+
+    public function tolls(): HasMany
+    {
+        return $this->hasMany(Toll::class);
     }
 }
