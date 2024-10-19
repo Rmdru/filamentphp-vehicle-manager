@@ -7,6 +7,7 @@ use App\Models\Toll;
 use App\Models\Vehicle;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
@@ -150,9 +151,8 @@ class TollResource extends Resource
                         'ring' => 'success',
                         'provincial' => 'warning',
                     ]),
-                TextInput::make('road')
-                    ->label(__('Road'))
-                    ->maxLength(20),
+                TagsInput::make('road')
+                    ->label(__('Road')),
                 TextInput::make('start_location')
                     ->label(__('Start location'))
                     ->required()

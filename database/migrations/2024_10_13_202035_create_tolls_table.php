@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->string('payment_method', 50)->nullable();
             $table->string('country', 50)->nullable();
             $table->string('road_type', 50)->nullable();
-            $table->string('road', 20)->nullable();
+            $table->json('road')->nullable();
             $table->string('start_location', 100);
             $table->string('end_location', 100)->nullable();
             $table->date('date');

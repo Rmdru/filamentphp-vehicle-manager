@@ -32,7 +32,8 @@ class Toll extends Model
     ];
 
     protected $casts = [
-        'date' => 'date:Y-m-d H:i:s',
+        'date' => 'date:Y-m-d',
+        'road' => 'array',
     ];
 
     public function vehicle(): BelongsTo

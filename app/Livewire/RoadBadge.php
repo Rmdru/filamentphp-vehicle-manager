@@ -20,13 +20,19 @@ class RoadBadge extends Component
 
     public function render(): View
     {
-        $config = $this->getRoadConfig();
-        $roadTypeConfig = $config['roadTypeConfig'];
-        $road = $config['road'];
+        $badges = [];
+
+        $roads = $this->getRoadConfig();
+
+        foreach ($roads as $road) {
+            $badges[] = [
+                'roadTypeConfig' => $road['roadTypeConfig'],
+                'roadNumber' => $road['road'],
+            ];
+        }
 
         return view('livewire.road-badge', [
-            'roadTypeConfig' => $roadTypeConfig,
-            'roadNumber' => $road,
+            'badges' => $badges,
         ]);
     }
 
@@ -50,14 +56,20 @@ class RoadBadge extends Component
             ];
         }
 
-        $roadComponents = $this->getRoadComponents($this->road);
+        $roads = [];
 
-        $road = $roadTypeConfig['prefix'] . $roadComponents['road'];
+        foreach ($this->road as $road) {
+            $roadComponents = $this->getRoadComponents($road);
 
-        return [
-            'roadTypeConfig' => $roadTypeConfig,
-            'road' => $road,
-        ];
+            $road = $roadTypeConfig['prefix'] . $roadComponents['road'];
+
+            $roads[] = [
+                'roadTypeConfig' => $roadTypeConfig,
+                'road' => $road,
+            ];
+        }
+
+        return $roads;
     }
 
     private function getCountryConfig(): ?array

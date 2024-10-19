@@ -53,6 +53,7 @@ class Timeline extends Page
                 'insurances',
                 'taxes',
                 'parkings',
+                'tolls',
             ])
             ->latest()
             ->first();
@@ -105,6 +106,24 @@ class Timeline extends Page
             };
 
             $vehicle->maintenances->push($parking);
+        }
+
+        foreach ($vehicle->tolls as $toll) {
+            $toll->typeIcon = match ($toll->type) {
+                'location' => 'gmdi-location-on-r',
+                'section' => 'gmdi-route-r',
+                default => '',
+            };
+            $toll->type = match ($toll->type) {
+                'location' => __('Locatie'),
+                'section' => __('Section'),
+            };
+
+            if (! empty($toll->end_location)) {
+                $toll->start_location = $toll->start_location . ' - ' . $toll->end_location;
+            }
+
+            $vehicle->maintenances->push($toll);
         }
 
         $items = $vehicle->maintenances->merge($vehicle->refuelings)

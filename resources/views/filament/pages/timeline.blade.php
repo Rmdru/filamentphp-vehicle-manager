@@ -226,6 +226,43 @@
                             </x-filament::link>
                         </div>
                     </x-filament::section>
+                @elseif($item instanceof App\Models\Toll)
+                    <x-filament::section icon="maki-toll" class="mt-6" collapsible>
+                        <x-slot name="heading">
+                            {{ __('Toll') }}
+                        </x-slot>
+                        <div class="flex gap-8 items-center">
+                            <div class="flex gap-2 flex-col">
+                                <livewire:country-flag :country="$item->country" />
+                                <livewire:road-badge :roadType="$item->road_type" :road="$item->road" :country="$item->country" />
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <div class="flex gap-2 items-center">
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                    {{ $item->date->isoFormat('MMM D, Y') }}
+                                </div>
+                                <div class="flex gap-2 items-center">
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
+                                    € {{ $item->price }}
+                                </div>
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <div class="flex gap-2 items-center">
+                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                    {{ $item->start_location }}
+                                </div>
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <x-filament::badge color="gray" :icon="$item->typeIcon">
+                                    {{ $item->type }}
+                                </x-filament::badge>
+                            </div>
+                            <x-filament::link href="/account/parkings/{{ $item->id }}/edit" color="white"
+                                              icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                                {{ __('Edit') }}
+                            </x-filament::link>
+                        </div>
+                    </x-filament::section>
                 @endif
             @endforeach
         </x-filament::fieldset>
