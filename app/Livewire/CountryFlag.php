@@ -21,10 +21,10 @@ class CountryFlag extends Component
         return view('livewire.country-flag', $country);
     }
 
-    private function getCountryConfig(): array
+    private function getCountryConfig(): ?array
     {
         $countries = config('countries');
 
-        return $countries[$this->country];
+        return ! empty($this->country) ? $countries[$this->country] : null;
     }
 }

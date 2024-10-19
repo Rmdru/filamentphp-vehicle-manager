@@ -19,6 +19,7 @@ use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Livewire;
 
 class TollResource extends Resource
@@ -79,6 +80,7 @@ class TollResource extends Resource
                     ->label(__('Type'))
                     ->inline()
                     ->grouped()
+                    ->required()
                     ->options([
                         'location' => __('Location'),
                         'section' => __('Section'),
@@ -153,6 +155,7 @@ class TollResource extends Resource
                     ->maxLength(20),
                 TextInput::make('start_location')
                     ->label(__('Start location'))
+                    ->required()
                     ->maxLength(100),
                 TextInput::make('end_location')
                     ->label(__('End location'))
@@ -172,6 +175,11 @@ class TollResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->whereHas('vehicle', function ($query) {
+                    $query->selected();
+                })->orderByDesc('date');
+            })
             ->columns([
                 Split::make([
                     Stack::make([
@@ -190,7 +198,7 @@ class TollResource extends Resource
                             ->searchable()
                             ->formatStateUsing(function ($record) {
                                 return Livewire::mount('RoadBadge', [
-                                    'roadType' => $record->road_type,//
+                                    'roadType' => $record->road_type,
                                     'road' => $record->road,
                                     'country' => $record->country,
                                 ]);

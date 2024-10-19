@@ -60,11 +60,11 @@ class RoadBadge extends Component
         ];
     }
 
-    private function getCountryConfig(): array
+    private function getCountryConfig(): ?array
     {
         $countries = config('countries');
 
-        return $countries[$this->country];
+        return ! empty($this->country) ? $countries[$this->country] : null;
     }
 
     private function getRoadComponents(string $string): array
