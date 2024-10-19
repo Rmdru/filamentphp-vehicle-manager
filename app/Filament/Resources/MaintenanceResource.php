@@ -56,13 +56,16 @@ class MaintenanceResource extends Resource
                 Tables\Columns\Layout\Split::make([
                     TextColumn::make('date')
                         ->label(__('Date'))
+                        ->sortable()
                         ->date()
                         ->icon('gmdi-calendar-month-r'),
                     TextColumn::make('garage')
+                        ->sortable()
                         ->label(__('Garage'))
                         ->icon('mdi-garage')
                         ->searchable(),
                     TextColumn::make('type_maintenance')
+                        ->sortable()
                         ->label(__('Type maintenance'))
                         ->badge()
                         ->default('')
@@ -81,15 +84,18 @@ class MaintenanceResource extends Resource
                         ->color('gray'),
                     TextColumn::make('apk')
                         ->icon(fn(Maintenance $maintenance) => $maintenance->apk ? 'gmdi-security' : 'gmdi-close-r')
+                        ->sortable()
                         ->badge()
                         ->color('gray')
                         ->formatStateUsing(fn(Maintenance $maintenance) => $maintenance->apk ? __('MOT') : __('No MOT'))
                         ->label(__('MOT')),
                     TextColumn::make('mileage')
+                        ->sortable()
                         ->label(__('Mileage'))
                         ->icon('gmdi-route')
                         ->suffix(' km'),
                     TextColumn::make('total_price')
+                        ->sortable()
                         ->label(__('Total price'))
                         ->icon('mdi-hand-coin-outline')
                         ->money('EUR')

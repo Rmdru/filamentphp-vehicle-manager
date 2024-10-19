@@ -127,6 +127,7 @@ class VehicleResource extends Resource
                             ->sortable()
                             ->icon('gmdi-local-gas-station')
                             ->placeholder('-')
+                            ->sortable()
                             ->label(__('Powertrain'))
                             ->formatStateUsing(fn (string $state) => $fuelTypes[$state] ?? $state),
                     ])
@@ -143,6 +144,7 @@ class VehicleResource extends Resource
                         TextColumn::make('status')
                             ->icon(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'icon'))
                             ->badge()
+                            ->sortable()
                             ->default('OK')
                             ->formatStateUsing(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'text'))
                             ->color(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
@@ -152,6 +154,7 @@ class VehicleResource extends Resource
                             ->badge()
                             ->default('OK')
                             ->color('gray')
+                            ->sortable()
                             ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
                             ->label(__('Privacy')),
                     ])

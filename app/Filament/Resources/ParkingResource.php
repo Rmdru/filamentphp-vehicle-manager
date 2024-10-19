@@ -53,6 +53,7 @@ class ParkingResource extends Resource
             ->columns([
                 TextColumn::make('start_time')
                     ->label(__('Date and time'))
+                    ->sortable()
                     ->date()
                     ->formatStateUsing(function (Parking $parking) {
                         return $parking->start_time->isoFormat('MMM D, Y  H:mm') . ' - ' . $parking->end_time->isoFormat('MMM D, Y H:mm');
@@ -60,10 +61,12 @@ class ParkingResource extends Resource
                     ->icon('gmdi-calendar-month-r'),
                 TextColumn::make('location')
                     ->label(__('Location'))
+                    ->sortable()
                     ->icon('gmdi-location-on-r'),
                 TextColumn::make('price')
                     ->label(__('Price'))
                     ->icon('mdi-hand-coin-outline')
+                    ->sortable()
                     ->money('EUR')
                     ->summarize([
                         Average::make()->label(__('Price average')),
@@ -72,6 +75,7 @@ class ParkingResource extends Resource
                 TextColumn::make('type')
                     ->label(__('Type'))
                     ->badge()
+                    ->sortable()
                     ->color('gray')
                     ->icon(fn(string $state): string => match ($state) {
                         'street' => 'maki-parking-paid',
@@ -85,6 +89,7 @@ class ParkingResource extends Resource
                 TextColumn::make('payment_method')
                     ->label(__('Payment method'))
                     ->badge()
+                    ->sortable()
                     ->color('gray')
                     ->icon(fn(string $state): string => match ($state) {
                         'cash' => 'mdi-hand-coin-outline',

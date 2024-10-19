@@ -55,6 +55,7 @@ class InsuranceResource extends Resource
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     TextColumn::make('start_date')
+                        ->sortable()
                         ->label(__('Start date'))
                         ->date()
                         ->formatStateUsing(function (Insurance $insurance) {
@@ -67,6 +68,7 @@ class InsuranceResource extends Resource
                         ->icon('gmdi-calendar-month-r'),
                     TextColumn::make('type')
                         ->label(__('Type'))
+                        ->sortable()
                         ->badge()
                         ->default('')
                         ->formatStateUsing(fn(string $state): string => $insuranceTypes[$state]['name'] ?? __('Unknown'))
@@ -74,10 +76,12 @@ class InsuranceResource extends Resource
                         ->color('gray'),
                     TextColumn::make('insurance_company')
                         ->label(__('Insurance company'))
+                        ->sortable()
                         ->icon('mdi-office-building'),
                     TextColumn::make('price')
                         ->label(__('Price per month'))
                         ->icon('mdi-hand-coin-outline')
+                        ->sortable()
                         ->money('EUR')
                         ->summarize([
                             Average::make()->label(__('Total price average')),
@@ -86,6 +90,7 @@ class InsuranceResource extends Resource
                     TextColumn::make('invoice_day')
                         ->label(__('Invoice day'))
                         ->icon('gmdi-calendar-month-r')
+                        ->sortable()
                         ->suffix(__('th of the month')),
                 ]),
             ])

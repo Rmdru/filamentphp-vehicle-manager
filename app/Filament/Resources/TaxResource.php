@@ -53,6 +53,7 @@ class TaxResource extends Resource
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     TextColumn::make('start_date')
+                        ->sortable()
                         ->label(__('Start date'))
                         ->date()
                         ->formatStateUsing(function (Tax $tax) {
@@ -64,6 +65,7 @@ class TaxResource extends Resource
                         })
                         ->icon('gmdi-calendar-month-r'),
                     TextColumn::make('price')
+                        ->sortable()
                         ->label(__('Price per month'))
                         ->icon('mdi-hand-coin-outline')
                         ->money('EUR')
@@ -72,6 +74,7 @@ class TaxResource extends Resource
                             Range::make()->label(__('Total price range')),
                         ]),
                     TextColumn::make('invoice_day')
+                        ->sortable()
                         ->label(__('Invoice day'))
                         ->icon('gmdi-calendar-month-r')
                         ->suffix(__('th of the month')),

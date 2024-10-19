@@ -62,6 +62,7 @@ class RefuelingResource extends Resource
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     TextColumn::make('gas_station')
+                        ->sortable()
                         ->formatStateUsing(
                             function (Refueling $refueling) use ($gasStationLogos) {
                                 $gasStationBrand = str($refueling->gas_station)->lower()->explode(' ')[0];
@@ -73,11 +74,13 @@ class RefuelingResource extends Resource
                         ),
                     Stack::make([
                         TextColumn::make('date')
+                            ->sortable()
                             ->label(__('Date'))
                             ->date()
                             ->icon('gmdi-calendar-month-r'),
                         TextColumn::make('gas_station')
                             ->label(__('Gas station'))
+                            ->sortable()
                             ->icon('gmdi-location-on-s')
                             ->searchable()
                             ->summarize(Summarizer::make()
@@ -96,6 +99,7 @@ class RefuelingResource extends Resource
                         ->space(1),
                     Stack::make([
                         TextColumn::make('total_price')
+                            ->sortable()
                             ->label(__('Total price'))
                             ->icon('mdi-hand-coin-outline')
                             ->money('EUR')
@@ -104,6 +108,7 @@ class RefuelingResource extends Resource
                                 Range::make()->label(__('Total price range')),
                             ]),
                         TextColumn::make('unit_price')
+                            ->sortable()
                             ->label(__('Unit price'))
                             ->icon('gmdi-local-offer')
                             ->prefix('€ ')
@@ -113,6 +118,7 @@ class RefuelingResource extends Resource
                                 Range::make()->label(__('Unit price range')),
                             ]),
                         TextColumn::make('costs_per_kilometer')
+                            ->sortable()
                             ->label(__('Costs per kilometer'))
                             ->icon('uni-euro-circle-o')
                             ->money('EUR')
@@ -126,16 +132,19 @@ class RefuelingResource extends Resource
                         ->space(1),
                     Stack::make([
                         TextColumn::make('mileage_end')
+                            ->sortable()
                             ->label(__('Mileage end'))
                             ->icon('gmdi-route')
                             ->suffix(' km'),
                         TextColumn::make('distance')
+                            ->sortable()
                             ->default('0')
                             ->label(__('Distance'))
                             ->icon('gmdi-add')
                             ->suffix(' km')
                             ->formatStateUsing(fn(Refueling $refueling) => $refueling->mileage_end - $refueling->mileage_begin),
                         TextColumn::make('avg_speed')
+                            ->sortable()
                             ->label(__('Average speed'))
                             ->icon('mdi-speedometer')
                             ->suffix(' km/h'),
@@ -143,6 +152,7 @@ class RefuelingResource extends Resource
                         ->space(1),
                     Stack::make([
                         TextColumn::make('fuel_consumption')
+                            ->sortable()
                             ->label(__('Fuel consumption'))
                             ->icon('gmdi-local-gas-station-r')
                             ->badge()
@@ -164,6 +174,7 @@ class RefuelingResource extends Resource
                                 Range::make()->label(__('Fuel consumption range')),
                             ]),
                         TextColumn::make('amount')
+                            ->sortable()
                             ->label(__('Amount'))
                             ->icon('gmdi-water-drop-r')
                             ->suffix(' l')
@@ -172,10 +183,12 @@ class RefuelingResource extends Resource
                                 Range::make()->label(__('Amount range')),
                             ]),
                         TextColumn::make('fuel_type')
+                            ->sortable()
                             ->label(__('Fuel type'))
                             ->icon('gmdi-local-gas-station-r')
                             ->formatStateUsing(fn(Refueling $refueling) => $fuelTypes[$refueling->fuel_type]),
                         TextColumn::make('fuel_consumption_onboard_computer')
+                            ->sortable()
                             ->label(__('Fuel consumption onboard computer'))
                             ->icon('gmdi-dashboard-r')
                             ->suffix(' l/100km'),
@@ -183,6 +196,7 @@ class RefuelingResource extends Resource
                         ->space(1),
                     Stack::make([
                         TextColumn::make('tyres')
+                            ->sortable()
                             ->badge()
                             ->color(fn(string $state): string => match ($state) {
                                 'all_season' => 'danger',
@@ -202,6 +216,7 @@ class RefuelingResource extends Resource
                                 'winter' => __('Winter tyres'),
                             }),
                         TextColumn::make('climate_control')
+                            ->sortable()
                             ->badge()
                             ->color(fn(string $state): string => match ($state) {
                                 'automatically' => 'warning',
@@ -219,6 +234,7 @@ class RefuelingResource extends Resource
                                 'heater' => __('Heater'),
                             }),
                         TextColumn::make('routes')
+                            ->sortable()
                             ->badge()
                             ->color(fn(string $state): string => match ($state) {
                                 'motorway' => 'info',
@@ -240,6 +256,7 @@ class RefuelingResource extends Resource
 
                             }),
                         TextColumn::make('driving_style')
+                            ->sortable()
                             ->badge()
                             ->color(fn(string $state): string => match ($state) {
                                 'slow' => 'warning',
