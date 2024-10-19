@@ -25,6 +25,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BuilderQuery;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 
 class RefuelingResource extends Resource
@@ -55,9 +56,11 @@ class RefuelingResource extends Resource
 
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                })->orderByDesc('date');
+                return $query
+                    ->select('*', DB::raw('mileage_end - mileage_begin as distance'))
+                    ->whereHas('vehicle', function ($query) {
+                        $query->selected();
+                    })->orderByDesc('date');
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
@@ -137,12 +140,11 @@ class RefuelingResource extends Resource
                             ->icon('gmdi-route')
                             ->suffix(' km'),
                         TextColumn::make('distance')
-                            ->sortable()
                             ->default('0')
+                            ->sortable()
                             ->label(__('Distance'))
                             ->icon('gmdi-add')
-                            ->suffix(' km')
-                            ->formatStateUsing(fn(Refueling $refueling) => $refueling->mileage_end - $refueling->mileage_begin),
+                            ->suffix(' km'),
                         TextColumn::make('avg_speed')
                             ->sortable()
                             ->label(__('Average speed'))
