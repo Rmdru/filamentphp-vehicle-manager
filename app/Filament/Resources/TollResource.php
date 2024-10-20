@@ -59,7 +59,6 @@ class TollResource extends Resource
                     ->label(__('Vehicle'))
                     ->required()
                     ->searchable()
-                    ->sortable()
                     ->native(false)
                     ->relationship('vehicle')
                     ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id)
@@ -75,7 +74,6 @@ class TollResource extends Resource
                 DatePicker::make('date')
                     ->label(__('Date'))
                     ->required()
-                    ->sortable()
                     ->native(false)
                     ->displayFormat('d-m-Y')
                     ->maxDate(now()),
@@ -83,7 +81,6 @@ class TollResource extends Resource
                     ->label(__('Type'))
                     ->inline()
                     ->grouped()
-                    ->sortable()
                     ->required()
                     ->options([
                         'location' => __('Location'),
@@ -98,7 +95,6 @@ class TollResource extends Resource
                 ToggleButtons::make('payment_circumstances')
                     ->label(__('Payment circumstances'))
                     ->inline()
-                    ->sortable()
                     ->grouped()
                     ->options([
                         'toll_gate' => __('Toll gate'),
@@ -112,7 +108,6 @@ class TollResource extends Resource
                     ->label(__('Payment method'))
                     ->inline()
                     ->grouped()
-                    ->sortable()
                     ->options([
                         'cash' => __('Cash'),
                         'card' => __('Card'),
@@ -127,19 +122,16 @@ class TollResource extends Resource
                     ]),
                 TextInput::make('toll_company')
                     ->label(__('Toll company'))
-                    ->sortable()
                     ->maxLength(100),
                 Select::make('country')
                     ->label(__('Country'))
                     ->searchable()
-                    ->sortable()
                     ->native(false)
                     ->options($countriesOptions),
                 ToggleButtons::make('road_type')
                     ->label(__('Road type'))
                     ->inline()
                     ->grouped()
-                    ->sortable()
                     ->options([
                         'highway' => __('Highway'),
                         'secondary' => __('Secondary'),
@@ -164,17 +156,14 @@ class TollResource extends Resource
                 TextInput::make('start_location')
                     ->label(__('Start location'))
                     ->required()
-                    ->sortable()
                     ->maxLength(100),
                 TextInput::make('end_location')
                     ->label(__('End location'))
                     ->maxLength(100)
-                    ->sortable()
                     ->visible(fn($get) => $get('type') === 'section'),
                 TextInput::make('price')
                     ->label(__('Price'))
                     ->numeric()
-                    ->sortable()
                     ->mask(RawJs::make('$money($input)'))
                     ->stripCharacters(',')
                     ->required()
