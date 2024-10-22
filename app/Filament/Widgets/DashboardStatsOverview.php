@@ -41,9 +41,17 @@ class DashboardStatsOverview extends BaseWidget
                 suffix: 'l/100km',
             ),
             $this->buildStat(
+                title: __('Average range'),
+                value: $this->calculateAverageRange(),
+                icon: 'gmdi-route-r',
+                latestValue: $this->calculateAverageRange(true),
+                suffix: 'km',
+                operator: '>'
+            ),
+            $this->buildStat(
                 title: __('Average monthly distance'),
                 value: $this->calculateAverageMonthlyDistance(),
-                icon: 'gmdi-route-r',
+                icon: 'mdi-map-marker-distance',
                 latestValue: $this->calculateAverageMonthlyDistance(true),
                 suffix: 'km',
             ),
@@ -326,5 +334,19 @@ class DashboardStatsOverview extends BaseWidget
         }
 
         return $refuelings;
+    }
+
+    private function calculateAverageRange(bool $latest = false): float
+    {
+        $fuelConsumption = $this->calculateAverageFuelConsumption();
+
+        if ($latest) {
+            $fuelConsumption = $this->calculateAverageFuelConsumption(true);
+        }
+
+        $tankCapacity = 35;
+        $avgRange = $tankCapacity / $fuelConsumption * 100;
+
+        return round($avgRange);
     }
 }
