@@ -36,21 +36,26 @@ class Vehicle extends Model
         'mileage_start',
         'mileage_latest',
         'purchase_date',
+        'purchase_price',
         'license_plate',
         'powertrain',
+        'country_registration',
         'is_private',
+        'status',
     ];
 
     protected $casts = [
         'purchase_date' => 'date:Y-m-d',
         'private' => 'boolean',
     ];
-    
+
     protected $appends = [
         'fuel_status',
         'maintenance_status',
         'apk_status',
         'airco_check_status',
+        'insurance_status',
+        'tax_status',
     ];
 
     protected static function booted()
@@ -69,6 +74,13 @@ class Vehicle extends Model
         $query->where([
             'id' => Session::get('vehicle_id'),
             'user_id' => Auth::id(),
+        ]);
+    }
+
+    public function scopeOnlyDrivable(Builder $query): void
+    {
+        $query->where([
+            'status' => 'driveable',
         ]);
     }
 
@@ -242,7 +254,7 @@ class Vehicle extends Model
         ];
 
         if (
-            (! is_null($timeTillRefueling) && $timeTillRefueling < 20)
+            (! is_null($timeTillRefueling) && $timeTillRefueling < 10)
             || $maintenanceStatus['time'] < 31
             || $maintenanceStatus['distance'] < 1500
             || $timeTillApk < 31
@@ -253,7 +265,7 @@ class Vehicle extends Model
         }
 
         if (
-            (! is_null($timeTillRefueling) && $timeTillRefueling < 40)
+            (! is_null($timeTillRefueling) && $timeTillRefueling < 30)
             || $maintenanceStatus['time'] < 62
             || $maintenanceStatus['distance'] < 3000
             || $timeTillApk < 62

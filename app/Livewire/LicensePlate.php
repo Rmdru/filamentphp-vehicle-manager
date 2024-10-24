@@ -19,14 +19,28 @@ class LicensePlate extends Component
 
     public function render(): View
     {
-        $licensePlate = Vehicle::selected()->first()->license_plate;
+        $countries = config('countries');
+        $vehicle = Vehicle::selected()->first();
 
         if ($this->vehicleId) {
-            $licensePlate = Vehicle::where('id', $this->vehicleId)->latest()->first()->license_plate;
+            $vehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
+        }
+
+        $licensePlateConfig = $countries[$vehicle->country_registration]['license_plate'];
+
+        if (empty($licensePlateConfig)) {
+            $licensePlateConfig = [
+                'border' => null,
+                'color' => 'text-black',
+                'backgroundColor' => 'bg-white',
+                'prefix' => null,
+                'euBar' => false,
+            ];
         }
 
         return view('livewire.license-plate', [
-            'licensePlate' => $licensePlate,
+            'licensePlate' => $vehicle->license_plate,
+            'licensePlateConfig' => $licensePlateConfig,
         ]);
     }
 }

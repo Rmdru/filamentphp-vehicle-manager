@@ -174,9 +174,9 @@ class MaintenanceResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id)
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) use ($brands) {
-                                $vehicles = Vehicle::get();
+                                $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) use ($brands) {
                                     return $index->car = $brands[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';

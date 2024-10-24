@@ -54,6 +54,12 @@ class ViewVehicle extends ViewRecord
                 Infolists\Components\Fieldset::make('ownership')
                     ->label(__('Ownership'))
                     ->schema([
+                        TextEntry::make('country_registration')
+                            ->formatStateUsing(function ($record) {
+                                return Livewire::mount('country-flag', ['country' => $record->country_registration]);
+                            })
+                            ->html()
+                            ->label(__('Country of registration')),
                         TextEntry::make('license_plate')
                             ->formatStateUsing(function ($record) {
                                 return Livewire::mount('license-plate', ['vehicleId' => $record->id]);
@@ -76,6 +82,23 @@ class ViewVehicle extends ViewRecord
                             ->date()
                             ->placeholder('-')
                             ->label(__('Purchase date')),
+                        TextEntry::make('purchase_price')
+                            ->icon('gmdi-local-offer-r')
+                            ->placeholder('-')
+                            ->money('EUR')
+                            ->label(__('Purchase price')),
+                        TextEntry::make('status')
+                            ->icon('mdi-list-status')
+                            ->placeholder('-')
+                            ->formatStateUsing(fn(string $state) => match ($state) {
+                                'drivable' => __('Drivable'),
+                                'suspended' => __('Suspended'),
+                                'seized' => __('Seized'),
+                                'stolen' => __('Stolen'),
+                                'sold' => __('Sold'),
+                                'destroyed' => __('Destroyed'),
+                            })
+                            ->label(__('Status')),
                     ]),
                 Infolists\Components\Fieldset::make('Privacy')
                     ->label(__('Privacy'))

@@ -348,9 +348,9 @@ class RefuelingResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id)
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::get();
+                                $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
                                     return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
@@ -409,7 +409,7 @@ class RefuelingResource extends Resource
                             ->required()
                             ->suffix(' km')
                             ->numeric()
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->mileage_latest),
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->mileage_latest ?? null),
                         TextInput::make('mileage_end')
                             ->label(__('Mileage end'))
                             ->required()

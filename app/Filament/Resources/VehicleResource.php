@@ -7,8 +7,10 @@ use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\Vehicle;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
@@ -41,6 +43,13 @@ class VehicleResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $countries = config('countries');
+        $countriesOptions = [];
+
+        foreach ($countries as $key => $value) {
+            $countriesOptions[$key] = $value['name'];
+        }
+
         return $form
             ->schema([
                 Fieldset::make('car_specifications')
@@ -86,11 +95,41 @@ class VehicleResource extends Resource
                             ->native(false)
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
+                        TextInput::make('purchase_price')
+                            ->label(__('Purchase price'))
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->prefix('€')
+                            ->step(0.01),
+                        Select::make('country_registration')
+                            ->label(__('Country of registration'))
+                            ->searchable()
+                            ->native(false)
+                            ->required()
+                            ->options($countriesOptions),
                         TextInput::make('license_plate')
                             ->label(__('License plate'))
                             ->required()
-                            ->prefix('NL')
-                            ->extraInputAttributes(['class' => '!text-black bg-yellow-600']),
+                            ->prefix('NL'),
+                        ToggleButtons::make('status')
+                            ->label(__('Status'))
+                            ->inline()
+                            ->options([
+                                'drivable' => __('Drivable'),
+                                'suspended' => __('Suspended'),
+                                'seized' => __('Seized'),
+                                'stolen' => __('Stolen'),
+                                'sold' => __('Sold'),
+                                'destroyed' => __('Destroyed'),
+                            ])
+                            ->icons([
+                                'drivable' => 'gmdi-directions-car-r',
+                                'suspended' => 'mdi-garage',
+                                'seized' => 'maki-police',
+                                'stolen' => 'mdi-lock-open-alert',
+                                'sold' => 'gmdi-local-offer',
+                                'destroyed' => 'fas-car-crash',
+                            ]),
                         ]),
                 Fieldset::make('privacy')
                     ->label(__('Privacy'))
@@ -148,6 +187,29 @@ class VehicleResource extends Resource
                             ->default('OK')
                             ->formatStateUsing(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'text'))
                             ->color(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
+                            ->label(__('Status')),
+                        TextColumn::make('status')
+                            ->icon(fn(string $state): string => match ($state) {
+                                'drivable' => 'gmdi-directions-car-r',
+                                'suspended' => 'mdi-garage',
+                                'seized' => 'maki-police',
+                                'stolen' => 'mdi-lock-open-alert',
+                                'sold' => 'gmdi-local-offer',
+                                'destroyed' => 'fas-car-crash',
+                                default => '',
+                            })
+                            ->formatStateUsing(fn(string $state) => match ($state) {
+                                'drivable' => __('Drivable'),
+                                'suspended' => __('Suspended'),
+                                'seized' => __('Seized'),
+                                'stolen' => __('Stolen'),
+                                'sold' => __('Sold'),
+                                'destroyed' => __('Destroyed'),
+                            })
+                            ->badge()
+                            ->default('drivable')
+                            ->color('gray')
+                            ->sortable()
                             ->label(__('Status')),
                         TextColumn::make('is_private')
                             ->icon(fn (Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')

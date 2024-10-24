@@ -23,6 +23,14 @@ return [
                 'prefix' => 'N',
             ],
         ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'warning',
+            'backgroundColor' => 'bg-yellow-500',
+            'prefix' => 'NL',
+            'euBar' => true,
+        ],
     ],
     'belgium' => [
         'name' => 'België/Belgique (Belgium)',
@@ -44,6 +52,14 @@ return [
                 'prefix' => 'N',
             ],
         ],
+        'license_plate' => [
+            'border' => 'border-red-500',
+            'color' => 'text-red-500',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'B',
+            'euBar' => true,
+        ],
     ],
     'germany' => [
         'name' => 'Deutschland (Germany)',
@@ -59,6 +75,14 @@ return [
                 'backgroundColor' => 'bg-yellow-500',
                 'prefix' => 'B',
             ],
+        ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'D',
+            'euBar' => true,
         ],
     ],
     'luxembourg' => [
@@ -79,6 +103,14 @@ return [
                 'color' => 'text-white',
                 'backgroundColor' => 'bg-red-500',
             ],
+        ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'warning',
+            'backgroundColor' => 'bg-yellow-500',
+            'prefix' => 'L',
+            'euBar' => true,
         ],
     ],
     'france' => [
@@ -101,6 +133,14 @@ return [
                 'prefix' => 'D',
             ],
         ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'F',
+            'euBar' => true,
+        ],
     ],
     'italy' => [
         'name' => 'Italia (Italy)',
@@ -121,6 +161,14 @@ return [
                 'backgroundColor' => 'bg-white',
                 'prefix' => 'SP',
             ],
+        ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'I',
+            'euBar' => true,
         ],
     ],
     'spain' => [
@@ -143,6 +191,14 @@ return [
                 'prefix' => 'C',
             ],
         ],
+        'license_plate' => [
+            'border' => 'border-white',
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'E',
+            'euBar' => true,
+        ],
     ],
     'united_kingdom' => [
         'name' => 'United Kingdom (United Kingdom)',
@@ -164,6 +220,14 @@ return [
                 'prefix' => 'B',
             ],
         ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'warning',
+            'backgroundColor' => 'bg-yellow-500',
+            'prefix' => null,
+            'euBar' => false,
+        ],
     ],
     'sweden' => [
         'name' => 'Sverige (Sweden)',
@@ -178,6 +242,14 @@ return [
                 'color' => 'text-white',
                 'backgroundColor' => 'bg-blue-500',
             ],
+        ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'S',
+            'euBar' => true,
         ],
     ],
     'norway' => [
@@ -198,6 +270,14 @@ return [
                 'backgroundColor' => 'bg-white',
             ],
         ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'N',
+            'euBar' => true,
+        ],
     ],
     'switzerland' => [
         'name' => 'Schweiz/Suisse/Svizzera (Switzerland)',
@@ -212,6 +292,14 @@ return [
                 'color' => 'text-white',
                 'backgroundColor' => 'bg-blue-500',
             ],
+        ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => null,
+            'euBar' => false,
         ],
     ],
     'austria' => [
@@ -228,6 +316,14 @@ return [
                 'backgroundColor' => 'bg-yellow-500',
                 'prefix' => 'B',
             ],
+        ],
+        'license_plate' => [
+            'border' => 'border-red-500',
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'A',
+            'euBar' => true,
         ],
     ],
     'poland' => [
@@ -249,6 +345,14 @@ return [
                 'backgroundColor' => 'bg-red-500',
             ],
         ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'PL',
+            'euBar' => true,
+        ],
     ],
     'czech_republic' => [
         'name' => 'Česká republika (Czech Republic)',
@@ -263,6 +367,14 @@ return [
                 'color' => 'text-white',
                 'backgroundColor' => 'bg-blue-500',
             ],
+        ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'CZ',
+            'euBar' => true,
         ],
     ],
     'portugal' => [
@@ -280,6 +392,14 @@ return [
                 'prefix' => 'N',
             ],
         ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'P',
+            'euBar' => true,
+        ],
     ],
     'greece' => [
         'name' => 'Ελλάδα (Greece)',
@@ -294,6 +414,14 @@ return [
                 'color' => 'text-white',
                 'backgroundColor' => 'bg-blue-500',
             ],
+        ],
+        'license_plate' => [
+            'border' => null,
+            'color' => 'text-black',
+            'filamentColor' => 'gray',
+            'backgroundColor' => 'bg-white',
+            'prefix' => 'GR',
+            'euBar' => true,
         ],
     ],
 ];

@@ -115,7 +115,7 @@ class Timeline extends Page
                 default => '',
             };
             $toll->type = match ($toll->type) {
-                'location' => __('Locatie'),
+                'location' => __('Location'),
                 'section' => __('Section'),
             };
 

@@ -166,9 +166,9 @@ class ParkingResource extends Resource
                     ->searchable()
                     ->native(false)
                     ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id)
+                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
                     ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::get();
+                        $vehicles = Vehicle::onlyDrivable()->get();
 
                         $vehicles->car = $vehicles->map(function ($index) {
                             return $index->car = $index->full_name . ' (' . $index->license_plate . ')';

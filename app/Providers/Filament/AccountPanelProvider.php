@@ -110,12 +110,13 @@ class AccountPanelProvider extends PanelProvider
 
         $vehicles = Vehicle::all();
         $brands = config('vehicles.brands');
+        $countries = config('countries');
 
         foreach ($vehicles as $vehicle) {
             $menuItems[] = NavigationItem::make($vehicle->full_name)
                 ->label($vehicle->full_name)
                 ->group('My Vehicles')
-                ->badge($vehicle->license_plate, 'warning')
+                ->badge($vehicle->license_plate, $countries[$vehicle->country_registration]['license_plate']['filamentColor'])
                 ->url(fn(): string => route('switch-vehicle', ['vehicleId' => $vehicle->id]))
                 ->isActiveWhen(fn(): bool => Session::get('vehicle_id') === $vehicle->id)
                 ->icon('si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower());
