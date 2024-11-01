@@ -80,7 +80,7 @@ class Vehicle extends Model
     public function scopeOnlyDrivable(Builder $query): void
     {
         $query->where([
-            'status' => 'driveable',
+            'status' => 'drivable',
         ]);
     }
 

@@ -89,7 +89,8 @@ class VehicleResource extends Resource
                         TextInput::make('mileage_start')
                             ->label(__('Mileage on purchase'))
                             ->suffix(' km')
-                            ->numeric(),
+                            ->numeric()
+                            ->minValue(0),
                         DatePicker::make('purchase_date')
                             ->label(__('Purchase date'))
                             ->native(false)
@@ -106,17 +107,20 @@ class VehicleResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->required()
-                            ->options($countriesOptions),
+                            ->options($countriesOptions)
+                            ->reactive()
+                            ->afterStateUpdated(fn (callable $set, $state) => $set('license_plate_prefix', $state)),
                         TextInput::make('license_plate')
                             ->label(__('License plate'))
                             ->required()
-                            ->prefix('NL'),
+                            ->prefix(fn (callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false),
                         ToggleButtons::make('status')
                             ->label(__('Status'))
                             ->inline()
                             ->options([
                                 'drivable' => __('Drivable'),
                                 'suspended' => __('Suspended'),
+                                'wok' => __('WOK status'),
                                 'seized' => __('Seized'),
                                 'stolen' => __('Stolen'),
                                 'sold' => __('Sold'),
@@ -125,6 +129,7 @@ class VehicleResource extends Resource
                             ->icons([
                                 'drivable' => 'gmdi-directions-car-r',
                                 'suspended' => 'mdi-garage',
+                                'wok' => 'mdi-shield-alert',
                                 'seized' => 'maki-police',
                                 'stolen' => 'mdi-lock-open-alert',
                                 'sold' => 'gmdi-local-offer',
@@ -192,6 +197,7 @@ class VehicleResource extends Resource
                             ->icon(fn(string $state): string => match ($state) {
                                 'drivable' => 'gmdi-directions-car-r',
                                 'suspended' => 'mdi-garage',
+                                'wok' => 'mdi-shield-alert',
                                 'seized' => 'maki-police',
                                 'stolen' => 'mdi-lock-open-alert',
                                 'sold' => 'gmdi-local-offer',
@@ -201,6 +207,7 @@ class VehicleResource extends Resource
                             ->formatStateUsing(fn(string $state) => match ($state) {
                                 'drivable' => __('Drivable'),
                                 'suspended' => __('Suspended'),
+                                'wok' => __('WOK status'),
                                 'seized' => __('Seized'),
                                 'stolen' => __('Stolen'),
                                 'sold' => __('Sold'),

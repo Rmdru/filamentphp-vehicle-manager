@@ -32,9 +32,10 @@ class LicensePlate extends Component
             $licensePlateConfig = [
                 'border' => null,
                 'color' => 'text-black',
-                'backgroundColor' => 'bg-white',
+                'filament_color' => 'gray',
+                'background_color' => 'bg-white',
                 'prefix' => null,
-                'euBar' => false,
+                'eu_bar' => false,
             ];
         }
 

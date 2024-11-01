@@ -111,12 +111,14 @@ class TollResource extends Resource
                     ->options([
                         'cash' => __('Cash'),
                         'card' => __('Card'),
+                        'online' => __('Online'),
                         'toll_badge' => __('Toll badge'),
                         'app' => __('App'),
                     ])
                     ->icons([
                         'cash' => 'mdi-hand-coin-outline',
                         'card' => 'gmdi-credit-card',
+                        'online' => 'gmdi-qr-code',
                         'toll_badge' => 'mdi-car-connected',
                         'app' => 'mdi-cellphone-wireless',
                     ]),
@@ -262,6 +264,7 @@ class TollResource extends Resource
                             ->icon(fn(string $state): string => match ($state) {
                                 'cash' => 'mdi-hand-coin-outline',
                                 'card' => 'gmdi-credit-card',
+                                'online' => 'gmdi-qr-code',
                                 'toll_badge' => 'mdi-car-connected',
                                 'app' => 'mdi-cellphone-wireless',
                                 default => '',
@@ -269,6 +272,7 @@ class TollResource extends Resource
                             ->formatStateUsing(fn(string $state) => match ($state) {
                                 'cash' => __('Cash'),
                                 'card' => __('Card'),
+                                'online' => __('Online'),
                                 'toll_badge' => __('Toll badge'),
                                 'app' => __('App'),
                             }),

@@ -45,7 +45,7 @@ class RoadBadge extends Component
         if (empty($roadTypeConfig)) {
             $roadTypeConfig = [
                 'color' => 'text-black',
-                'backgroundColor' => 'bg-white',
+                'background_color' => 'bg-white',
             ];
 
             $road = $this->road;
@@ -57,6 +57,19 @@ class RoadBadge extends Component
         }
 
         $roads = [];
+
+        if (is_string($this->road)) {
+            $roadComponents = $this->getRoadComponents($this->road);
+
+            $this->road = $roadTypeConfig['prefix'] . $roadComponents['road'];
+
+            return [
+                [
+                    'roadTypeConfig' => $roadTypeConfig,
+                    'road' => $this->road,
+                ]
+            ];
+        }
 
         foreach ($this->road as $road) {
             $roadComponents = $this->getRoadComponents($road);

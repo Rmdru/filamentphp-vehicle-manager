@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\Timeline;
+use App\Filament\Resources\FineResource;
 use App\Filament\Resources\InsuranceResource;
 use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\ParkingResource;
@@ -92,6 +93,7 @@ class AccountPanelProvider extends PanelProvider
                             ...TaxResource::getNavigationItems(),
                             ...ParkingResource::getNavigationItems(),
                             ...TollResource::getNavigationItems(),
+                            ...FineResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))
@@ -116,7 +118,7 @@ class AccountPanelProvider extends PanelProvider
             $menuItems[] = NavigationItem::make($vehicle->full_name)
                 ->label($vehicle->full_name)
                 ->group('My Vehicles')
-                ->badge($vehicle->license_plate, $countries[$vehicle->country_registration]['license_plate']['filamentColor'])
+                ->badge($vehicle->license_plate, $countries[$vehicle->country_registration]['license_plate']['filament_color'])
                 ->url(fn(): string => route('switch-vehicle', ['vehicleId' => $vehicle->id]))
                 ->isActiveWhen(fn(): bool => Session::get('vehicle_id') === $vehicle->id)
                 ->icon('si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower());
