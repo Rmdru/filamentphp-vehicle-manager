@@ -54,6 +54,7 @@ class Timeline extends Page
                 'taxes',
                 'parkings',
                 'tolls',
+                'fines',
             ])
             ->latest()
             ->first();
@@ -124,6 +125,14 @@ class Timeline extends Page
             }
 
             $vehicle->maintenances->push($toll);
+        }
+
+        foreach ($vehicle->fines as $fine) {
+            $fine->typeIcon = $fine->payed ? 'gmdi-check-r' : 'gmdi-timer-s';
+            $fine->typeColor = $fine->payed ? 'success' : 'danger';
+            $fine->type = $fine->payed ? __('Payed') : __('Pending payment');
+
+            $vehicle->maintenances->push($fine);
         }
 
         $items = $vehicle->maintenances->merge($vehicle->refuelings)

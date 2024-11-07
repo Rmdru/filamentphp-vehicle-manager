@@ -263,6 +263,51 @@
                             </x-filament::link>
                         </div>
                     </x-filament::section>
+                @elseif($item instanceof App\Models\Fine)
+                    <x-filament::section icon="maki-police" class="mt-6" collapsible>
+                        <x-slot name="heading">
+                            {{ __('Fine') }}
+                        </x-slot>
+                        <div class="flex gap-8 items-center">
+                            <div
+                                class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                                @svg($item->icon)
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <div class="flex gap-2 items-center">
+                                    <x-gmdi-gavel-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                    {{ $item->fact }}
+                                </div>
+                                <div class="flex gap-2 items-center">
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                    {{ $item->date->isoFormat('MMM D, Y') }}
+                                </div>
+                                <div class="flex gap-2 items-center">
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
+                                    € {{ $item->price }}
+                                </div>
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <livewire:country-flag :country="$item->country" />
+                                <livewire:road-badge :roadType="$item->road_type" :road="$item->road" :country="$item->country" />
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <div class="flex gap-2 items-center">
+                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                    {{ $item->location }}
+                                </div>
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <x-filament::badge :color="$item->typeColor" :icon="$item->typeIcon">
+                                    {{ $item->type }}
+                                </x-filament::badge>
+                            </div>
+                            <x-filament::link href="/account/parkings/{{ $item->id }}/edit" color="white"
+                                              icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                                {{ __('Edit') }}
+                            </x-filament::link>
+                        </div>
+                    </x-filament::section>
                 @endif
             @endforeach
         </x-filament::fieldset>

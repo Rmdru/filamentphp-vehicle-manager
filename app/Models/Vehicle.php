@@ -334,4 +334,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Toll::class);
     }
+
+    public function fines(): HasMany
+    {
+        return $this->hasMany(Fine::class);
+    }
 }
