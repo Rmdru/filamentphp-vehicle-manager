@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TollResource\Pages;
 use App\Models\Toll;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -19,6 +20,7 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Livewire;
@@ -281,7 +283,47 @@ class TollResource extends Resource
                 ]),
             ])
             ->filters([
-                //
+                Filter::make('date')
+                    ->label(__('Date'))
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->label(__('Date from'))
+                            ->native(false),
+                        DatePicker::make('date_until')
+                            ->label(__('Date until'))
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['date_from'] && $data['date_until']) {
+                            $indicators['date'] = __('Date from :from until :until', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } else if ($data['date_from']) {
+                            $indicators['date'] = __('Date from :from', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } else if ($data['date_until']) {
+                            $indicators['date'] = __('Date until :until', [
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

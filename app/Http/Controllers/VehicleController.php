@@ -13,6 +13,6 @@ class VehicleController extends Controller
     {
         Session::put('Dashboard_filters.vehicleId', $vehicleId);
 
-        return redirect('/account/dashboard');
+        return back();
     }
 }

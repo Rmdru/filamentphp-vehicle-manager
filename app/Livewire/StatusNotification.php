@@ -23,6 +23,7 @@ class StatusNotification extends Component
         $this->getMaintenanceNotification();
         $this->getAircoCheckNotification();
         $this->getRefuelingNotification();
+        $this->getWashingNotification();
         $this->getEverythingOkNotification();
     }
 
@@ -178,7 +179,7 @@ class StatusNotification extends Component
         }
 
         $timeTillRefueling = $selectedVehicle->fuel_status;
-        $refuelingsCount = $selectedVehicle->refuelings->count();
+        $refuelingsCount = $selectedVehicle->refuelings->where('fuel_type', 'Premium Unleaded')->count();
 
         if (! $timeTillRefueling && ! $refuelingsCount) {
             return null;
@@ -191,6 +192,33 @@ class StatusNotification extends Component
 
         if ($timeTillRefueling < 30) {
             $this->createNotification('warning', __('Fuel is getting old!'), 'gmdi-local-gas-station-r');
+            return null;
+        }
+
+        return null;
+    }
+
+    private function getWashingNotification(): null
+    {
+        $selectedVehicle = Vehicle::selected()->first();
+
+        if ($this->vehicleId) {
+            $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
+        }
+
+        $timeTillWash = $selectedVehicle->washing_status['time'];
+
+        if (! $timeTillWash) {
+            return null;
+        }
+
+        if ($timeTillWash < 5) {
+            $this->createNotification('warning', __('Washing required!'), 'mdi-car-wash');
+            return null;
+        }
+
+        if ($timeTillWash < 10) {
+            $this->createNotification('info', __('Washing required soon!'), 'mdi-car-wash');
             return null;
         }
 

@@ -308,6 +308,48 @@
                             </x-filament::link>
                         </div>
                     </x-filament::section>
+                @elseif($item instanceof App\Models\Reconditioning)
+                    <x-filament::section icon="mdi-car-wash" class="mt-6" collapsible>
+                        <x-slot name="heading">
+                            {{ __('Reconditioning') }}
+                        </x-slot>
+                        <div class="flex gap-8 items-center">
+                            <div
+                                class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                                @svg($item->icon)
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <div class="flex gap-2 items-center">
+                                    <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                    {{ $item->date->isoFormat('MMM D, Y') }}
+                                </div>
+                                <div class="flex gap-2 items-center">
+                                    <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
+                                    € {{ $item->price }}
+                                </div>
+                                <div class="flex gap-2 items-center">
+                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                    {{ $item->location }}
+                                </div>
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                @foreach($item->type as $key => $type)
+                                    <x-filament::badge :icon="$item->typeIcon[$key]">
+                                        {{ $item->type[$key] }}
+                                    </x-filament::badge>
+                                @endforeach
+                            </div>
+                            <div class="flex gap-2 flex-col">
+                                <x-filament::badge>
+                                    {{ $item->executor }}
+                                </x-filament::badge>
+                            </div>
+                            <x-filament::link href="/account/parkings/{{ $item->id }}/edit" color="white"
+                                              icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                                {{ __('Edit') }}
+                            </x-filament::link>
+                        </div>
+                    </x-filament::section>
                 @endif
             @endforeach
         </x-filament::fieldset>

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Maintenance;
+use App\Models\Reconditioning;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Pages\Page;
@@ -55,6 +56,7 @@ class Timeline extends Page
                 'parkings',
                 'tolls',
                 'fines',
+                'reconditionings',
             ])
             ->latest()
             ->first();
@@ -135,6 +137,41 @@ class Timeline extends Page
             $vehicle->maintenances->push($fine);
         }
 
+        foreach ($vehicle->reconditionings as $reconditionings) {
+
+            $typeIcon = [];
+            $type = [];
+
+            foreach ($reconditionings->type as $reconditioningType) {
+                $typeIcon[] = match ($reconditioningType) {
+                    'carwash' => 'mdi-car-wash',
+                    'interior_cleaning' => 'mdi-vacuum',
+                    'exterior_cleaning' => 'gmdi-cleaning-services-r',
+                    'engine_bay_cleaning' => 'mdi-engine',
+                    'damage_repair' => 'mdi-spray',
+                };
+
+                $type[] = match ($reconditioningType) {
+                    'carwash' => __('Carwash'),
+                    'exterior_cleaning' => __('Exterior cleaning'),
+                    'interior_cleaning' => __('Interior cleaning'),
+                    'engine_bay_cleaning' => __('Engine bay cleaning'),
+                    'damage_repair' => __('Damage repair'),
+                };
+            }
+
+            $reconditionings->icon = 'mdi-car-wash';
+            $reconditionings->typeIcon = $typeIcon;
+            $reconditionings->type = $type;
+            $reconditionings->executor = match($reconditionings->executor) {
+                'myself' => __('Myself'),
+                'someone' => __('Someone else'),
+                'company' => __('Company'),
+            };
+
+            $vehicle->maintenances->push($reconditionings);
+        }
+
         $items = $vehicle->maintenances->merge($vehicle->refuelings)
             ->sortByDesc(function ($item) {
                 return $item->date;
@@ -161,6 +198,12 @@ class Timeline extends Page
                     ->whereNotNull('type_maintenance')
                     ->orderByDesc('date')
                     ->limit(1),
+                'reconditioning' => Reconditioning::select('id')
+                    ->whereColumn('vehicle_id', 'vehicles.id')
+                    ->where('type', 'LIKE', '%exterior_cleaning%')
+                    ->orWhere('type', 'LIKE', '%carwash%')
+                    ->orderByDesc('date')
+                    ->limit(1),
             ])
             ->with([
                 'insurances',
@@ -171,6 +214,7 @@ class Timeline extends Page
         $items = collect();
         $apk = Maintenance::find($vehicle->apk);
         $maintenance = Maintenance::find($vehicle->maintenance);
+        $wash = Reconditioning::find($vehicle->reconditioning);
 
         if (! empty($apk)) {
             $apk->title = __('MOT');
@@ -237,6 +281,14 @@ class Timeline extends Page
                 $tax->categoryIcon = 'mdi-highway';
                 $items->push($tax);
             }
+        }
+
+        if (! empty($wash)) {
+            $wash->title = __('Washing');
+            $wash->categoryIcon = 'mdi-car-wash';
+            $wash->date = $wash->date->addMonth();
+
+            $items->push($wash);
         }
 
         $groupedItems = $items->sortByDesc(function ($item) {

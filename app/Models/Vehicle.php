@@ -56,6 +56,7 @@ class Vehicle extends Model
         'airco_check_status',
         'insurance_status',
         'tax_status',
+        'washing_status',
     ];
 
     protected static function booted()
@@ -93,7 +94,7 @@ class Vehicle extends Model
 
     public function getFuelStatusAttribute(): ?int
     {
-        if ($this->refuelings->isNotEmpty() && $this->refuelings->count() > 0) {
+        if ($this->refuelings->isNotEmpty() && $this->refuelings->where('fuel_type', 'Premium Unleaded')->count() > 0) {
             $latestRefueling = $this->refuelings->sortByDesc('date')->first();
 
             if (! empty($latestRefueling) && $latestRefueling->fuel_type = 'Premium Unleaded') {
@@ -215,6 +216,37 @@ class Vehicle extends Model
         return [];
     }
 
+    public function getWashingStatusAttribute(): array
+    {
+        if ($this->reconditionings->isNotEmpty()) {
+            $latestWashDate = $this->reconditionings->filter(function ($item) {
+                $types = $item->type;
+                return collect($types)->contains(function ($type) {
+                    return str_contains($type, 'carwash') || str_contains($type, 'exterior_cleaning');
+                });
+            })->sortByDesc('date')
+                ->first();
+
+            $washDate = Carbon::parse($latestWashDate->date ?? now())->addMonth();
+            $washDiff = $washDate->diffInDays(now());
+            $timeDiffHumans = $washDate->diffForHumans();
+
+            $timeTillWash = max(0, $washDiff - ($washDiff * 2));
+        }
+
+        if ($this->reconditionings->isEmpty()) {
+            $washDate = now()->addMonth();
+            $washDiff = $washDate->diffInDays(now());
+            $timeTillWash = max(0, $washDiff - ($washDiff * 2));
+            $timeDiffHumans = $washDate->diffForHumans();
+        }
+
+        return [
+            'time' => $timeTillWash,
+            'timeDiffHumans' => $timeDiffHumans,
+        ];
+    }
+
     public function getStatusBadge(string $vehicleId = '', string $item = '')
     {
         $selectedVehicle = Vehicle::selected()->first();
@@ -229,6 +261,7 @@ class Vehicle extends Model
         $timeTillAircoCheck = $selectedVehicle->airco_check_status['time'] ?? null;
         $timeTillInsuranceEndDate = $selectedVehicle->insurance_status['time'] ?? null;
         $timeTillTaxEndDate = $selectedVehicle->tax_status['time'] ?? null;
+        $timeTillWashing = $selectedVehicle->washing_status['time'] ?? null;
 
         $priorities = [
             'success' => [
@@ -271,6 +304,7 @@ class Vehicle extends Model
             || $timeTillApk < 62
             || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 62)
             || $timeTillInsuranceEndDate < 62
+            || $timeTillWashing < 5
         ) {
             return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
         }
@@ -278,6 +312,7 @@ class Vehicle extends Model
         if (
             $timeTillInsuranceEndDate < 62
             || ($timeTillTaxEndDate > 0 && $timeTillTaxEndDate < 31)
+            || $timeTillWashing < 10
         ) {
             return ! empty($item) ? $priorities['info'][$item] : $priorities['info'];
         }
@@ -338,5 +373,10 @@ class Vehicle extends Model
     public function fines(): HasMany
     {
         return $this->hasMany(Fine::class);
+    }
+
+    public function reconditionings(): HasMany
+    {
+        return $this->hasMany(Reconditioning::class);
     }
 }

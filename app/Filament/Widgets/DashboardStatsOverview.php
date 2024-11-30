@@ -135,22 +135,29 @@ class DashboardStatsOverview extends BaseWidget
             if ($startDate) {
                 $maintenances = $maintenances->where('date', '>=', $startDate);
                 $refuelings = $refuelings->where('date', '>=', $startDate);
-                $insurances = $insurances->where('start_date', '>=', $startDate);
-                $taxes = $taxes->where('start_date', '>=', $startDate);
                 $parkings = $parkings->where('end_time', '>=', $startDate);
                 $tolls = $tolls->where('date', '>=', $startDate);
                 $fines = $fines->where('date', '>=', $startDate);
             }
 
+            if ($startDate && ! $thisMonth) {
+                $insurances = $insurances->where('start_date', '>=', $startDate);
+                $taxes = $taxes->where('start_date', '>=', $startDate);
+            }
+
             if ($endDate) {
                 $maintenances = $maintenances->where('date', '<=', $endDate);
                 $refuelings = $refuelings->where('date', '<=', $endDate);
-                $insurances = $insurances->where('end_date', '<=', $endDate);
-                $taxes = $insurances->where('end_date', '<=', $endDate);
                 $parkings = $parkings->where('end_time', '<=', $endDate);
                 $tolls = $tolls->where('date', '<=', $endDate);
                 $fines = $fines->where('date', '<=', $endDate);
             }
+
+            if ($endDate && ! $thisMonth) {
+                $insurances = $insurances->where('end_date', '<=', $endDate);
+                $taxes = $insurances->where('end_date', '<=', $endDate);
+            }
+
 
             $totalInsurancePrice = 0;
             $totalInsuranceMonths = collect();
@@ -179,6 +186,14 @@ class DashboardStatsOverview extends BaseWidget
 
                 $totalTaxMonths = $totalTaxMonths->merge($tax->months);
                 $totalTaxPrice += $tax->months->count() * $tax->price;
+            }
+
+            if ($thisMonth) {
+                $totalInsuranceMonths = $totalInsuranceMonths->last();
+                $totalInsurancePrice = $insurances->first()->price;
+
+                $totalTaxMonths = $totalTaxMonths->last();
+                $totalTaxPrice = $taxes->first()->price;
             }
 
             $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price')
@@ -282,8 +297,7 @@ class DashboardStatsOverview extends BaseWidget
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
-        $refuelings = Refueling::query()
-            ->where('vehicle_id', $vehicleId);
+        $refuelings = Refueling::where('vehicle_id', $vehicleId);
 
         if (! $refuelings->count()) {
             return 0;
@@ -301,7 +315,7 @@ class DashboardStatsOverview extends BaseWidget
             return round($refuelings->latest()->first()->fuel_consumption, 1);
         }
 
-        return round($refuelings->get()->avg('fuel_consumption'), 1);
+        return round($refuelings->get()->avg('fuel_consumption'), 2);
     }
 
     private function calculateAvgSpeed(bool $latest = false): int

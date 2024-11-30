@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FineResource\Pages;
 use App\Models\Fine;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -23,6 +24,7 @@ use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BuilderQuery;
@@ -261,10 +263,15 @@ class FineResource extends Resource
                     TextColumn::make('icon')
                         ->formatStateUsing(
                             function (Fine $fine) {
+                                if ($fine->icon) {
+                                    return new HtmlString('<div class="p-3 rounded-full bg-white min-h-16 flex items-center [&>svg]:max-h-8 [&>svg]:mx-auto [&>svg]:fill-black">' .
+                                        Blade::render("<x-icon :name='\$fine->icon' class='w-10 h-10 text-gray-500' />", ['fine' => $fine]) .'</div>');
+                                }
+
                                 return new HtmlString('<div class="p-3 rounded-full bg-white min-h-16 flex items-center [&>svg]:max-h-8 [&>svg]:mx-auto [&>svg]:fill-black">' .
-                                    Blade::render("<x-icon :name='\$fine->icon' class='w-10 h-10 text-gray-500' />", ['fine' => $fine]) .'</div>');
+                                    Blade::render("<x-icon name='maki-police' class='w-10 h-10 text-gray-500' />") .'</div>');
                             }
-                        ),
+                        )->default(''),
                     TextColumn::make('fact')
                         ->label(__('Fact'))
                         ->description(fn (Fine $fine) => $fine->description)
@@ -426,7 +433,47 @@ class FineResource extends Resource
                 ]),
             ])
             ->filters([
-                //
+                Filter::make('date')
+                    ->label(__('Date'))
+                    ->form([
+                        DatePicker::make('date_from')
+                            ->label(__('Date from'))
+                            ->native(false),
+                        DatePicker::make('date_until')
+                            ->label(__('Date until'))
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['date_from'] && $data['date_until']) {
+                            $indicators['date'] = __('Date from :from until :until', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } else if ($data['date_from']) {
+                            $indicators['date'] = __('Date from :from', [
+                                'from' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                            ]);
+                        } else if ($data['date_until']) {
+                            $indicators['date'] = __('Date until :until', [
+                                'until' => Carbon::parse($data['date_until'])->isoFormat('MMM D, Y'),
+                            ]);
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

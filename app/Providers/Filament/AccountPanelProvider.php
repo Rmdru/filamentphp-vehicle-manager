@@ -8,11 +8,13 @@ use App\Filament\Resources\FineResource;
 use App\Filament\Resources\InsuranceResource;
 use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\ParkingResource;
+use App\Filament\Resources\ReconditioningResource;
 use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\TaxResource;
 use App\Filament\Resources\TollResource;
 use App\Filament\Resources\VehicleResource;
 use App\Http\Middleware\CreateFirstVehicle;
+use App\Models\Reconditioning;
 use App\Models\Vehicle;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -76,6 +78,7 @@ class AccountPanelProvider extends PanelProvider
                         ->label(__('Garage'))
                         ->items([
                             ...MaintenanceResource::getNavigationItems(),
+                            ...ReconditioningResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('Fuel'))
