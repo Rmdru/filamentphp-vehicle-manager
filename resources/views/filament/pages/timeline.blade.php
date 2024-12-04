@@ -334,13 +334,13 @@
                             </div>
                             <div class="flex gap-2 flex-col">
                                 @foreach($item->type as $key => $type)
-                                    <x-filament::badge :icon="$item->typeIcon[$key]">
+                                    <x-filament::badge :icon="$item->typeIcon[$key]" color="gray">
                                         {{ $item->type[$key] }}
                                     </x-filament::badge>
                                 @endforeach
                             </div>
                             <div class="flex gap-2 flex-col">
-                                <x-filament::badge>
+                                <x-filament::badge color="gray">
                                     {{ $item->executor }}
                                 </x-filament::badge>
                             </div>

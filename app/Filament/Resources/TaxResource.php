@@ -138,6 +138,7 @@ class TaxResource extends Resource
         return $form
             ->schema([
                 Select::make('vehicle_id')
+                    ->disabled()
                     ->label(__('Vehicle'))
                     ->required()
                     ->searchable()

@@ -19,7 +19,12 @@ class ViewVehicle extends ViewRecord
     public function infolist(Infolist $infolist): Infolist
     {
         $brands = config('vehicles.brands');
-        $fuelTypes = trans('powertrains');
+        $powertrains = trans('powertrains');
+        $powertrainsOptions = [];
+
+        foreach ($powertrains as $key => $value) {
+            $powertrainsOptions[$key] = $value['name'];
+        }
 
         return $infolist
             ->schema([
@@ -40,16 +45,19 @@ class ViewVehicle extends ViewRecord
                             ->label(__('Engine'))
                             ->placeholder('-')
                             ->icon('mdi-engine'),
-                        TextEntry::make('factory_specification_fuel_consumption')
-                            ->icon('gmdi-local-gas-station')
-                            ->suffix(' l/100km')
-                            ->placeholder('-')
-                            ->label(__('Factory specification fuel consumption')),
                         TextEntry::make('powertrain')
                             ->icon('gmdi-local-gas-station')
                             ->placeholder('-')
                             ->label(__('Powertrain'))
-                            ->formatStateUsing(fn (string $state) => $fuelTypes[$state] ?? $state),
+                            ->formatStateUsing(fn (string $state) => $powertrainsOptions[$state] ?? $state),
+                        TextEntry::make('factory_specification_fuel_consumption')
+                            ->icon('gmdi-local-gas-station')
+                            ->suffix(' l/100km')
+                            ->placeholder('-')
+                            ->label(__('Factory specification fuel consumption'))
+                            ->suffix(fn (?Vehicle $record) => isset($record->powertrain) && isset($powertrains[$record->powertrain])
+                                ? ' ' . $powertrains[$record->powertrain]['consumption_unit']
+                                : ' l/100km'),
                     ]),
                 Infolists\Components\Fieldset::make('ownership')
                     ->label(__('Ownership'))

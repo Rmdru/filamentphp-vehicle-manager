@@ -53,6 +53,8 @@ class RefuelingResource extends Resource
     {
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
+        $vehicle = Vehicle::selected()->onlyDrivable()->first();
+        $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return $table
             ->modifyQueryUsing(function (Builder $query) {
@@ -115,7 +117,7 @@ class RefuelingResource extends Resource
                             ->label(__('Unit price'))
                             ->icon('gmdi-local-offer')
                             ->prefix('€ ')
-                            ->suffix('/l')
+                            ->suffix('/' . $powertrain['unit_short'])
                             ->summarize([
                                 Average::make()->label(__('Unit price average')),
                                 Range::make()->label(__('Unit price range')),
@@ -170,7 +172,7 @@ class RefuelingResource extends Resource
                                     return 'warning';
                                 }
                             })
-                            ->suffix(' l/100km')
+                            ->suffix($powertrain['consumption_unit'])
                             ->summarize([
                                 Average::make()->label(__('Fuel consumption average')),
                                 Range::make()->label(__('Fuel consumption range')),
@@ -179,7 +181,7 @@ class RefuelingResource extends Resource
                             ->sortable()
                             ->label(__('Amount'))
                             ->icon('gmdi-water-drop-r')
-                            ->suffix(' l')
+                            ->suffix($powertrain['unit_short'])
                             ->summarize([
                                 Average::make()->label(__('Amount average')),
                                 Range::make()->label(__('Amount range')),
@@ -200,6 +202,7 @@ class RefuelingResource extends Resource
                         TextColumn::make('tyres')
                             ->sortable()
                             ->badge()
+                            ->label(__('Tyres'))
                             ->color(fn(string $state): string => match ($state) {
                                 'all_season' => 'danger',
                                 'summer' => 'warning',
@@ -220,6 +223,7 @@ class RefuelingResource extends Resource
                         TextColumn::make('climate_control')
                             ->sortable()
                             ->badge()
+                            ->label(__('Climate control'))
                             ->color(fn(string $state): string => match ($state) {
                                 'automatically' => 'warning',
                                 'airco' => 'info',
@@ -238,6 +242,7 @@ class RefuelingResource extends Resource
                         TextColumn::make('routes')
                             ->sortable()
                             ->badge()
+                            ->label(__('Routes'))
                             ->color(fn(string $state): string => match ($state) {
                                 'motorway' => 'info',
                                 'country_road' => 'success',
@@ -260,6 +265,7 @@ class RefuelingResource extends Resource
                         TextColumn::make('driving_style')
                             ->sortable()
                             ->badge()
+                            ->label(__('Driving style'))
                             ->color(fn(string $state): string => match ($state) {
                                 'slow' => 'warning',
                                 'average' => 'success',
@@ -323,6 +329,7 @@ class RefuelingResource extends Resource
                         return $indicators;
                     }),
                 SelectFilter::make('fuel_type')
+                    ->label(__('Fuel type'))
                     ->options($fuelTypes),
             ])
             ->actions([
@@ -337,18 +344,22 @@ class RefuelingResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $vehicle = Vehicle::selected()->onlyDrivable()->first();
+        $powertrain = trans('powertrains')[$vehicle->powertrain];
+
         return $form
             ->schema([
                 Fieldset::make('Refueling')
                     ->label(__('Refueling'))
                     ->schema([
                         Select::make('vehicle_id')
+                            ->disabled()
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
                             ->native(false)
                             ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
+                            ->default($vehicle->id ?? null)
                             ->options(function (Vehicle $vehicle) {
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
@@ -367,7 +378,8 @@ class RefuelingResource extends Resource
                         TextInput::make('gas_station')
                             ->label(__('Gas station'))
                             ->required()
-                            ->maxLength(100),
+                            ->maxLength(100)
+                            ->helperText(__('The first word is used for the brand logo')),
                     ]),
                 Fieldset::make('fuel')
                     ->label(__('Fuel'))
@@ -381,7 +393,7 @@ class RefuelingResource extends Resource
                             ->label(__('Amount'))
                             ->numeric()
                             ->required()
-                            ->suffix('l')
+                            ->suffix($powertrain['unit_short'])
                             ->step(0.01),
                         TextInput::make('unit_price')
                             ->label(__('Unit price'))
@@ -390,7 +402,7 @@ class RefuelingResource extends Resource
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
-                            ->suffix('/l')
+                            ->suffix('/' . $powertrain['unit_short'])
                             ->step(0.001),
                         TextInput::make('total_price')
                             ->label(__('Total price'))
@@ -417,7 +429,7 @@ class RefuelingResource extends Resource
                             ->numeric(),
                         TextInput::make('fuel_consumption_onboard_computer')
                             ->label(__('Fuel consumption onboard computer'))
-                            ->suffix(' l/100km')
+                            ->suffix($powertrain['consumption_unit'])
                             ->numeric(),
                     ]),
                 Fieldset::make('circumstances')

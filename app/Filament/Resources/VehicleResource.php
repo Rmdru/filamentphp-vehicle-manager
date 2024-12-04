@@ -28,7 +28,7 @@ class VehicleResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Vehicles');
+        return __('Manage my vehicles');
     }
 
     public static function getPluralModelLabel(): string
@@ -45,9 +45,17 @@ class VehicleResource extends Resource
     {
         $countries = config('countries');
         $countriesOptions = [];
+        $powertrains = trans('powertrains');
+        $powertrainsOptions = [];
+        $fuelConsumptionUnits = [];
 
         foreach ($countries as $key => $value) {
             $countriesOptions[$key] = $value['name'];
+        }
+
+        foreach ($powertrains as $key => $value) {
+            $powertrainsOptions[$key] = $value['name'];
+            $fuelConsumptionUnits[$key] = $value['fuel_consumption_unit'] ?? 'l/100km';
         }
 
         return $form
@@ -72,17 +80,19 @@ class VehicleResource extends Resource
                         TextInput::make('engine')
                             ->label(__('Engine'))
                             ->maxLength(50),
-                        TextInput::make('factory_specification_fuel_consumption')
-                            ->label(__('Factory specification for fuel consumption'))
-                            ->numeric()
-                            ->suffix(' l/100km')
-                            ->inputMode('decimal'),
                         Select::make('powertrain')
                             ->label(__('Powertrain'))
                             ->native(false)
                             ->searchable()
-                            ->options(trans('powertrains')),
-                        ]),
+                            ->options($powertrainsOptions)
+                            ->reactive()
+                            ->afterStateUpdated(fn (callable $set, $state) => $set('powertrain', $state)),
+                        TextInput::make('factory_specification_fuel_consumption')
+                            ->label(__('Factory specification for fuel consumption'))
+                            ->numeric()
+                            ->inputMode('decimal')
+                            ->suffix(fn (callable $get) => $powertrains[$get('powertrain')]['consumption_unit'] ?? 'l/100km'),
+                    ]),
                 Fieldset::make('ownership')
                     ->label(__('Ownership'))
                     ->schema([
@@ -148,7 +158,12 @@ class VehicleResource extends Resource
     public static function table(Table $table): Table
     {
         $brands = config('vehicles.brands');
-        $fuelTypes = trans('powertrains');
+        $powertrains = trans('powertrains');
+        $powertrainsOptions = [];
+
+        foreach ($powertrains as $key => $value) {
+            $powertrainsOptions[$key] = $value['name'];
+        }
 
         return $table
             ->columns([
@@ -173,7 +188,7 @@ class VehicleResource extends Resource
                             ->placeholder('-')
                             ->sortable()
                             ->label(__('Powertrain'))
-                            ->formatStateUsing(fn (string $state) => $fuelTypes[$state] ?? $state),
+                            ->formatStateUsing(fn (string $state) => $powertrains[$state]['name'] ?? $state),
                     ])
                         ->space(1),
                     Stack::make([

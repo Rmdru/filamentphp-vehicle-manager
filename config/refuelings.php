@@ -5,8 +5,12 @@ declare(strict_types=1);
 return [
         'gas_station_logos' => [
             'shell' => 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e8/Shell_logo.svg/1200px-Shell_logo.svg.png',
+            'shellrecharge' => 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e8/Shell_logo.svg/1200px-Shell_logo.svg.png',
+            'newmotion' => 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e8/Shell_logo.svg/1200px-Shell_logo.svg.png',
             'bp' => 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d2/BP_Helios_logo.svg/1200px-BP_Helios_logo.svg.png',
+            'bppulse' => 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d2/BP_Helios_logo.svg/1200px-BP_Helios_logo.svg.png',
             'aral' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Aral_Logo.svg/1200px-Aral_Logo.svg.png',
+            'aralpulse' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Aral_Logo.svg/1200px-Aral_Logo.svg.png',
             'total' => 'https://upload.wikimedia.org/wikipedia/en/thumb/5/54/TotalEnergies_logo.svg/1200px-TotalEnergies_logo.svg.png',
             'totalenergies' => 'https://upload.wikimedia.org/wikipedia/en/thumb/5/54/TotalEnergies_logo.svg/1200px-TotalEnergies_logo.svg.png',
             'tamoil' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Tamoil.svg/2560px-Tamoil.svg.png',
@@ -25,6 +29,14 @@ return [
             'avia' => 'https://cdn.freebiesupply.com/logos/large/2x/avia-5-logo-png-transparent.png',
             'texaco' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Texaco_logo.svg/2560px-Texaco_logo.svg.png',
             'argos' => 'https://w7.pngwing.com/pngs/405/567/png-transparent-argos-energies-texaco-filling-station-tamoil-service-in-place-blue-text-trademark-thumbnail.png',
+            'eko' => 'https://m.helpe.gr/userfiles/8a53b155-76e9-4d45-9773-a27000e44a36/EKO_logo_final.png',
+            'fastned' => 'https://content.presspage.com/uploads/2519/71bc054d-a4f9-47f4-bc66-8e1b12d9c540/800_1.mainfastnedlogoyellowbrown.png',
+            'tesla' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Tesla_logo.png/600px-Tesla_logo.png',
+            'teslasupercharger' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Tesla_logo.png/600px-Tesla_logo.png',
+            'ionity' => 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Ionity_logo_cmyk.svg',
+            'allego' => 'https://d1io3yog0oux5.cloudfront.net/_daf36d7642631fdb3a2380014d79eb54/allego/logo.png',
+            'evbox' => 'https://d21buns5ku92am.cloudfront.net/68025/images/421521-EVBox%20Logo%20Black-8f3465-large-1647418113.png',
+            'vattenfall' => 'https://www.ipkw.nl/wp-content/uploads/2020/10/ipkw-bedrijven-vattenfall-logo.png',
             'default' => 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_gas_station_48px-512.png',
         ],
 ];

@@ -3,15 +3,70 @@
 declare(strict_types=1);
 
 return [
-    "Gasoline" => "Benzin",
-    "Gasoline mild-hybrid" => "Benzin mild-hybride",
-    "Gasoline full-hybrid" => "Benzin-Vollhybrid",
-    "Gasoline plugin-hybrid" => "Benzin-Plugin-Hybrid",
-    "Gasoline LPG" => "Benzin-LPG",
-    "Gasoline LPG full-hybrid" => "Benzin-LPG-Vollhybrid",
-    "Diesel" => "Diesel",
-    "Diesel full-hybrid" => "Diesel-Vollhybrid",
-    "CNG" => "CNG",
-    "Hydrogen" => "Wasserstoff",
-    "Electricity" => "Elektrizität",
+    "gasoline" => [
+        "name" => "Benzin",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_mild_hybrid" => [
+        "name" => "Benzin Mild-Hybrid",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_full_hybrid" => [
+        "name" => "Benzin Voll-Hybrid",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_plugin_hybrid" => [
+        "name" => "Benzin Plug-in-Hybrid",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_lpg" => [
+        "name" => "Benzin LPG",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_lpg_full_hybrid" => [
+        "name" => "Benzin LPG Voll-Hybrid",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_cng" => [
+        "name" => "Benzin CNG",
+        "unit" => "Kilogramm",
+        "unit_short" => "kg",
+        "consumption_unit" => "kg/100km"
+    ],
+    "diesel" => [
+        "name" => "Diesel",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "diesel_full_hybrid" => [
+        "name" => "Diesel Voll-Hybrid",
+        "unit" => "Liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "hydrogen" => [
+        "name" => "Wasserstoff",
+        "unit" => "Kilogramm",
+        "unit_short" => "kg",
+        "consumption_unit" => "kg/100km"
+    ],
+    "electricity" => [
+        "name" => "Elektrizität",
+        "unit" => "Kilowattstunde",
+        "unit_short" => "kWh",
+        "consumption_unit" => "kWh/100km"
+    ],
 ];

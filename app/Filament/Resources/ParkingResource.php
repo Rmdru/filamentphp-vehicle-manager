@@ -95,12 +95,14 @@ class ParkingResource extends Resource
                         'cash' => 'mdi-hand-coin-outline',
                         'card' => 'gmdi-credit-card',
                         'app' => 'mdi-cellphone-wireless',
+                        'online' => 'gmdi-qr-code',
                         default => '',
                     })
                     ->formatStateUsing(fn(string $state) => match ($state) {
                         'cash' => __('Cash'),
                         'card' => __('Card'),
                         'app' => __('App'),
+                        'online' => __('Online'),
                     }),
             ])
             ->filters([
@@ -161,6 +163,7 @@ class ParkingResource extends Resource
         return $form
             ->schema([
                 Select::make('vehicle_id')
+                    ->disabled()
                     ->label(__('Vehicle'))
                     ->required()
                     ->searchable()
@@ -196,8 +199,7 @@ class ParkingResource extends Resource
                     ->label(__('Start time'))
                     ->required()
                     ->native(false)
-                    ->displayFormat('d-m-Y H:i')
-                    ->maxDate(now()),
+                    ->displayFormat('d-m-Y H:i'),
                 DateTimePicker::make('end_time')
                     ->label(__('End time'))
                     ->native(false)
@@ -218,11 +220,13 @@ class ParkingResource extends Resource
                         'cash' => __('Cash'),
                         'card' => __('Card'),
                         'app' => __('App'),
+                        'online' => __('Online'),
                     ])
                     ->icons([
                         'cash' => 'mdi-hand-coin-outline',
                         'card' => 'gmdi-credit-card',
                         'app' => 'mdi-cellphone-wireless',
+                        'online' => 'gmdi-qr-code',
                     ]),
             ]);
     }

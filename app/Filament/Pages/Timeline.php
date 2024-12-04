@@ -200,8 +200,10 @@ class Timeline extends Page
                     ->limit(1),
                 'reconditioning' => Reconditioning::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')
-                    ->where('type', 'LIKE', '%exterior_cleaning%')
-                    ->orWhere('type', 'LIKE', '%carwash%')
+                    ->where(function ($query) {
+                        $query->where('type', 'LIKE', '%exterior_cleaning%')
+                            ->orWhere('type', 'LIKE', '%carwash%');
+                    })
                     ->orderByDesc('date')
                     ->limit(1),
             ])

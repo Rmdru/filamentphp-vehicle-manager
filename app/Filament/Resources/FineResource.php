@@ -68,6 +68,7 @@ class FineResource extends Resource
                     ->label(__('Basic'))
                     ->schema([
                         Select::make('vehicle_id')
+                            ->disabled()
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()

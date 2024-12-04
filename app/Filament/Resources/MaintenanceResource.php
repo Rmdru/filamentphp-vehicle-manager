@@ -169,6 +169,7 @@ class MaintenanceResource extends Resource
                     ->label(__('Maintenance'))
                     ->schema([
                         Select::make('vehicle_id')
+                            ->disabled()
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()

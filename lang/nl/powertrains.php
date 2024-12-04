@@ -3,15 +3,70 @@
 declare(strict_types=1);
 
 return [
-    "Gasoline" => "Benzine",
-    "Gasoline mild-hybrid" => "Benzine mild-hybrid",
-    "Gasoline full-hybrid" => "Benzine full-hybrid",
-    "Gasoline plugin-hybrid" => "Benzine plug-in-hybrid",
-    "Gasoline LPG" => "Benzine LPG",
-    "Gasoline LPG full-hybrid" => "Benzine LPG full-hybrid",
-    "Diesel" => "Diesel",
-    "Diesel full-hybrid" => "Diesel full-hybrid",
-    "CNG" => "CNG",
-    "Hydrogen" => "Waterstof",
-    "Electricity" => "Elektriciteit",
+    "gasoline" => [
+        "name" => "Benzine",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_mild_hybrid" => [
+        "name" => "Benzine mild-hybride",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_full_hybrid" => [
+        "name" => "Benzine full-hybride",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_plugin_hybrid" => [
+        "name" => "Benzine plug-in hybride",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_lpg" => [
+        "name" => "Benzine LPG",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_lpg_full_hybrid" => [
+        "name" => "Benzine LPG full-hybride",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "gasoline_cng" => [
+        "name" => "Benzine CNG",
+        "unit" => "kilogram",
+        "unit_short" => "kg",
+        "consumption_unit" => "kg/100km"
+    ],
+    "diesel" => [
+        "name" => "Diesel",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "diesel_full_hybrid" => [
+        "name" => "Diesel full-hybride",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km"
+    ],
+    "hydrogen" => [
+        "name" => "Waterstof",
+        "unit" => "kilogram",
+        "unit_short" => "kg",
+        "consumption_unit" => "kg/100km"
+    ],
+    "electricity" => [
+        "name" => "Elektriciteit",
+        "unit" => "kilowattuur",
+        "unit_short" => "kWh",
+        "consumption_unit" => "kWh/100km"
+    ],
 ];

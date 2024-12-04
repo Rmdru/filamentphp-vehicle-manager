@@ -14,6 +14,6 @@ return [
     "LPG" => "LPG",
     "CNG" => "CNG",
     "Hydrogen" => "Hydrogen",
-    "Fast charging electricity" => "Fast charging electricity",
-    "Electricity" => "Electricity",
+    "Electricity >= 50 kW" => "Electricity >= 50 kW",
+    "Electricity < 50 kW" => "Electricity < 50 kW",
 ];

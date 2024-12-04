@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Insurance;
 use App\Models\Refueling;
+use App\Models\Tax;
 use App\Models\Vehicle;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -17,6 +18,9 @@ class DashboardStatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
+        $vehicle = Vehicle::selected()->onlyDrivable()->first();
+        $powertrain = trans('powertrains')[$vehicle->powertrain];
+
         return [
             $this->buildStat(
                 title: __('Average monthly costs'),
@@ -38,7 +42,7 @@ class DashboardStatsOverview extends BaseWidget
                 value: $this->calculateAverageFuelConsumption(),
                 icon: 'gmdi-local-gas-station-r',
                 latestValue: $this->calculateAverageFuelConsumption(true),
-                suffix: 'l/100km',
+                suffix: $powertrain['consumption_unit'],
             ),
             $this->buildStat(
                 title: __('Average range'),
@@ -164,34 +168,36 @@ class DashboardStatsOverview extends BaseWidget
             $totalTaxPrice = 0;
             $totalTaxMonths = collect();
 
+            if (! $insurances) {
+                $insurance = new Insurance();
+
+                $insurance->months = collect();
+                $insurance->price = 0;
+            }
+
             foreach ($insurances as $insurance) {
-                if (! $insurance) {
-                    $insurance = new Insurance();
-
-                    $insurance->months = collect();
-                    $insurance->price = 0;
-                }
-
                 $totalInsuranceMonths = $totalInsuranceMonths->merge($insurance->months);
                 $totalInsurancePrice += $insurance->months->count() * $insurance->price;
             }
 
+            if (! $taxes) {
+                $tax = new Tax();
+
+                $tax->months = collect();
+                $tax->price = 0;
+            }
+
             foreach ($taxes as $tax) {
-                if (! $tax) {
-                    $tax = new Insurance();
-
-                    $tax->months = collect();
-                    $tax->price = 0;
-                }
-
                 $totalTaxMonths = $totalTaxMonths->merge($tax->months);
                 $totalTaxPrice += $tax->months->count() * $tax->price;
             }
 
-            if ($thisMonth) {
+            if ($thisMonth && $totalInsurancePrice) {
                 $totalInsuranceMonths = $totalInsuranceMonths->last();
                 $totalInsurancePrice = $insurances->first()->price;
+            }
 
+            if ($thisMonth && $totalTaxPrice) {
                 $totalTaxMonths = $totalTaxMonths->last();
                 $totalTaxPrice = $taxes->first()->price;
             }
@@ -360,6 +366,10 @@ class DashboardStatsOverview extends BaseWidget
     private function calculateAverageRange(bool $latest = false): float
     {
         $fuelConsumption = $this->calculateAverageFuelConsumption();
+
+        if (! $fuelConsumption) {
+            return 0.0;
+        }
 
         if ($latest) {
             $fuelConsumption = $this->calculateAverageFuelConsumption(true);
