@@ -208,7 +208,7 @@ class StatusNotification extends Component
 
         $timeTillWash = $selectedVehicle->washing_status['time'];
 
-        if (! $timeTillWash) {
+        if (! isset($timeTillWash)) {
             return null;
         }
 
