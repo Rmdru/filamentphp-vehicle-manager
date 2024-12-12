@@ -7,6 +7,7 @@ use App\Models\Toll;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -44,137 +45,6 @@ class TollResource extends Resource
     public static function getModelLabel(): string
     {
         return __('Toll');
-    }
-
-    public static function form(Form $form): Form
-    {
-        $countries = config('countries');
-        $countriesOptions = [];
-
-        foreach ($countries as $key => $value) {
-            $countriesOptions[$key] = $value['name'];
-        }
-
-        return $form
-            ->schema([
-                Select::make('vehicle_id')
-                    ->disabled()
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
-                    ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::onlyDrivable()->get();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
-                        });
-
-                        return $vehicles->pluck('car', 'id');
-                    }),
-                DatePicker::make('date')
-                    ->label(__('Date'))
-                    ->required()
-                    ->native(false)
-                    ->displayFormat('d-m-Y')
-                    ->maxDate(now()),
-                ToggleButtons::make('type')
-                    ->label(__('Type'))
-                    ->inline()
-                    ->grouped()
-                    ->required()
-                    ->options([
-                        'location' => __('Location'),
-                        'section' => __('Section'),
-                    ])
-                    ->icons([
-                        'location' => 'gmdi-location-on-r',
-                        'section' => 'gmdi-route-r',
-                    ])
-                    ->reactive()
-                    ->afterStateUpdated(fn($state, callable $set) => $set('type', $state)),
-                ToggleButtons::make('payment_circumstances')
-                    ->label(__('Payment circumstances'))
-                    ->inline()
-                    ->grouped()
-                    ->options([
-                        'toll_gate' => __('Toll gate'),
-                        'camera' => __('Camera'),
-                    ])
-                    ->icons([
-                        'toll_gate' => 'maki-toll',
-                        'camera' => 'iconpark-surveillancecamerastwo',
-                    ]),
-                ToggleButtons::make('payment_method')
-                    ->label(__('Payment method'))
-                    ->inline()
-                    ->grouped()
-                    ->options([
-                        'cash' => __('Cash'),
-                        'card' => __('Card'),
-                        'online' => __('Online'),
-                        'toll_badge' => __('Toll badge'),
-                        'app' => __('App'),
-                    ])
-                    ->icons([
-                        'cash' => 'mdi-hand-coin-outline',
-                        'card' => 'gmdi-credit-card',
-                        'online' => 'gmdi-qr-code',
-                        'toll_badge' => 'mdi-car-connected',
-                        'app' => 'mdi-cellphone-wireless',
-                    ]),
-                TextInput::make('toll_company')
-                    ->label(__('Toll company'))
-                    ->maxLength(100),
-                Select::make('country')
-                    ->label(__('Country'))
-                    ->searchable()
-                    ->native(false)
-                    ->options($countriesOptions),
-                ToggleButtons::make('road_type')
-                    ->label(__('Road type'))
-                    ->inline()
-                    ->grouped()
-                    ->options([
-                        'highway' => __('Highway'),
-                        'secondary' => __('Secondary'),
-                        'ring' => __('Ring'),
-                        'provincial' => __('Provincial'),
-                        'other' => __('Other'),
-                    ])
-                    ->icons([
-                        'highway' => 'mdi-highway',
-                        'secondary' => 'mdi-tunnel',
-                        'ring' => 'mdi-reload',
-                        'provincial' => 'fas-road',
-                    ])
-                    ->colors([
-                        'highway' => 'danger',
-                        'secondary' => 'info',
-                        'ring' => 'success',
-                        'provincial' => 'warning',
-                    ]),
-                TagsInput::make('road')
-                    ->label(__('Road')),
-                TextInput::make('start_location')
-                    ->label(__('Start location'))
-                    ->required()
-                    ->maxLength(100),
-                TextInput::make('end_location')
-                    ->label(__('End location'))
-                    ->maxLength(100)
-                    ->visible(fn($get) => $get('type') === 'section'),
-                TextInput::make('price')
-                    ->label(__('Price'))
-                    ->numeric()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->required()
-                    ->prefix('€')
-                    ->step(0.01),
-            ]);
     }
 
     public static function table(Table $table): Table
@@ -333,6 +203,149 @@ class TollResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function form(Form $form): Form
+    {
+        $countries = config('countries');
+        $countriesOptions = [];
+
+        foreach ($countries as $key => $value) {
+            $countriesOptions[$key] = $value['name'];
+        }
+
+        return $form
+            ->schema([
+                Fieldset::make('Basis')
+                    ->label(__('Basis'))
+                    ->schema([
+                        Select::make('vehicle_id')
+                            ->disabled()
+                            ->label(__('Vehicle'))
+                            ->required()
+                            ->searchable()
+                            ->native(false)
+                            ->relationship('vehicle')
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
+                            ->options(function (Vehicle $vehicle) {
+                                $vehicles = Vehicle::onlyDrivable()->get();
+
+                                $vehicles->car = $vehicles->map(function ($index) {
+                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                });
+
+                                return $vehicles->pluck('car', 'id');
+                            }),
+                        DatePicker::make('date')
+                            ->label(__('Date'))
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d-m-Y')
+                            ->maxDate(now()),
+                    ]),
+                Fieldset::make('Location')
+                    ->label(__('Location'))
+                    ->schema([
+                        ToggleButtons::make('type')
+                            ->label(__('Type'))
+                            ->inline()
+                            ->grouped()
+                            ->required()
+                            ->options([
+                                'location' => __('Location'),
+                                'section' => __('Section'),
+                            ])
+                            ->icons([
+                                'location' => 'gmdi-location-on-r',
+                                'section' => 'gmdi-route-r',
+                            ])
+                            ->reactive()
+                            ->afterStateUpdated(fn($state, callable $set) => $set('type', $state)),
+                        TextInput::make('toll_company')
+                            ->label(__('Toll company'))
+                            ->maxLength(100),
+                        Select::make('country')
+                            ->label(__('Country'))
+                            ->searchable()
+                            ->native(false)
+                            ->options($countriesOptions),
+                        ToggleButtons::make('road_type')
+                            ->label(__('Road type'))
+                            ->inline()
+                            ->grouped()
+                            ->options([
+                                'highway' => __('Highway'),
+                                'secondary' => __('Secondary'),
+                                'ring' => __('Ring'),
+                                'provincial' => __('Provincial'),
+                                'other' => __('Other'),
+                            ])
+                            ->icons([
+                                'highway' => 'mdi-highway',
+                                'secondary' => 'mdi-tunnel',
+                                'ring' => 'mdi-reload',
+                                'provincial' => 'fas-road',
+                            ])
+                            ->colors([
+                                'highway' => 'danger',
+                                'secondary' => 'info',
+                                'ring' => 'success',
+                                'provincial' => 'warning',
+                            ]),
+                        TagsInput::make('road')
+                            ->label(__('Road')),
+                        TextInput::make('start_location')
+                            ->label(__('Start location'))
+                            ->required()
+                            ->maxLength(100),
+                        TextInput::make('end_location')
+                            ->label(__('End location'))
+                            ->maxLength(100)
+                            ->visible(fn($get) => $get('type') === 'section'),
+                    ]),
+                Fieldset::make('Payment')
+                    ->label(__('Payment'))
+                    ->schema([
+                        TextInput::make('price')
+                            ->label(__('Price'))
+                            ->numeric()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->required()
+                            ->prefix('€')
+                            ->step(0.01),
+                        ToggleButtons::make('payment_circumstances')
+                            ->label(__('Payment circumstances'))
+                            ->inline()
+                            ->grouped()
+                            ->options([
+                                'toll_gate' => __('Toll gate'),
+                                'camera' => __('Camera'),
+                            ])
+                            ->icons([
+                                'toll_gate' => 'maki-toll',
+                                'camera' => 'iconpark-surveillancecamerastwo',
+                            ]),
+                        ToggleButtons::make('payment_method')
+                            ->label(__('Payment method'))
+                            ->inline()
+                            ->grouped()
+                            ->options([
+                                'cash' => __('Cash'),
+                                'card' => __('Card'),
+                                'online' => __('Online'),
+                                'toll_badge' => __('Toll badge'),
+                                'app' => __('App'),
+                            ])
+                            ->icons([
+                                'cash' => 'mdi-hand-coin-outline',
+                                'card' => 'gmdi-credit-card',
+                                'online' => 'gmdi-qr-code',
+                                'toll_badge' => 'mdi-car-connected',
+                                'app' => 'mdi-cellphone-wireless',
+                            ]),
+                    ]),
             ]);
     }
 

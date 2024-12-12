@@ -7,6 +7,7 @@ use App\Models\Parking;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -162,71 +163,83 @@ class ParkingResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('vehicle_id')
-                    ->disabled()
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
-                    ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::onlyDrivable()->get();
+                Fieldset::make('Basis')
+                    ->label(__('Basis'))
+                    ->schema([
+                        Select::make('vehicle_id')
+                            ->disabled()
+                            ->label(__('Vehicle'))
+                            ->required()
+                            ->searchable()
+                            ->native(false)
+                            ->relationship('vehicle')
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
+                            ->options(function (Vehicle $vehicle) {
+                                $vehicles = Vehicle::onlyDrivable()->get();
 
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
-                        });
+                                $vehicles->car = $vehicles->map(function ($index) {
+                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                });
 
-                        return $vehicles->pluck('car', 'id');
-                    }),
-                ToggleButtons::make('type')
-                    ->label(__('Type'))
-                    ->inline()
-                    ->grouped()
-                    ->options([
-                        'street' => __('Street'),
-                        'garage' => __('Parking garage'),
-                    ])
-                    ->icons([
-                        'street' => 'maki-parking-paid',
-                        'garage' => 'maki-parking-garage',
+                                return $vehicles->pluck('car', 'id');
+                            }),
+                        ToggleButtons::make('type')
+                            ->label(__('Type'))
+                            ->inline()
+                            ->grouped()
+                            ->options([
+                                'street' => __('Street'),
+                                'garage' => __('Parking garage'),
+                            ])
+                            ->icons([
+                                'street' => 'maki-parking-paid',
+                                'garage' => 'maki-parking-garage',
+                            ]),
+                        TextInput::make('location')
+                            ->label(__('Location'))
+                            ->required()
+                            ->maxLength(100),
                     ]),
-                TextInput::make('location')
-                    ->label(__('Location'))
-                    ->required()
-                    ->maxLength(100),
-                DateTimePicker::make('start_time')
-                    ->label(__('Start time'))
-                    ->required()
-                    ->native(false)
-                    ->displayFormat('d-m-Y H:i'),
-                DateTimePicker::make('end_time')
-                    ->label(__('End time'))
-                    ->native(false)
-                    ->displayFormat('d-m-Y H:i'),
-                TextInput::make('price')
-                    ->label(__('Price'))
-                    ->numeric()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->required()
-                    ->prefix('€')
-                    ->step(0.01),
-                ToggleButtons::make('payment_method')
-                    ->label(__('Payment method'))
-                    ->inline()
-                    ->grouped()
-                    ->options([
-                        'cash' => __('Cash'),
-                        'card' => __('Card'),
-                        'app' => __('App'),
-                        'online' => __('Online'),
-                    ])
-                    ->icons([
-                        'cash' => 'mdi-hand-coin-outline',
-                        'card' => 'gmdi-credit-card',
-                        'app' => 'mdi-cellphone-wireless',
-                        'online' => 'gmdi-qr-code',
+                Fieldset::make('Period')
+                    ->label(__('Period'))
+                    ->schema([
+                        DateTimePicker::make('start_time')
+                            ->label(__('Start time'))
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d-m-Y H:i'),
+                        DateTimePicker::make('end_time')
+                            ->label(__('End time'))
+                            ->native(false)
+                            ->displayFormat('d-m-Y H:i'),
+                    ]),
+                Fieldset::make('Payment')
+                    ->label(__('Payment'))
+                    ->schema([
+                        TextInput::make('price')
+                            ->label(__('Price'))
+                            ->numeric()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->required()
+                            ->prefix('€')
+                            ->step(0.01),
+                        ToggleButtons::make('payment_method')
+                            ->label(__('Payment method'))
+                            ->inline()
+                            ->grouped()
+                            ->options([
+                                'cash' => __('Cash'),
+                                'card' => __('Card'),
+                                'app' => __('App'),
+                                'online' => __('Online'),
+                            ])
+                            ->icons([
+                                'cash' => 'mdi-hand-coin-outline',
+                                'card' => 'gmdi-credit-card',
+                                'app' => 'mdi-cellphone-wireless',
+                                'online' => 'gmdi-qr-code',
+                            ]),
                     ]),
             ]);
     }

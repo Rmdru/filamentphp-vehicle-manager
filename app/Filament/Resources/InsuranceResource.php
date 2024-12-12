@@ -8,6 +8,7 @@ use App\Models\Insurance;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -151,58 +152,70 @@ class InsuranceResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('vehicle_id')
-                    ->disabled()
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
-                    ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::onlyDrivable()->get();
+                Fieldset::make('Basis')
+                    ->label(__('Basis'))
+                    ->schema([
+                        Select::make('vehicle_id')
+                            ->disabled()
+                            ->label(__('Vehicle'))
+                            ->required()
+                            ->searchable()
+                            ->native(false)
+                            ->relationship('vehicle')
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
+                            ->options(function (Vehicle $vehicle) {
+                                $vehicles = Vehicle::onlyDrivable()->get();
 
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
-                        });
+                                $vehicles->car = $vehicles->map(function ($index) {
+                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                });
 
-                        return $vehicles->pluck('car', 'id');
-                    }),
-                TextInput::make('insurance_company')
-                    ->label(__('Insurance company'))
-                    ->required()
-                    ->maxLength(50),
-                Select::make('type')
-                    ->label(__('Type'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->options(array_column(config('insurances.types'), 'name')),
-                DatePicker::make('start_date')
-                    ->label(__('Start date'))
-                    ->required()
-                    ->native(false)
-                    ->displayFormat('d-m-Y')
-                    ->maxDate(now()),
-                DatePicker::make('end_date')
-                    ->label(__('End date'))
-                    ->native(false)
-                    ->displayFormat('d-m-Y'),
-                TextInput::make('price')
-                    ->label(__('Price per month'))
-                    ->numeric()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->required()
-                    ->prefix('€')
-                    ->step(0.01),
-                TextInput::make('invoice_day')
-                    ->label(__('Invoice day'))
-                    ->numeric()
-                    ->minValue(1)
-                    ->maxValue(31)
-                    ->required()
-                    ->suffix(__('th of the month')),
+                                return $vehicles->pluck('car', 'id');
+                            }),
+                        TextInput::make('insurance_company')
+                            ->label(__('Insurance company'))
+                            ->required()
+                            ->maxLength(50),
+                        Select::make('type')
+                            ->label(__('Type'))
+                            ->required()
+                            ->searchable()
+                            ->native(false)
+                            ->options(array_column(config('insurances.types'), 'name')),
+                    ]),
+                Fieldset::make('Payment')
+                    ->label(__('Payment'))
+                    ->schema([
+                        TextInput::make('price')
+                            ->label(__('Price per month'))
+                            ->numeric()
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->required()
+                            ->prefix('€')
+                            ->step(0.01),
+                        TextInput::make('invoice_day')
+                            ->label(__('Invoice day'))
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(31)
+                            ->required()
+                            ->suffix(__('th of the month')),
+                    ]),
+                Fieldset::make('Period')
+                    ->label(__('Period'))
+                    ->schema([
+                        DatePicker::make('start_date')
+                            ->label(__('Start date'))
+                            ->required()
+                            ->native(false)
+                            ->displayFormat('d-m-Y')
+                            ->maxDate(now()),
+                        DatePicker::make('end_date')
+                            ->label(__('End date'))
+                            ->native(false)
+                            ->displayFormat('d-m-Y'),
+                    ]),
             ]);
     }
 

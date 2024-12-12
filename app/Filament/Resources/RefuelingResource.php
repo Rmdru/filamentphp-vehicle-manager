@@ -11,6 +11,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
@@ -158,7 +159,13 @@ class RefuelingResource extends Resource
                         TextColumn::make('fuel_consumption')
                             ->sortable()
                             ->label(__('Fuel consumption'))
-                            ->icon('gmdi-local-gas-station-r')
+                            ->icon(function (Refueling $refueling) {
+                                if (str($refueling->fuel_type)->contains('electric', true)) {
+                                    return 'fas-charging-station';
+                                }
+
+                                return 'gmdi-local-gas-station-r';
+                            })
                             ->badge()
                             ->color(function (Refueling $refueling) {
                                 $fuelConsumption = $refueling->fuel_consumption;
@@ -180,7 +187,13 @@ class RefuelingResource extends Resource
                         TextColumn::make('amount')
                             ->sortable()
                             ->label(__('Amount'))
-                            ->icon('gmdi-water-drop-r')
+                            ->icon(function (Refueling $refueling) {
+                                if (str($refueling->fuel_type)->contains('electric', true)) {
+                                    return 'gmdi-electric-bolt-r';
+                                }
+
+                                return 'mdi-fuel';
+                            })
                             ->suffix($powertrain['unit_short'])
                             ->summarize([
                                 Average::make()->label(__('Amount average')),
@@ -189,7 +202,13 @@ class RefuelingResource extends Resource
                         TextColumn::make('fuel_type')
                             ->sortable()
                             ->label(__('Fuel type'))
-                            ->icon('gmdi-local-gas-station-r')
+                            ->icon(function (Refueling $refueling) {
+                                if (str($refueling->fuel_type)->contains('electric', true)) {
+                                    return 'fas-charging-station';
+                                }
+
+                                return 'gmdi-local-gas-station-r';
+                            })
                             ->formatStateUsing(fn(Refueling $refueling) => $fuelTypes[$refueling->fuel_type]),
                         TextColumn::make('fuel_consumption_onboard_computer')
                             ->sortable()
@@ -207,13 +226,11 @@ class RefuelingResource extends Resource
                                 'all_season' => 'danger',
                                 'summer' => 'warning',
                                 'winter' => 'info',
-                                default => '',
                             })
                             ->icon(fn(string $state): string => match ($state) {
                                 'all_season' => 'gmdi-sunny-snowing',
                                 'summer' => 'gmdi-wb-sunny-o',
                                 'winter' => 'forkawesome-snowflake-o',
-                                default => '',
                             })
                             ->formatStateUsing(fn(string $state) => match ($state) {
                                 'all_season' => __('All season tyres'),
@@ -228,16 +245,22 @@ class RefuelingResource extends Resource
                                 'automatically' => 'warning',
                                 'airco' => 'info',
                                 'heater' => 'danger',
+                                'demisting' => 'success',
+                                'defrost' => 'info',
                             })
                             ->icon(fn(string $state): string => match ($state) {
                                 'automatically' => 'fas-temperature-high',
                                 'airco' => 'mdi-air-conditioner',
                                 'heater' => 'mdi-heat-wave',
+                                'demisting' => 'mdi-wiper',
+                                'defrost' => 'forkawesome-snowflake-o',
                             })
                             ->formatStateUsing(fn(string $state) => match ($state) {
                                 'automatically' => __('Automatically'),
                                 'airco' => __('Airco'),
                                 'heater' => __('Heater'),
+                                'demisting' => __('Demisting'),
+                                'defrost' => __('Defrost'),
                             }),
                         TextColumn::make('routes')
                             ->sortable()
@@ -247,12 +270,14 @@ class RefuelingResource extends Resource
                                 'motorway' => 'info',
                                 'country_road' => 'success',
                                 'city' => 'warning',
+                                'trailer' => 'danger',
 
                             })
                             ->icon(fn(string $state): string => match ($state) {
                                 'motorway' => 'mdi-highway',
                                 'country_road' => 'gmdi-landscape-s',
                                 'city' => 'gmdi-location-city-r',
+                                'trailer' => 'mdi-truck-trailer',
 
                             })
                             ->listWithLineBreaks()
@@ -260,6 +285,7 @@ class RefuelingResource extends Resource
                                 'motorway' => __('Motorway'),
                                 'country_road' => __('Country road'),
                                 'city' => __('City'),
+                                'trailer' => __('Trailer'),
 
                             }),
                         TextColumn::make('driving_style')
@@ -435,7 +461,7 @@ class RefuelingResource extends Resource
                 Fieldset::make('circumstances')
                     ->label(__('Circumstances'))
                     ->schema([
-                        Forms\Components\ToggleButtons::make('tyres')
+                        ToggleButtons::make('tyres')
                             ->label(__('Tyres'))
                             ->inline()
                             ->grouped()
@@ -454,47 +480,54 @@ class RefuelingResource extends Resource
                                 'summer' => 'warning',
                                 'winter' => 'info',
                             ]),
-                        Forms\Components\ToggleButtons::make('climate_control')
+                        ToggleButtons::make('climate_control')
                             ->label(__('Climate control'))
                             ->multiple()
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'automatically' => __('Automatically'),
                                 'airco' => __('Airco'),
                                 'heater' => __('Heater'),
+                                'demisting' => __('Demisting'),
+                                'defrost' => __('Defrost'),
                             ])
                             ->icons([
                                 'automatically' => 'fas-temperature-high',
                                 'airco' => 'mdi-air-conditioner',
                                 'heater' => 'mdi-heat-wave',
+                                'demisting' => 'mdi-wiper',
+                                'defrost' => 'forkawesome-snowflake-o',
                             ])
                             ->colors([
                                 'automatically' => 'warning',
                                 'airco' => 'info',
                                 'heater' => 'danger',
+                                'demisting' => 'success',
+                                'defrost' => 'info',
                             ]),
-                        Forms\Components\ToggleButtons::make('routes')
+                        ToggleButtons::make('routes')
                             ->label(__('Routes'))
                             ->inline()
                             ->multiple()
-                            ->grouped()
                             ->options([
                                 'motorway' => __('Motorway'),
                                 'country_road' => __('Country road'),
                                 'city' => __('City'),
+                                'trailer' => __('Trailer'),
                             ])
                             ->icons([
                                 'motorway' => 'mdi-highway',
                                 'country_road' => 'gmdi-landscape-s',
                                 'city' => 'gmdi-location-city-r',
+                                'trailer' => 'mdi-truck-trailer',
                             ])
                             ->colors([
                                 'motorway' => 'info',
                                 'country_road' => 'success',
                                 'city' => 'warning',
+                                'trailer' => 'danger',
                             ]),
-                        Forms\Components\ToggleButtons::make('driving_style')
+                        ToggleButtons::make('driving_style')
                             ->label(__('Driving style'))
                             ->inline()
                             ->grouped()
