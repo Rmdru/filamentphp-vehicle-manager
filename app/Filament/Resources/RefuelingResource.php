@@ -16,6 +16,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Panel;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
@@ -66,7 +68,7 @@ class RefuelingResource extends Resource
                     })->orderByDesc('date');
             })
             ->columns([
-                Tables\Columns\Layout\Split::make([
+                Split::make([
                     TextColumn::make('gas_station')
                         ->sortable()
                         ->formatStateUsing(
@@ -216,8 +218,10 @@ class RefuelingResource extends Resource
                             ->icon('gmdi-dashboard-r')
                             ->suffix(' l/100km'),
                     ])
-                        ->space(1),
-                    Stack::make([
+                        ->space(),
+                ]),
+                Panel::make([
+                    Split::make([
                         TextColumn::make('tyres')
                             ->sortable()
                             ->badge()
@@ -286,7 +290,6 @@ class RefuelingResource extends Resource
                                 'country_road' => __('Country road'),
                                 'city' => __('City'),
                                 'trailer' => __('Trailer'),
-
                             }),
                         TextColumn::make('driving_style')
                             ->sortable()
@@ -308,9 +311,9 @@ class RefuelingResource extends Resource
                                 'average' => __('Average'),
                                 'fast' => __('Fast'),
                             }),
-                    ])
-                        ->space(1),
-                ]),
+                    ]),
+                ])
+                    ->collapsible()
             ])
             ->filters([
                 Filter::make('date')
