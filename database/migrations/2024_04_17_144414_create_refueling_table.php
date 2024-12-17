@@ -27,7 +27,7 @@ return new class extends Migration
             $table->float('fuel_usage_onboard_computer')->nullable();
             $table->float('fuel_usage');
             $table->float('costs_per_kilometer');
-            $table->string('tyres', 100)->nullable();
+            $table->string('tires', 100)->nullable();
             $table->json('climate_control')->nullable();
             $table->json('routes')->nullable();
             $table->string('driving_style', 100)->nullable();

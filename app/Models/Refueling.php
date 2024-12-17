@@ -34,7 +34,7 @@ class Refueling extends Model
         'fuel_consumption_onboard_computer',
         'fuel_consumption',
         'costs_per_kilometer',
-        'tyres',
+        'tires',
         'climate_control',
         'routes',
         'driving_style',

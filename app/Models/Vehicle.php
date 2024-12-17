@@ -57,6 +57,8 @@ class Vehicle extends Model
         'insurance_status',
         'tax_status',
         'washing_status',
+        'tire_pressure_check_status',
+        'liquids_check_status',
     ];
 
     protected static function booted()
@@ -110,7 +112,7 @@ class Vehicle extends Model
     {
         $maintenanceTypes = ['small_maintenance', 'maintenance', 'big_maintenance'];
 
-        if ($this->maintenances->isNotEmpty()) {
+        if ($this->maintenances->isNotEmpty() && in_array($this->maintenances, $maintenanceTypes)) {
             $latestMaintenance = $this->maintenances->whereIn('type_maintenance', $maintenanceTypes)->sortByDesc('date')->first();
 
             $maintenanceDate = Carbon::parse($latestMaintenance->date ?? now())->addYear();
@@ -119,10 +121,10 @@ class Vehicle extends Model
 
             $timeTillMaintenance = max(0, $maintenanceDiff - ($maintenanceDiff * 2));
 
-            $distanceTillMaintenance = 15000 + $latestMaintenance->mileage_begin - $this->mileage_latest;
+            $distanceTillMaintenance = 15000 + $latestMaintenance->mileage_start - $this->mileage_latest;
         }
 
-        if ($this->maintenances->isEmpty()) {
+        if ($this->maintenances->isEmpty() || ! in_array($this->maintenances, $maintenanceTypes)) {
             $maintenanceDate = now()->addYear();
             $maintenanceDiff = $maintenanceDate->diffInDays(now());
             $timeTillMaintenance = max(0, $maintenanceDiff - ($maintenanceDiff * 2));
@@ -139,7 +141,7 @@ class Vehicle extends Model
 
     public function getApkStatusAttribute(): array
     {
-        if ($this->maintenances->isNotEmpty()) {
+        if ($this->maintenances->where('apk', true)->isNotEmpty()) {
             $latestApk = $this->maintenances->where('apk', true)->sortByDesc('date')->first();
 
             $apkDate = Carbon::parse($latestApk->date ?? now())->addYear();
@@ -149,7 +151,7 @@ class Vehicle extends Model
             $timeTillApk = max(0, $apkDiff - ($apkDiff * 2));
         }
 
-        if ($this->maintenances->isEmpty()) {
+        if ($this->maintenances->where('apk', true)->isEmpty()) {
             $apkDiff = now()->addYear()->diffInDays(now());
             $timeTillApk = max(0, $apkDiff - ($apkDiff * 2));
             $timeDiffHumans = now()->addYear()->diffForHumans();
@@ -163,7 +165,7 @@ class Vehicle extends Model
 
     public function getAircoCheckStatusAttribute(): array
     {
-        if ($this->maintenances->isNotEmpty()) {
+        if ($this->maintenances->where('airco_check', true)->isNotEmpty()) {
             $latestAircoCheck = $this->maintenances->where('airco_check', true)->sortByDesc('date')->first();
 
             $aircoCheckDate = Carbon::parse($latestAircoCheck->date)->addYears(2);
@@ -173,6 +175,44 @@ class Vehicle extends Model
 
             return [
                 'time' => $timeTillAircoCheck,
+                'timeDiffHumans' => $timeDiffHumans,
+            ];
+        }
+
+        return [];
+    }
+
+    public function getTirePressureCheckStatusAttribute(): array
+    {
+        if ($this->maintenances->where('type_maintenance', 'tire_pressure')->isNotEmpty()) {
+            $latest = $this->maintenances->where('type_maintenance', 'tire_pressure')->sortByDesc('date')->first();
+
+            $date = Carbon::parse($latest->date)->addMonths(2);
+            $timeTillDiff = $date->diffInDays(now());
+            $timeTill = max(0, $timeTillDiff - ($timeTillDiff * 2));
+            $timeDiffHumans = $date->diffForHumans();
+
+            return [
+                'time' => $timeTill,
+                'timeDiffHumans' => $timeDiffHumans,
+            ];
+        }
+
+        return [];
+    }
+
+    public function getLiquidsCheckStatusAttribute(): array
+    {
+        if ($this->maintenances->where('type_maintenance', 'liquids_check')->isNotEmpty()) {
+            $latest = $this->maintenances->where('type_maintenance', 'liquids_check')->sortByDesc('date')->first();
+
+            $date = Carbon::parse($latest->date)->addMonths(2);
+            $timeTillDiff = $date->diffInDays(now());
+            $timeTill = max(0, $timeTillDiff - ($timeTillDiff * 2));
+            $timeDiffHumans = $date->diffForHumans();
+
+            return [
+                'time' => $timeTill,
                 'timeDiffHumans' => $timeDiffHumans,
             ];
         }
@@ -262,6 +302,8 @@ class Vehicle extends Model
         $timeTillInsuranceEndDate = $selectedVehicle->insurance_status['time'] ?? null;
         $timeTillTaxEndDate = $selectedVehicle->tax_status['time'] ?? null;
         $timeTillWashing = $selectedVehicle->washing_status['time'] ?? null;
+        $timeTillTirePressure = $selectedVehicle->tire_pressure_status['time'] ?? null;
+        $timeTillLiquidsCheck = $selectedVehicle->liquids_check_status['time'] ?? null;
 
         $priorities = [
             'success' => [
@@ -305,6 +347,8 @@ class Vehicle extends Model
             || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 62)
             || $timeTillInsuranceEndDate < 62
             || $timeTillWashing < 5
+            || $timeTillTirePressure < 10
+            || $timeTillLiquidsCheck < 5
         ) {
             return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
         }
@@ -313,6 +357,8 @@ class Vehicle extends Model
             $timeTillInsuranceEndDate < 62
             || ($timeTillTaxEndDate > 0 && $timeTillTaxEndDate < 31)
             || $timeTillWashing < 10
+            || $timeTillTirePressure < 20
+            || $timeTillLiquidsCheck < 10
         ) {
             return ! empty($item) ? $priorities['info'][$item] : $priorities['info'];
         }

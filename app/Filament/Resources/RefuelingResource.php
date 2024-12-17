@@ -222,10 +222,10 @@ class RefuelingResource extends Resource
                 ]),
                 Panel::make([
                     Split::make([
-                        TextColumn::make('tyres')
+                        TextColumn::make('tires')
                             ->sortable()
                             ->badge()
-                            ->label(__('Tyres'))
+                            ->label(__('Tires'))
                             ->color(fn(string $state): string => match ($state) {
                                 'all_season' => 'danger',
                                 'summer' => 'warning',
@@ -237,9 +237,9 @@ class RefuelingResource extends Resource
                                 'winter' => 'forkawesome-snowflake-o',
                             })
                             ->formatStateUsing(fn(string $state) => match ($state) {
-                                'all_season' => __('All season tyres'),
-                                'summer' => __('Summer tyres'),
-                                'winter' => __('Winter tyres'),
+                                'all_season' => __('All season tires'),
+                                'summer' => __('Summer tires'),
+                                'winter' => __('Winter tires'),
                             }),
                         TextColumn::make('climate_control')
                             ->sortable()
@@ -464,8 +464,8 @@ class RefuelingResource extends Resource
                 Fieldset::make('circumstances')
                     ->label(__('Circumstances'))
                     ->schema([
-                        ToggleButtons::make('tyres')
-                            ->label(__('Tyres'))
+                        ToggleButtons::make('tires')
+                            ->label(__('Tires'))
                             ->inline()
                             ->grouped()
                             ->options([

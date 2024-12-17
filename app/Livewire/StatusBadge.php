@@ -22,7 +22,7 @@ class StatusBadge extends Component
     {
         $badge = Vehicle::getStatusBadge($this->vehicleId);
 
-        return view('livewire.status-badge', [
+        return view('livewire.->placeholder(__('Unknown')-badge', [
             'badge' => $badge,
         ]);
     }

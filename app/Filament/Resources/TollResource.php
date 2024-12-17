@@ -217,8 +217,8 @@ class TollResource extends Resource
 
         return $form
             ->schema([
-                Fieldset::make('Basis')
-                    ->label(__('Basis'))
+                Fieldset::make('Basic')
+                    ->label(__('Basic'))
                     ->schema([
                         Select::make('vehicle_id')
                             ->disabled()

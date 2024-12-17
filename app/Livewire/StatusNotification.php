@@ -24,6 +24,8 @@ class StatusNotification extends Component
         $this->getAircoCheckNotification();
         $this->getRefuelingNotification();
         $this->getWashingNotification();
+        $this->getTirePressureNotification();
+        $this->getLiquidsCheckNotification();
         $this->getEverythingOkNotification();
     }
 
@@ -219,6 +221,60 @@ class StatusNotification extends Component
 
         if ($timeTillWash < 10) {
             $this->createNotification('info', __('Washing required soon!'), 'mdi-car-wash');
+            return null;
+        }
+
+        return null;
+    }
+
+    private function getTirePressureNotification(): null
+    {
+        $selectedVehicle = Vehicle::selected()->first();
+
+        if ($this->vehicleId) {
+            $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
+        }
+
+        $timeTill = $selectedVehicle->tire_pressure_check_status['time'] ?? null;
+
+        if (! isset($timeTill)) {
+            return null;
+        }
+
+        if ($timeTill < 10) {
+            $this->createNotification('warning', __('Check tire pressure!'), 'mdi-car-tire-alert');
+            return null;
+        }
+
+        if ($timeTill < 20) {
+            $this->createNotification('info', __('Check tire pressure soon!'), 'mdi-car-tire-alert');
+            return null;
+        }
+
+        return null;
+    }
+
+    private function getLiquidsCheckNotification(): null
+    {
+        $selectedVehicle = Vehicle::selected()->first();
+
+        if ($this->vehicleId) {
+            $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
+        }
+
+        $timeTill = $selectedVehicle->liquids_check_status['time'] ?? null;
+
+        if (! isset($timeTill)) {
+            return null;
+        }
+
+        if ($timeTill < 5) {
+            $this->createNotification('warning', __('Check liquids!'), 'mdi-oil');
+            return null;
+        }
+
+        if ($timeTill < 10) {
+            $this->createNotification('info', __('Check liquids soon!'), 'mdi-oil');
             return null;
         }
 

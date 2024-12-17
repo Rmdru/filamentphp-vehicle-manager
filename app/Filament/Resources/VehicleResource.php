@@ -119,7 +119,8 @@ class VehicleResource extends Resource
                             ->required()
                             ->options($countriesOptions)
                             ->reactive()
-                            ->afterStateUpdated(fn (callable $set, $state) => $set('license_plate_prefix', $state)),
+                            ->afterStateUpdated(fn (callable $set, $state) => $set('license_plate_prefix', $state))
+                            ->helperText(__('Is used for the license plate layout')),
                         TextInput::make('license_plate')
                             ->label(__('License plate'))
                             ->required()
@@ -134,6 +135,7 @@ class VehicleResource extends Resource
                                 'seized' => __('Seized'),
                                 'stolen' => __('Stolen'),
                                 'sold' => __('Sold'),
+                                'not_rollable' => __('Not rollable'),
                                 'destroyed' => __('Destroyed'),
                             ])
                             ->icons([
@@ -143,7 +145,8 @@ class VehicleResource extends Resource
                                 'seized' => 'maki-police',
                                 'stolen' => 'mdi-lock-open-alert',
                                 'sold' => 'gmdi-local-offer',
-                                'destroyed' => 'fas-car-crash',
+                                'not_rollable' => 'fas-car-crash',
+                                'destroyed' => 'mdi-fire',
                             ]),
                         ]),
                 Fieldset::make('privacy')
@@ -185,7 +188,7 @@ class VehicleResource extends Resource
                         TextColumn::make('powertrain')
                             ->sortable()
                             ->icon('gmdi-local-gas-station')
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->sortable()
                             ->label(__('Powertrain'))
                             ->formatStateUsing(fn (string $state) => $powertrains[$state]['name'] ?? $state),
@@ -216,7 +219,8 @@ class VehicleResource extends Resource
                                 'seized' => 'maki-police',
                                 'stolen' => 'mdi-lock-open-alert',
                                 'sold' => 'gmdi-local-offer',
-                                'destroyed' => 'fas-car-crash',
+                                'not_rollable' => 'fas-car-crash',
+                                'destroyed' => 'mdi-fire',
                                 default => '',
                             })
                             ->formatStateUsing(fn(string $state) => match ($state) {
@@ -226,6 +230,7 @@ class VehicleResource extends Resource
                                 'seized' => __('Seized'),
                                 'stolen' => __('Stolen'),
                                 'sold' => __('Sold'),
+                                'not_rollable' => __('Not rollable'),
                                 'destroyed' => __('Destroyed'),
                             })
                             ->badge()

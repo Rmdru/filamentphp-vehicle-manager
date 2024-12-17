@@ -16,12 +16,15 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Session;
 
 class MaintenanceResource extends Resource
 {
@@ -52,8 +55,32 @@ class MaintenanceResource extends Resource
                     $query->selected();
                 })->orderByDesc('date');
             })
+            ->headerActions([
+                Action::make('small_checks')
+                    ->label(__('Add small check'))
+                    ->form([
+                        Select::make('type_maintenance')
+                            ->label(__('Type'))
+                            ->options([
+                                'tire_pressure' => __('Tire pressure checked'),
+                                'liquids_checked' => __('Liquids checked'),
+                            ])
+                            ->required(),
+                        DatePicker::make('date')
+                            ->default(now())
+                            ->label(__('Date')),
+                    ])
+                    ->action(function (array $data): void {
+                        Maintenance::create([
+                            'vehicle_id' => Session::get('vehicle_id'),
+                            'type_maintenance' => $data['type_maintenance'],
+                            'date' => $data['date'] ?? Carbon::today()->format('Y-m-d'),
+                            'mileage' => Vehicle::selected()->first()->mileage_latest,
+                        ]);
+                    }),
+            ])
             ->columns([
-                Tables\Columns\Layout\Split::make([
+                Split::make([
                     TextColumn::make('date')
                         ->label(__('Date'))
                         ->sortable()
@@ -63,6 +90,7 @@ class MaintenanceResource extends Resource
                         ->sortable()
                         ->label(__('Garage'))
                         ->icon('mdi-garage')
+                        ->default(__('Unknown'))
                         ->searchable(),
                     TextColumn::make('type_maintenance')
                         ->sortable()
@@ -70,12 +98,16 @@ class MaintenanceResource extends Resource
                         ->badge()
                         ->default('')
                         ->formatStateUsing(fn(string $state) => match ($state) {
+                            'tire_pressure' => __('Tire pressure checked'),
+                            'liquids_checked' => __('Liquids checked'),
                             'maintenance' => __('Maintenance'),
                             'small_maintenance' => __('Small maintenance'),
-                            'Big maintenance' => __('Big maintenance'),
+                            'big_maintenance' => __('Big maintenance'),
                             default => __('No maintenance'),
                         })
                         ->icon(fn(string $state): string => match ($state) {
+                            'tire_pressure' => 'mdi-car-tire-alert',
+                            'liquids_checked' => 'mdi-oil',
                             'maintenance' => 'mdi-car-wrench',
                             'small_maintenance' => 'mdi-oil',
                             'big_maintenance' => 'mdi-engine',
@@ -99,6 +131,7 @@ class MaintenanceResource extends Resource
                         ->label(__('Total price'))
                         ->icon('mdi-hand-coin-outline')
                         ->money('EUR')
+                        ->default(__('Unknown'))
                         ->summarize([
                             Average::make()->label(__('Total price average')),
                             Range::make()->label(__('Total price range')),

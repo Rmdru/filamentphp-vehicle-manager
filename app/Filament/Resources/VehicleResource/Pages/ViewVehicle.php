@@ -43,17 +43,17 @@ class ViewVehicle extends ViewRecord
                             ->label(__('Version')),
                         TextEntry::make('engine')
                             ->label(__('Engine'))
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->icon('mdi-engine'),
                         TextEntry::make('powertrain')
                             ->icon('gmdi-local-gas-station')
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->label(__('Powertrain'))
                             ->formatStateUsing(fn (string $state) => $powertrainsOptions[$state] ?? $state),
                         TextEntry::make('factory_specification_fuel_consumption')
                             ->icon('gmdi-local-gas-station')
                             ->suffix(' l/100km')
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->label(__('Factory specification fuel consumption'))
                             ->suffix(fn (?Vehicle $record) => isset($record->powertrain) && isset($powertrains[$record->powertrain])
                                 ? ' ' . $powertrains[$record->powertrain]['consumption_unit']
@@ -77,27 +77,27 @@ class ViewVehicle extends ViewRecord
                         TextEntry::make('mileage_start')
                             ->icon('gmdi-route')
                             ->suffix(' km')
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->label(__('Mileage on purchase')),
                         TextEntry::make('mileage_start')
                             ->icon('gmdi-route')
                             ->suffix(' km')
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->label(__('Mileage'))
                             ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
                         TextEntry::make('purchase_date')
                             ->icon('gmdi-calendar-month-r')
                             ->date()
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->label(__('Purchase date')),
                         TextEntry::make('purchase_price')
                             ->icon('gmdi-local-offer-r')
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->money('EUR')
                             ->label(__('Purchase price')),
                         TextEntry::make('status')
                             ->icon('mdi-list-status')
-                            ->placeholder('-')
+                            ->placeholder(__('Unknown'))
                             ->formatStateUsing(fn(string $state) => match ($state) {
                                 'drivable' => __('Drivable'),
                                 'suspended' => __('Suspended'),

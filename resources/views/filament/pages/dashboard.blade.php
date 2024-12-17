@@ -1,9 +1,9 @@
 <x-filament::page>
-    <div class="w-fit flex gap-2 items-center">
-        {{ __('Vehicle:') }}
-        <x-filament::badge color="gray" icon="si-{{$vehicle->brand}}" size="xl">
+    <div class="w-fit flex gap-4 items-center">
+        <div class="flex gap-2 items-center">
+            @svg('si-' . $vehicle->brand, ['class' => 'w-8 h-8'])
             {{ $vehicle->brand . ' ' . $vehicle->model }}
-        </x-filament::badge>
+        </div>
         <livewire:license-plate :vehicleId="$vehicle->id" />
     </div>
     <x-filament::section icon="gmdi-notifications-r" collapsible>

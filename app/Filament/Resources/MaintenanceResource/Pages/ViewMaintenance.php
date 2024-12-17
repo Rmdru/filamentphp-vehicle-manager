@@ -34,6 +34,7 @@ class ViewMaintenance extends ViewRecord
                             ->icon('gmdi-calendar-month-r'),
                         TextEntry::make('garage')
                             ->label(__('Garage'))
+                            ->placeholder(__('Unknown'))
                             ->icon('mdi-garage'),
                     ]),
                 Infolists\Components\Fieldset::make('tasks')
@@ -42,11 +43,11 @@ class ViewMaintenance extends ViewRecord
                         TextEntry::make('type_maintenance')
                             ->label(__('Type maintenance'))
                             ->badge()
-                            ->default('')
+                            ->placeholder('')
                             ->formatStateUsing(fn (string $state) => match ($state) {
                                 'maintenance' => __('Maintenance'),
                                 'small_maintenance' => __('Small maintenance'),
-                                'Big maintenance' => __('Big maintenance'),
+                                'big_maintenance' => __('Big maintenance'),
                                 default => __('No maintenance'),
                             })
                             ->icon(fn (string $state): string => match ($state) {
@@ -65,6 +66,7 @@ class ViewMaintenance extends ViewRecord
                         TextEntry::make('apk_date')
                             ->label(__('MOT date'))
                             ->date()
+                            ->placeholder(__('Unknown'))
                             ->icon('gmdi-security'),
                         TextEntry::make('airco_check')
                             ->icon(fn (Maintenance $maintenance) => $maintenance->airco_check ? 'mdi-air-conditioner' : 'gmdi-close-r')
@@ -74,10 +76,11 @@ class ViewMaintenance extends ViewRecord
                             ->label(__('Airco check')),
                         TextEntry::make('description')
                             ->label(__('Description'))
-                            ->default('-')
+                            ->placeholder(__('Unknown'))
                             ->icon('gmdi-assignment-turned-in-o'),
                         TextEntry::make('total_price')
                             ->label(__('Total price'))
+                            ->placeholder(__('Unknown'))
                             ->icon('mdi-hand-coin-outline')
                             ->money('EUR'),
                     ]),

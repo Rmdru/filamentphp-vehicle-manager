@@ -49,7 +49,13 @@ class Timeline extends Page
 
         $vehicle = Vehicle::selected()
             ->with([
-                'maintenances',
+                'maintenances' => function ($query) {
+                    $query->whereIn('type_maintenance', [
+                        'small_maintenance',
+                        'maintenance',
+                        'big_maintenance'
+                    ]);
+                },
                 'refuelings',
                 'insurances',
                 'taxes',
@@ -195,7 +201,11 @@ class Timeline extends Page
                     ->limit(1),
                 'maintenance' => Maintenance::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')
-                    ->whereNotNull('type_maintenance')
+                    ->whereIn('type_maintenance', [
+                        'small_maintenance',
+                        'maintenance',
+                        'big_maintenance'
+                    ])
                     ->orderByDesc('date')
                     ->limit(1),
                 'reconditioning' => Reconditioning::select('id')
