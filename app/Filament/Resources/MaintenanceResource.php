@@ -9,7 +9,9 @@ use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -226,7 +228,6 @@ class MaintenanceResource extends Resource
                             ->maxDate(now()),
                         TextInput::make('garage')
                             ->label(__('Garage'))
-                            ->required()
                             ->maxLength(100),
                         TextInput::make('mileage')
                             ->label(__('Mileage'))
@@ -254,7 +255,7 @@ class MaintenanceResource extends Resource
                             ->displayFormat('d-m-Y'),
                         Toggle::make('airco_check')
                             ->label(__('Airco check')),
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->label(__('Description')),
                         TextInput::make('total_price')
                             ->label(__('Total price'))
@@ -264,6 +265,22 @@ class MaintenanceResource extends Resource
                             ->required()
                             ->prefix('€')
                             ->step(0.01),
+                        Repeater::make('tasks')
+                            ->label(__('Tasks'))
+                            ->schema([
+                                TextInput::make('task')
+                                    ->label(__('Task')),
+                                TextInput::make('price')
+                                    ->label(__('Price'))
+                                    ->mask(RawJs::make('$money($input)'))
+                                    ->stripCharacters(',')
+                                    ->prefix('€')
+                                    ->step(0.01),
+                                TextInput::make('icon')
+                                    ->label(__('Icon')),
+                            ])
+                            ->columnSpan(2)
+                            ->columns(),
                     ]),
             ]);
     }

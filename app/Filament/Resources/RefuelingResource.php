@@ -77,7 +77,7 @@ class RefuelingResource extends Resource
 
                                 $logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
 
-                                return new HtmlString('<div class="p-3 rounded-full bg-white w-5/12 min-h-16 flex items-center"><img src="' . $logo . '" /></div>');
+                                return new HtmlString('<div class="w-4/12 min-h-16 flex items-center"><img src="' . $logo . '" /></div>');
                             }
                         ),
                     Stack::make([
@@ -313,7 +313,7 @@ class RefuelingResource extends Resource
                             }),
                     ]),
                 ])
-                    ->collapsible()
+                    ->collapsible(),
             ])
             ->filters([
                 Filter::make('date')
