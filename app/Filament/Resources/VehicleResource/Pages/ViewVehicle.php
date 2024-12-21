@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\VehicleResource\Pages;
 
 use App\Filament\Resources\VehicleResource;
-use Livewire\Livewire;
 use App\Models\Vehicle;
+use Filament\Infolists\Components\Fieldset;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\IconEntry\IconEntrySize;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Livewire\Livewire;
 
 class ViewVehicle extends ViewRecord
 {
@@ -28,13 +31,13 @@ class ViewVehicle extends ViewRecord
 
         return $infolist
             ->schema([
-                Infolists\Components\Fieldset::make('car_specifications')
-                    ->label(__('Car specifications'))
+                Fieldset::make('basic')
+                    ->label(__('Basic'))
                     ->schema([
                         TextEntry::make('brand')
                             ->label(__('Brand'))
-                            ->icon(fn (Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower())
-                            ->formatStateUsing(fn (Vehicle $vehicle) => $brands[$vehicle->brand]),
+                            ->icon(fn(Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower())
+                            ->formatStateUsing(fn(Vehicle $vehicle) => $brands[$vehicle->brand]),
                         TextEntry::make('model')
                             ->icon('gmdi-directions-car-filled-r')
                             ->label(__('Model')),
@@ -49,17 +52,13 @@ class ViewVehicle extends ViewRecord
                             ->icon('gmdi-local-gas-station')
                             ->placeholder(__('Unknown'))
                             ->label(__('Powertrain'))
-                            ->formatStateUsing(fn (string $state) => $powertrainsOptions[$state] ?? $state),
-                        TextEntry::make('factory_specification_fuel_consumption')
-                            ->icon('gmdi-local-gas-station')
-                            ->suffix(' l/100km')
-                            ->placeholder(__('Unknown'))
-                            ->label(__('Factory specification fuel consumption'))
-                            ->suffix(fn (?Vehicle $record) => isset($record->powertrain) && isset($powertrains[$record->powertrain])
-                                ? ' ' . $powertrains[$record->powertrain]['consumption_unit']
-                                : ' l/100km'),
+                            ->formatStateUsing(fn(string $state) => $powertrainsOptions[$state] ?? $state),
+                        TextEntry::make('fuel_types')
+                            ->label(__('Compatible fuel types'))
+                            ->badge()
+                            ->separator(','),
                     ]),
-                Infolists\Components\Fieldset::make('ownership')
+                Fieldset::make('ownership')
                     ->label(__('Ownership'))
                     ->schema([
                         TextEntry::make('country_registration')
@@ -84,7 +83,7 @@ class ViewVehicle extends ViewRecord
                             ->suffix(' km')
                             ->placeholder(__('Unknown'))
                             ->label(__('Mileage'))
-                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
+                            ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
                         TextEntry::make('purchase_date')
                             ->icon('gmdi-calendar-month-r')
                             ->date()
@@ -108,16 +107,37 @@ class ViewVehicle extends ViewRecord
                             })
                             ->label(__('Status')),
                     ]),
-                Infolists\Components\Fieldset::make('Privacy')
+                Fieldset::make('Privacy')
                     ->label(__('Privacy'))
                     ->schema([
                         TextEntry::make('is_private')
-                            ->icon(fn (Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
+                            ->icon(fn(Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
                             ->badge()
                             ->default(__('Public'))
                             ->color('gray')
-                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
+                            ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
                             ->label(__('Privacy')),
+                    ]),
+                Fieldset::make('specifications')
+                    ->label(__('Specifications'))
+                    ->schema([
+                        RepeatableEntry::make('specifications')
+                            ->schema([
+                                IconEntry::make('icon')
+                                    ->hiddenLabel()
+                                    ->hidden(fn(?string $state): bool => empty($state))
+                                    ->size(IconEntrySize::ExtraLarge)
+                                    ->icon(fn(string $state): string => $state),
+                                TextEntry::make('name')
+                                    ->hidden(fn(?string $state): bool => empty($state))
+                                    ->hiddenLabel(),
+                                TextEntry::make('value')
+                                    ->hidden(fn(?string $state): bool => empty($state))
+                                    ->hiddenLabel(),
+                            ])
+                            ->columns(3)
+                            ->columnSpan(2)
+                            ->grid(),
                     ]),
             ]);
     }

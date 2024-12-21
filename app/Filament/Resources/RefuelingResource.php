@@ -417,7 +417,7 @@ class RefuelingResource extends Resource
                             ->label(__('Fuel type'))
                             ->required()
                             ->native(false)
-                            ->options(trans('fuel_types')),
+                            ->options($vehicle->fuel_types),
                         TextInput::make('amount')
                             ->label(__('Amount'))
                             ->numeric()

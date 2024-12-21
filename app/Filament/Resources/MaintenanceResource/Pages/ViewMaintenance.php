@@ -90,10 +90,13 @@ class ViewMaintenance extends ViewRecord
                                     ->hiddenLabel()
                                     ->size(IconEntrySize::ExtraLarge)
                                     ->icon(fn(string $state): string => $state)
+                                    ->hidden(fn(?string $state): bool => empty($state))
                                     ->default('mdi-car-wrench'),
                                 TextEntry::make('task')
+                                    ->hidden(fn(?string $state): bool => empty($state))
                                     ->hiddenLabel(),
                                 TextEntry::make('price')
+                                    ->hidden(fn(?string $state): bool => empty($state))
                                     ->money('EUR')
                                     ->default(0.00)
                                     ->hiddenLabel(),

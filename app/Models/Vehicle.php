@@ -32,7 +32,6 @@ class Vehicle extends Model
         'model',
         'version',
         'engine',
-        'factory_specification_fuel_consumption',
         'mileage_start',
         'mileage_latest',
         'purchase_date',
@@ -42,11 +41,15 @@ class Vehicle extends Model
         'country_registration',
         'is_private',
         'status',
+        'fuel_types',
+        'specifications',
     ];
 
     protected $casts = [
         'purchase_date' => 'date:Y-m-d',
         'private' => 'boolean',
+        'fuel_types' => 'array',
+        'specifications' => 'array',
     ];
 
     protected $appends = [

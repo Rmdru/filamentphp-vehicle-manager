@@ -9,11 +9,12 @@ return [
     "Super Plus 100" => "Super Sans Plomb 100",
     "Super Plus 102" => "Super Sans Plomb 102",
     "Diesel" => "Gazole",
-    "Premium diesel" =>  "Gazole haut de gamme",
+    "Premium diesel" => "Gazole haut de gamme",
     "Adblue" => "Adblue",
     "LPG" => "GPL",
     "CNG" => "GNC",
     "Hydrogen" => "Hydrogène",
+    "E85" => "E85",
     "Electricity >= 50 kW" => "Électricité >= 50 kW",
     "Electricity < 50 kW" => "Électricité < 50 kW",
 ];

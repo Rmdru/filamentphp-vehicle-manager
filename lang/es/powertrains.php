@@ -7,66 +7,72 @@ return [
         "name" => "Gasolina",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "consumption_unit" => "l/100km",
     ],
     "gasoline_mild_hybrid" => [
-        "name" => "Gasolina híbrida ligera",
+        "name" => "Gasolina + híbrido suave",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "consumption_unit" => "l/100km",
     ],
     "gasoline_full_hybrid" => [
-        "name" => "Gasolina híbrida completa",
+        "name" => "Gasolina + híbrido completo",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "consumption_unit" => "l/100km",
     ],
     "gasoline_plugin_hybrid" => [
-        "name" => "Gasolina híbrida enchufable",
+        "name" => "Gasolina + complemento-híbrido.",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "consumption_unit" => "l/100km",
     ],
     "gasoline_lpg" => [
-        "name" => "Gasolina GLP",
+        "name" => "Gasolina + autogás (GLP)",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "consumption_unit" => "l/100km",
     ],
     "gasoline_lpg_full_hybrid" => [
-        "name" => "Gasolina GLP híbrida completa",
+        "name" => "Gasolina + autogás (GLP) + full-hybrid",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "consumption_unit" => "l/100km",
     ],
     "gasoline_cng" => [
-        "name" => "Gasolina GNC",
+        "name" => "Gasolina + gas natural (GNC)",
         "unit" => "kilogramo",
         "unit_short" => "kg",
-        "consumption_unit" => "kg/100km"
+        "consumption_unit" => "kg/100km",
     ],
     "diesel" => [
-        "name" => "Diésel",
+        "name" => "Gasoléo",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "consumption_unit" => "l/100km",
+    ],
+    "diesel_adblue" => [
+        "name" => "Gasoléo + adblue",
+        "unit" => "liter",
+        "unit_short" => "l",
+        "consumption_unit" => "l/100km",
     ],
     "diesel_full_hybrid" => [
-        "name" => "Diésel híbrida completa",
+        "name" => "Gasoléo + híbrido completo",
         "unit" => "litro",
         "unit_short" => "l",
-        "consumption_unit" => "l/100km"
+        "sumption_unit" => "l/100km",
     ],
     "hydrogen" => [
         "name" => "Hidrógeno",
         "unit" => "kilogramo",
         "unit_short" => "kg",
-        "consumption_unit" => "kg/100km"
+        "consumption_unit" => "kg/100km",
     ],
     "electricity" => [
         "name" => "Electricidad",
         "unit" => "kilovatio hora",
         "unit_short" => "kWh",
-        "consumption_unit" => "kWh/100km"
+        "consumption_unit" => "kWh/100km",
     ],
 ];

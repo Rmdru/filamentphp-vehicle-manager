@@ -2,22 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\Vehicle;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Livewire\Livewire;
 
 class VehicleResource extends Resource
@@ -48,6 +49,7 @@ class VehicleResource extends Resource
         $powertrains = trans('powertrains');
         $powertrainsOptions = [];
         $fuelConsumptionUnits = [];
+        $fuelTypes = trans('fuel_types');
 
         foreach ($countries as $key => $value) {
             $countriesOptions[$key] = $value['name'];
@@ -60,8 +62,8 @@ class VehicleResource extends Resource
 
         return $form
             ->schema([
-                Fieldset::make('car_specifications')
-                    ->label(__('Car specifications'))
+                Fieldset::make('basic')
+                    ->label(__('Basic'))
                     ->schema([
                         Select::make('brand')
                             ->label(__('Brand'))
@@ -86,12 +88,11 @@ class VehicleResource extends Resource
                             ->searchable()
                             ->options($powertrainsOptions)
                             ->reactive()
-                            ->afterStateUpdated(fn (callable $set, $state) => $set('powertrain', $state)),
-                        TextInput::make('factory_specification_fuel_consumption')
-                            ->label(__('Factory specification for fuel consumption'))
-                            ->numeric()
-                            ->inputMode('decimal')
-                            ->suffix(fn (callable $get) => $powertrains[$get('powertrain')]['consumption_unit'] ?? 'l/100km'),
+                            ->afterStateUpdated(fn(callable $set, $state) => $set('powertrain', $state)),
+                        TagsInput::make('fuel_types')
+                            ->required()
+                            ->label(__('Compatible fuel types'))
+                            ->suggestions($fuelTypes),
                     ]),
                 Fieldset::make('ownership')
                     ->label(__('Ownership'))
@@ -119,19 +120,21 @@ class VehicleResource extends Resource
                             ->required()
                             ->options($countriesOptions)
                             ->reactive()
-                            ->afterStateUpdated(fn (callable $set, $state) => $set('license_plate_prefix', $state))
+                            ->afterStateUpdated(fn(callable $set, $state) => $set('license_plate_prefix', $state))
                             ->helperText(__('Is used for the license plate layout')),
                         TextInput::make('license_plate')
                             ->label(__('License plate'))
                             ->required()
-                            ->prefix(fn (callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false),
+                            ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false),
                         ToggleButtons::make('status')
                             ->label(__('Status'))
                             ->inline()
+                            ->required()
                             ->options([
                                 'drivable' => __('Drivable'),
                                 'suspended' => __('Suspended'),
                                 'wok' => __('WOK status'),
+                                'apk' => __('Invalid MOT'),
                                 'seized' => __('Seized'),
                                 'stolen' => __('Stolen'),
                                 'sold' => __('Sold'),
@@ -139,22 +142,39 @@ class VehicleResource extends Resource
                                 'destroyed' => __('Destroyed'),
                             ])
                             ->icons([
-                                'drivable' => 'gmdi-directions-car-r',
+                                'drivable' => 'mdi-speedometer',
                                 'suspended' => 'mdi-garage',
-                                'wok' => 'mdi-shield-alert',
+                                'wok' => 'mdi-shield-off',
+                                'apk' => 'mdi-shield-alert',
                                 'seized' => 'maki-police',
                                 'stolen' => 'mdi-lock-open-alert',
                                 'sold' => 'gmdi-local-offer',
                                 'not_rollable' => 'fas-car-crash',
                                 'destroyed' => 'mdi-fire',
                             ]),
-                        ]),
+                    ]),
                 Fieldset::make('privacy')
                     ->label(__('Privacy'))
                     ->schema([
                         Toggle::make('is_private')
-                            ->label(__('Private'))
-                        ]),
+                            ->label(__('Private')),
+                    ]),
+                Fieldset::make('specifications')
+                    ->label(__('Specifications'))
+                    ->schema([
+                        Repeater::make('specifications')
+                            ->hiddenLabel()
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label(__('Name')),
+                                TextInput::make('value')
+                                    ->label(__('Value')),
+                                TextInput::make('icon')
+                                    ->label(__('Icon')),
+                            ])
+                            ->columnSpan(2)
+                            ->columns(),
+                    ]),
             ]);
     }
 
@@ -176,22 +196,22 @@ class VehicleResource extends Resource
                             ->sortable()
                             ->searchable()
                             ->label(__('Vehicle'))
-                            ->icon(fn (Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower())
-                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->full_name),
+                            ->icon(fn(Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower())
+                            ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->full_name),
                         TextColumn::make('mileage_start')
                             ->sortable()
                             ->searchable()
                             ->icon('gmdi-route')
                             ->suffix(' km')
                             ->label(__('Mileage'))
-                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
+                            ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
                         TextColumn::make('powertrain')
                             ->sortable()
                             ->icon('gmdi-local-gas-station')
                             ->placeholder(__('Unknown'))
                             ->sortable()
                             ->label(__('Powertrain'))
-                            ->formatStateUsing(fn (string $state) => $powertrains[$state]['name'] ?? $state),
+                            ->formatStateUsing(fn(string $state) => $powertrains[$state]['name'] ?? $state),
                     ])
                         ->space(1),
                     Stack::make([
@@ -204,18 +224,19 @@ class VehicleResource extends Resource
                             ->html()
                             ->label(__('License plate')),
                         TextColumn::make('status')
-                            ->icon(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'icon'))
+                            ->icon(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'icon'))
                             ->badge()
                             ->sortable()
                             ->default('OK')
-                            ->formatStateUsing(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'text'))
-                            ->color(fn (Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
+                            ->formatStateUsing(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'text'))
+                            ->color(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
                             ->label(__('Status')),
                         TextColumn::make('status')
                             ->icon(fn(string $state): string => match ($state) {
-                                'drivable' => 'gmdi-directions-car-r',
+                                'drivable' => 'mdi-speedometer',
                                 'suspended' => 'mdi-garage',
-                                'wok' => 'mdi-shield-alert',
+                                'wok' => 'mdi-shield-off',
+                                'apk' => 'mdi-shield-alert',
                                 'seized' => 'maki-police',
                                 'stolen' => 'mdi-lock-open-alert',
                                 'sold' => 'gmdi-local-offer',
@@ -227,6 +248,7 @@ class VehicleResource extends Resource
                                 'drivable' => __('Drivable'),
                                 'suspended' => __('Suspended'),
                                 'wok' => __('WOK status'),
+                                'apk' => __('Invalid MOT'),
                                 'seized' => __('Seized'),
                                 'stolen' => __('Stolen'),
                                 'sold' => __('Sold'),
@@ -239,16 +261,16 @@ class VehicleResource extends Resource
                             ->sortable()
                             ->label(__('Status')),
                         TextColumn::make('is_private')
-                            ->icon(fn (Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
+                            ->icon(fn(Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
                             ->badge()
                             ->default('OK')
                             ->color('gray')
                             ->sortable()
-                            ->formatStateUsing(fn (Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
+                            ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
                             ->label(__('Privacy')),
                     ])
-                        ->space(1),
-                ])
+                        ->space(),
+                ]),
             ])
             ->defaultSort('purchase_date', 'desc')
             ->contentGrid([
