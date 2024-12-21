@@ -89,10 +89,11 @@ class VehicleResource extends Resource
                             ->options($powertrainsOptions)
                             ->reactive()
                             ->afterStateUpdated(fn(callable $set, $state) => $set('powertrain', $state)),
-                        TagsInput::make('fuel_types')
+                        Select::make('fuel_types')
                             ->required()
                             ->label(__('Compatible fuel types'))
-                            ->suggestions($fuelTypes),
+                            ->multiple()
+                            ->options($fuelTypes),
                     ]),
                 Fieldset::make('ownership')
                     ->label(__('Ownership'))

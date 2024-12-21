@@ -136,7 +136,7 @@ class TollResource extends Resource
                             ->badge()
                             ->icon(fn(string $state): string => match ($state) {
                                 'cash' => 'mdi-hand-coin-outline',
-                                'card' => 'gmdi-credit-card',
+                                'bank_card' => 'gmdi-credit-card',
                                 'online' => 'gmdi-qr-code',
                                 'toll_badge' => 'mdi-car-connected',
                                 'app' => 'mdi-cellphone-wireless',
@@ -144,7 +144,7 @@ class TollResource extends Resource
                             })
                             ->formatStateUsing(fn(string $state) => match ($state) {
                                 'cash' => __('Cash'),
-                                'card' => __('Card'),
+                                'bank_card' => __('Bank card'),
                                 'online' => __('Online'),
                                 'toll_badge' => __('Toll badge'),
                                 'app' => __('App'),
@@ -333,14 +333,14 @@ class TollResource extends Resource
                             ->grouped()
                             ->options([
                                 'cash' => __('Cash'),
-                                'card' => __('Card'),
+                                'bank_card' => __('Bank card'),
                                 'online' => __('Online'),
                                 'toll_badge' => __('Toll badge'),
                                 'app' => __('App'),
                             ])
                             ->icons([
                                 'cash' => 'mdi-hand-coin-outline',
-                                'card' => 'gmdi-credit-card',
+                                'bank_card' => 'gmdi-credit-card',
                                 'online' => 'gmdi-qr-code',
                                 'toll_badge' => 'mdi-car-connected',
                                 'app' => 'mdi-cellphone-wireless',

@@ -122,6 +122,8 @@ class ViewVehicle extends ViewRecord
                     ->label(__('Specifications'))
                     ->schema([
                         RepeatableEntry::make('specifications')
+                            ->hiddenLabel()
+                            ->placeholder(__('None'))
                             ->schema([
                                 IconEntry::make('icon')
                                     ->hiddenLabel()

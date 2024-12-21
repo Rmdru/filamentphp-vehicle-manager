@@ -39,6 +39,8 @@ class Refueling extends Model
         'routes',
         'driving_style',
         'avg_speed',
+        'discount',
+        'payment_method',
         'comments',
     ];
 

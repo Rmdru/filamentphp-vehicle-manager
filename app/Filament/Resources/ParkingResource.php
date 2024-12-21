@@ -94,14 +94,14 @@ class ParkingResource extends Resource
                     ->color('gray')
                     ->icon(fn(string $state): string => match ($state) {
                         'cash' => 'mdi-hand-coin-outline',
-                        'card' => 'gmdi-credit-card',
+                        'bank_card' => 'gmdi-credit-card',
                         'app' => 'mdi-cellphone-wireless',
                         'online' => 'gmdi-qr-code',
                         default => '',
                     })
                     ->formatStateUsing(fn(string $state) => match ($state) {
                         'cash' => __('Cash'),
-                        'card' => __('Card'),
+                        'bank_card' => __('Bank card'),
                         'app' => __('App'),
                         'online' => __('Online'),
                     }),
@@ -230,13 +230,13 @@ class ParkingResource extends Resource
                             ->grouped()
                             ->options([
                                 'cash' => __('Cash'),
-                                'card' => __('Card'),
+                                'bank_card' => __('Bank card'),
                                 'app' => __('App'),
                                 'online' => __('Online'),
                             ])
                             ->icons([
                                 'cash' => 'mdi-hand-coin-outline',
-                                'card' => 'gmdi-credit-card',
+                                'bank_card' => 'gmdi-credit-card',
                                 'app' => 'mdi-cellphone-wireless',
                                 'online' => 'gmdi-qr-code',
                             ]),

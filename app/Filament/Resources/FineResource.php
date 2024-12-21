@@ -150,7 +150,7 @@ class FineResource extends Resource
                             ->label(__('Payment method'))
                             ->icon(fn(string $state): string => match ($state) {
                                 'cash' => 'mdi-hand-coin-outline',
-                                'card' => 'gmdi-credit-card',
+                                'bank_card' => 'gmdi-credit-card',
                                 'online' => 'gmdi-qr-code',
                                 'direct_debit' => 'fas-file-invoice-dollar',
                                 'bank_transfer' => 'mdi-bank-transfer',
@@ -158,7 +158,7 @@ class FineResource extends Resource
                             })
                             ->formatStateUsing(fn(string $state): string => match ($state) {
                                 'cash' => __('Cash'),
-                                'card' => __('Card'),
+                                'bank_card' => __('Bank card'),
                                 'online' => __('Online'),
                                 'direct_debit' => __('Direct debit'),
                                 'bank_transfer' => __('Bank transfer'),
@@ -446,14 +446,14 @@ class FineResource extends Resource
                             ->inline()
                             ->options([
                                 'cash' => __('Cash'),
-                                'card' => __('Card'),
+                                'bank_card' => __('Bank card'),
                                 'online' => __('Online'),
                                 'direct_debit' => __('Direct debit'),
                                 'bank_transfer' => __('Bank transfer'),
                             ])
                             ->icons([
                                 'cash' => 'mdi-hand-coin-outline',
-                                'card' => 'gmdi-credit-card',
+                                'bank_card' => 'gmdi-credit-card',
                                 'online' => 'gmdi-qr-code',
                                 'direct_debit' => 'fas-file-invoice-dollar',
                                 'bank_transfer' => 'mdi-bank-transfer',

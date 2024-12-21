@@ -311,6 +311,24 @@ class RefuelingResource extends Resource
                                 'average' => __('Average'),
                                 'fast' => __('Fast'),
                             }),
+                        TextColumn::make('payment_method')
+                            ->label(__('Payment method'))
+                            ->sortable()
+                            ->badge()
+                            ->icon(fn (string $state) => match ($state) {
+                                'cash' => 'mdi-hand-coin-outline',
+                                'bank_card' => 'gmdi-credit-card',
+                                'loyalty_program' => 'mdi-gift',
+                                'fuel_card' => 'gmdi-local-gas-station-r',
+                            })
+                            ->formatStateUsing(fn (string $state) => match ($state) {
+                                'cash' => __('Cash'),
+                                'bank_card' => __('Bank card'),
+                                'loyalty_program' => __('Loyality program'),
+                                'fuel_card' => __('Fuel card'),
+                            }),
+                        TextColumn::make('discount')
+                            ->label(__('Discount')),
                     ]),
                 ])
                     ->collapsible(),
@@ -375,6 +393,12 @@ class RefuelingResource extends Resource
     {
         $vehicle = Vehicle::selected()->onlyDrivable()->first();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
+        $fuelTypes = trans('fuel_types');
+        $fuelTypeOptions = [];
+
+        foreach ($vehicle->fuel_types as $value) {
+            $fuelTypeOptions[$value] = $fuelTypes[$value];
+        }
 
         return $form
             ->schema([
@@ -417,7 +441,7 @@ class RefuelingResource extends Resource
                             ->label(__('Fuel type'))
                             ->required()
                             ->native(false)
-                            ->options($vehicle->fuel_types),
+                            ->options($fuelTypeOptions),
                         TextInput::make('amount')
                             ->label(__('Amount'))
                             ->numeric()
@@ -555,6 +579,27 @@ class RefuelingResource extends Resource
                             ->suffix('km/h'),
                         Forms\Components\Textarea::make('comments')
                             ->label(__('Comments')),
+                    ]),
+                Fieldset::make('payment')
+                    ->label(__('Payment'))
+                    ->schema([
+                        ToggleButtons::make('payment_method')
+                            ->label(__('Payment method'))
+                            ->inline()
+                            ->icons([
+                                'cash' => 'mdi-hand-coin-outline',
+                                'bank_card' => 'gmdi-credit-card',
+                                'loyalty_program' => 'mdi-gift',
+                                'fuel_card' => 'gmdi-local-gas-station-r',
+                            ])
+                            ->options([
+                                'cash' => __('Cash'),
+                                'bank_card' => __('Bank card'),
+                                'loyalty_program' => __('Loyality program'),
+                                'fuel_card' => __('Fuel card'),
+                            ]),
+                        TextInput::make('discount')
+                            ->label(__('Discount')),
                     ]),
             ]);
     }
