@@ -48,7 +48,7 @@ class TaxResource extends Resource
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->orderByDesc('start_date');
+                });
             })
             ->columns([
                 Tables\Columns\Layout\Split::make([
@@ -130,7 +130,8 @@ class TaxResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('start_date', 'desc');
     }
 
     public static function form(Form $form): Form

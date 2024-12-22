@@ -55,7 +55,7 @@ class MaintenanceResource extends Resource
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->orderByDesc('date');
+                });
             })
             ->headerActions([
                 Action::make('small_checks')
@@ -191,7 +191,8 @@ class MaintenanceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('date', 'desc');
     }
 
     public static function form(Form $form): Form

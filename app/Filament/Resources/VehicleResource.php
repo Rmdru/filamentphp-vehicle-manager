@@ -8,7 +8,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
@@ -286,7 +285,8 @@ class VehicleResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('purchase_date', 'desc');
     }
 
     public static function getPages(): array

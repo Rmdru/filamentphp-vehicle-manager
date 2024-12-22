@@ -59,7 +59,7 @@ class FineResource extends Resource
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->orderByDesc('date');
+                });
             })
             ->columns([
                 Split::make([
@@ -285,7 +285,8 @@ class FineResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('date', 'desc');
     }
 
     public static function form(Form $form): Form

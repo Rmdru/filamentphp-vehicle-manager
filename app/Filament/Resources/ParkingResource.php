@@ -49,7 +49,7 @@ class ParkingResource extends Resource
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->orderByDesc('end_time');
+                });
             })
             ->columns([
                 TextColumn::make('start_time')
@@ -156,7 +156,8 @@ class ParkingResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('start_time', 'desc');
     }
 
     public static function form(Form $form): Form

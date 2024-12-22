@@ -55,8 +55,9 @@ class ViewVehicle extends ViewRecord
                             ->formatStateUsing(fn(string $state) => $powertrainsOptions[$state] ?? $state),
                         TextEntry::make('fuel_types')
                             ->label(__('Compatible fuel types'))
+                            ->formatStateUsing(fn($state) => trans('fuel_types')[$state])
                             ->badge()
-                            ->separator(','),
+                            ->separator(),
                     ]),
                 Fieldset::make('ownership')
                     ->label(__('Ownership'))

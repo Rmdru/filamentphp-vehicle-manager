@@ -8,15 +8,15 @@ use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\Layout\Split;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
-use Filament\Tables\Columns\Layout\Panel;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Panel;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
@@ -45,83 +45,13 @@ class ReconditioningResource extends Resource
         return __('Reconditioning');
     }
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Select::make('vehicle_id')
-                    ->disabled()
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native(false)
-                    ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
-                    ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::onlyDrivable()->get();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
-                        });
-
-                        return $vehicles->pluck('car', 'id');
-                    }),
-                DatePicker::make('date')
-                    ->label(__('Date'))
-                    ->required()
-                    ->native(false)
-                    ->displayFormat('d-m-Y')
-                    ->maxDate(now()),
-                ToggleButtons::make('type')
-                    ->label(__('Type'))
-                    ->inline()
-                    ->required()
-                    ->multiple()
-                    ->options([
-                        'carwash' => __('Carwash'),
-                        'exterior_cleaning' => __('Exterior cleaning'),
-                        'interior_cleaning' => __('Interior cleaning'),
-                        'engine_bay_cleaning' => __('Engine bay cleaning'),
-                        'damage_repair' => __('Damage repair'),
-                    ])
-                    ->icons([
-                        'carwash' => 'mdi-car-wash',
-                        'interior_cleaning' => 'mdi-vacuum',
-                        'exterior_cleaning' => 'gmdi-cleaning-services-r',
-                        'engine_bay_cleaning' => 'mdi-engine',
-                        'damage_repair' => 'mdi-spray',
-                    ]),
-                ToggleButtons::make('executor')
-                    ->label(__('Executor'))
-                    ->inline()
-                    ->required()
-                    ->options([
-                        'myself' => __('Myself'),
-                        'someone' => __('Someone else'),
-                        'company' => __('Company'),
-                    ]),
-                TextInput::make('price')
-                    ->label(__('Price'))
-                    ->numeric()
-                    ->mask(RawJs::make('$money($input)'))
-                    ->stripCharacters(',')
-                    ->prefix('€')
-                    ->step(0.01),
-                TextInput::make('location')
-                    ->label(__('Location'))
-                    ->maxLength(100),
-                Textarea::make('description')
-                    ->label(__('Description')),
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
-                })->orderByDesc('date');
+                });
             })
             ->columns([
                 Split::make([
@@ -230,6 +160,77 @@ class ReconditioningResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->defaultSort('date', 'desc');
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Select::make('vehicle_id')
+                    ->disabled()
+                    ->label(__('Vehicle'))
+                    ->required()
+                    ->searchable()
+                    ->native(false)
+                    ->relationship('vehicle')
+                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
+                    ->options(function (Vehicle $vehicle) {
+                        $vehicles = Vehicle::onlyDrivable()->get();
+
+                        $vehicles->car = $vehicles->map(function ($index) {
+                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                        });
+
+                        return $vehicles->pluck('car', 'id');
+                    }),
+                DatePicker::make('date')
+                    ->label(__('Date'))
+                    ->required()
+                    ->native(false)
+                    ->displayFormat('d-m-Y')
+                    ->maxDate(now()),
+                ToggleButtons::make('type')
+                    ->label(__('Type'))
+                    ->inline()
+                    ->required()
+                    ->multiple()
+                    ->options([
+                        'carwash' => __('Carwash'),
+                        'exterior_cleaning' => __('Exterior cleaning'),
+                        'interior_cleaning' => __('Interior cleaning'),
+                        'engine_bay_cleaning' => __('Engine bay cleaning'),
+                        'damage_repair' => __('Damage repair'),
+                    ])
+                    ->icons([
+                        'carwash' => 'mdi-car-wash',
+                        'interior_cleaning' => 'mdi-vacuum',
+                        'exterior_cleaning' => 'gmdi-cleaning-services-r',
+                        'engine_bay_cleaning' => 'mdi-engine',
+                        'damage_repair' => 'mdi-spray',
+                    ]),
+                ToggleButtons::make('executor')
+                    ->label(__('Executor'))
+                    ->inline()
+                    ->required()
+                    ->options([
+                        'myself' => __('Myself'),
+                        'someone' => __('Someone else'),
+                        'company' => __('Company'),
+                    ]),
+                TextInput::make('price')
+                    ->label(__('Price'))
+                    ->numeric()
+                    ->mask(RawJs::make('$money($input)'))
+                    ->stripCharacters(',')
+                    ->prefix('€')
+                    ->step(0.01),
+                TextInput::make('location')
+                    ->label(__('Location'))
+                    ->maxLength(100),
+                Textarea::make('description')
+                    ->label(__('Description')),
             ]);
     }
 

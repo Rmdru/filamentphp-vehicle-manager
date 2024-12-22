@@ -65,7 +65,7 @@ class RefuelingResource extends Resource
                     ->select('*', DB::raw('mileage_end - mileage_begin as distance'))
                     ->whereHas('vehicle', function ($query) {
                         $query->selected();
-                    })->orderByDesc('date');
+                    });
             })
             ->columns([
                 Split::make([
@@ -77,7 +77,7 @@ class RefuelingResource extends Resource
 
                                 $logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
 
-                                return new HtmlString('<div class="w-4/12 min-h-16 flex items-center"><img src="' . $logo . '" /></div>');
+                                return new HtmlString('<div class="w-5/12 min-h-16 flex items-center bg-white rounded p-2"><img src="' . $logo . '" /></div>');
                             }
                         ),
                     Stack::make([
@@ -315,17 +315,19 @@ class RefuelingResource extends Resource
                             ->label(__('Payment method'))
                             ->sortable()
                             ->badge()
-                            ->icon(fn (string $state) => match ($state) {
+                            ->icon(fn(string $state) => match ($state) {
                                 'cash' => 'mdi-hand-coin-outline',
                                 'bank_card' => 'gmdi-credit-card',
                                 'loyalty_program' => 'mdi-gift',
                                 'fuel_card' => 'gmdi-local-gas-station-r',
+                                'app' => 'mdi-cellphone-wireless',
                             })
-                            ->formatStateUsing(fn (string $state) => match ($state) {
+                            ->formatStateUsing(fn(string $state) => match ($state) {
                                 'cash' => __('Cash'),
                                 'bank_card' => __('Bank card'),
                                 'loyalty_program' => __('Loyality program'),
                                 'fuel_card' => __('Fuel card'),
+                                'app' => __('App'),
                             }),
                         TextColumn::make('discount')
                             ->label(__('Discount')),
@@ -386,7 +388,8 @@ class RefuelingResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('date', 'desc');
     }
 
     public static function form(Form $form): Form
@@ -591,12 +594,14 @@ class RefuelingResource extends Resource
                                 'bank_card' => 'gmdi-credit-card',
                                 'loyalty_program' => 'mdi-gift',
                                 'fuel_card' => 'gmdi-local-gas-station-r',
+                                'app' => 'mdi-cellphone-wireless',
                             ])
                             ->options([
                                 'cash' => __('Cash'),
                                 'bank_card' => __('Bank card'),
                                 'loyalty_program' => __('Loyality program'),
                                 'fuel_card' => __('Fuel card'),
+                                'app' => __('App'),
                             ]),
                         TextInput::make('discount')
                             ->label(__('Discount')),
