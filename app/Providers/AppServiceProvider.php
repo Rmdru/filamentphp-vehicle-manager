@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,5 +37,10 @@ class AppServiceProvider extends ServiceProvider
                     'es' => url('https://flagsapi.com/ES/flat/64.png'),
                 ]);
         });
+    }
+
+    private function configureDates(): void
+    {
+        Date::use(CarbonImmutable::class);
     }
 }

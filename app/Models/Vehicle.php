@@ -43,6 +43,7 @@ class Vehicle extends Model
         'status',
         'fuel_types',
         'specifications',
+        'notifications',
     ];
 
     protected $casts = [
@@ -50,6 +51,7 @@ class Vehicle extends Model
         'private' => 'boolean',
         'fuel_types' => 'array',
         'specifications' => 'array',
+        'notifications' => 'array',
     ];
 
     protected $appends = [

@@ -32,8 +32,7 @@ class Maintenance extends Model
         'description',
         'tasks',
         'total_price',
-        'mileage_begin',
-        'mileage_end',
+        'mileage',
     ];
 
     protected $casts = [

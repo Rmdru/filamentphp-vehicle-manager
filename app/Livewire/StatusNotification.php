@@ -10,46 +10,67 @@ use Livewire\Component;
 
 class StatusNotification extends Component
 {
-    public string $vehicleId;
     private array $notifications = [];
 
-    public function mount($vehicleId): void
+    public function mount(): void
     {
-        $this->vehicleId = $vehicleId;
+        $vehicle = Vehicle::selected()->first();
 
-        $this->getInsuranceNotification();
-        $this->getTaxNotification();
-        $this->getApkNotification();
-        $this->getMaintenanceNotification();
-        $this->getAircoCheckNotification();
-        $this->getRefuelingNotification();
-        $this->getWashingNotification();
-        $this->getTirePressureNotification();
-        $this->getLiquidsCheckNotification();
+        if (! empty($vehicle->notifications['insurance']['status'])) {
+            $this->getInsuranceNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['tax']['period_reminder'])) {
+            $this->getTaxNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['maintenance']['apk'])) {
+            $this->getApkNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['maintenance']['maintenance'])) {
+            $this->getMaintenanceNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['maintenance']['airco_check'])) {
+            $this->getAircoCheckNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['refueling']['old_fuel'])) {
+            $this->getRefuelingNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['reconditioning']['washing'])) {
+            $this->getWashingNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['maintenance']['tire_pressure_check'])) {
+            $this->getTirePressureNotification($vehicle);
+        }
+
+        if (! empty($vehicle->notifications['maintenance']['liquids_check'])) {
+            $this->getLiquidsCheckNotification($vehicle);
+        }
+
         $this->getEverythingOkNotification();
     }
 
-    public function getInsuranceNotification()
+    private function getInsuranceNotification(Vehicle $vehicle): void
     {
-        $timeTillInsurance = Vehicle::selected()->first()->insurance_status['time'] ?? null;
-
-        if ($this->vehicleId) {
-            $timeTillInsurance = Vehicle::where('id', $this->vehicleId)->latest()->first()->insurance_status['time'] ?? null;
-        }
+        $timeTillInsurance = $vehicle->insurance_status['time'] ?? null;
 
         if (! $timeTillInsurance) {
             $this->createNotification('critical', __('No insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
-            return null;
+            return;
         }
 
         if ($timeTillInsurance < 31) {
             $this->createNotification('warning', __('Insurance expires within 1 month!'), 'mdi-shield-car');
-            return null;
+            return;
         }
 
         if ($timeTillInsurance < 62) {
             $this->createNotification('info', __('Insurance expires within 2 months!'), 'mdi-shield-car');
-            return null;
         }
     }
 
@@ -84,201 +105,145 @@ class StatusNotification extends Component
         ]);
     }
 
-    public function getTaxNotification()
+    private function getTaxNotification(Vehicle $vehicle): void
     {
-        $timeTillTax = Vehicle::selected()->first()->tax_status['time'] ?? null;
+        $timeTillTax = $vehicle->tax_status['time'] ?? null;
 
         if ($timeTillTax > 0 && $timeTillTax < 31) {
             $this->createNotification('info', __('New tax period within 1 month!'), 'mdi-highway');
-            return null;
         }
     }
 
-    private function getApkNotification()
+    private function getApkNotification(Vehicle $vehicle): void
     {
-        $timeTillApk = Vehicle::selected()->first()->apk_status['time'] ?? null;
-
-        if ($this->vehicleId) {
-            $timeTillApk = Vehicle::where('id', $this->vehicleId)->latest()->first()->apk_status['time'] ?? null;
-        }
+        $timeTillApk = $vehicle->apk_status['time'] ?? null;
 
         if (! $timeTillApk) {
-            return null;
+            return;
         }
 
         if ($timeTillApk < 1) {
             $this->createNotification('critical', __('MOT expired! Your are currently not allowed to drive with the vehicle!'), 'gmdi-security');
-            return null;
+            return;
         }
 
         if ($timeTillApk < 31) {
             $this->createNotification('critical', __('MOT expires within 1 month!'), 'gmdi-security');
-            return null;
+            return;
         }
 
         if ($timeTillApk < 62) {
             $this->createNotification('warning', __('MOT expires within 2 months!'), 'gmdi-security');
-            return null;
         }
-
-        return null;
     }
 
-    private function getMaintenanceNotification(): null
+    private function getMaintenanceNotification(Vehicle $vehicle): void
     {
-        $maintenanceStatus = Vehicle::selected()->first()->maintenance_status;
-
-        if ($this->vehicleId) {
-            $maintenanceStatus = Vehicle::where('id', $this->vehicleId)->latest()->first()->maintenance_status;
-        }
+        $maintenanceStatus = $vehicle->maintenance_status;
 
         if (! $maintenanceStatus) {
-            return null;
+            return;
         }
 
         if ($maintenanceStatus['time'] < 31 || $maintenanceStatus['distance'] < 1500) {
             $this->createNotification('critical', __('Maintenance required now'), 'mdi-car-wrench');
-            return null;
+            return;
         }
 
         if ($maintenanceStatus['time'] < 62 || $maintenanceStatus['distance'] < 3000) {
             $this->createNotification('warning', __('Maintenance required soon'), 'mdi-car-wrench');
-            return null;
         }
-
-        return null;
     }
 
-    private function getAircoCheckNotification()
+    private function getAircoCheckNotification(Vehicle $vehicle): void
     {
-        $timeTillAiroCheck = Vehicle::selected()->first()->airco_check_status['time'] ?? null;
+        $timeTillAircoCheck = $vehicle->airco_check_status['time'] ?? null;
 
-        if ($this->vehicleId) {
-            $timeTillAiroCheck = Vehicle::where('id', $this->vehicleId)->latest()->first()->airco_check_status['time'] ?? null;
+        if (! $timeTillAircoCheck) {
+            return;
         }
 
-        if (! $timeTillAiroCheck) {
-            return null;
-        }
-
-        if ($timeTillAiroCheck < 31) {
+        if ($timeTillAircoCheck < 31) {
             $this->createNotification('critical', __('Airco check required!'), 'mdi-air-conditioner');
-            return null;
+            return;
         }
 
-        if ($timeTillAiroCheck < 62) {
+        if ($timeTillAircoCheck < 62) {
             $this->createNotification('warning', __('Airco check required soon!'), 'mdi-air-conditioner');
-            return null;
         }
     }
 
-    private function getRefuelingNotification(): null
+    private function getRefuelingNotification(Vehicle $vehicle): void
     {
-        $selectedVehicle = Vehicle::selected()->first();
-
-        if ($this->vehicleId) {
-            $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
-        }
-
-        $timeTillRefueling = $selectedVehicle->fuel_status;
-        $refuelingsCount = $selectedVehicle->refuelings->where('fuel_type', 'Premium Unleaded')->count();
+        $timeTillRefueling = $vehicle->fuel_status;
+        $refuelingsCount = $vehicle->refuelings->where('fuel_type', 'Premium Unleaded (E10)')->count();
 
         if (! $timeTillRefueling && ! $refuelingsCount) {
-            return null;
+            return;
         }
 
         if ($timeTillRefueling < 10) {
             $this->createNotification('critical', __('Fuel is too old!'), 'gmdi-local-gas-station-r');
-            return null;
+            return;
         }
 
         if ($timeTillRefueling < 30) {
             $this->createNotification('warning', __('Fuel is getting old!'), 'gmdi-local-gas-station-r');
-            return null;
         }
-
-        return null;
     }
 
-    private function getWashingNotification(): null
+    private function getWashingNotification(Vehicle $vehicle): void
     {
-        $selectedVehicle = Vehicle::selected()->first();
-
-        if ($this->vehicleId) {
-            $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
-        }
-
-        $timeTillWash = $selectedVehicle->washing_status['time'];
+        $timeTillWash = $vehicle->washing_status['time'];
 
         if (! isset($timeTillWash)) {
-            return null;
+            return;
         }
 
         if ($timeTillWash < 5) {
             $this->createNotification('warning', __('Washing required!'), 'mdi-car-wash');
-            return null;
+            return;
         }
 
         if ($timeTillWash < 10) {
             $this->createNotification('info', __('Washing required soon!'), 'mdi-car-wash');
-            return null;
         }
-
-        return null;
     }
 
-    private function getTirePressureNotification(): null
+    private function getTirePressureNotification(Vehicle $vehicle): void
     {
-        $selectedVehicle = Vehicle::selected()->first();
-
-        if ($this->vehicleId) {
-            $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
-        }
-
-        $timeTill = $selectedVehicle->tire_pressure_check_status['time'] ?? null;
+        $timeTill = $vehicle->tire_pressure_check_status['time'] ?? null;
 
         if (! isset($timeTill)) {
-            return null;
+            return;
         }
 
         if ($timeTill < 10) {
             $this->createNotification('warning', __('Check tire pressure!'), 'mdi-car-tire-alert');
-            return null;
+            return;
         }
 
         if ($timeTill < 20) {
             $this->createNotification('info', __('Check tire pressure soon!'), 'mdi-car-tire-alert');
-            return null;
         }
-
-        return null;
     }
 
-    private function getLiquidsCheckNotification(): null
+    private function getLiquidsCheckNotification(Vehicle $vehicle): void
     {
-        $selectedVehicle = Vehicle::selected()->first();
-
-        if ($this->vehicleId) {
-            $selectedVehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();
-        }
-
-        $timeTill = $selectedVehicle->liquids_check_status['time'] ?? null;
+        $timeTill = $vehicle->liquids_check_status['time'] ?? null;
 
         if (! isset($timeTill)) {
-            return null;
+            return;
         }
 
         if ($timeTill < 5) {
             $this->createNotification('warning', __('Check liquids!'), 'mdi-oil');
-            return null;
+            return;
         }
 
         if ($timeTill < 10) {
             $this->createNotification('info', __('Check liquids soon!'), 'mdi-oil');
-            return null;
         }
-
-        return null;
     }
 
     private function getEverythingOkNotification(): void

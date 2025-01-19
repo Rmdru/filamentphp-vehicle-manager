@@ -12,6 +12,7 @@ class CreateVehicle extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = auth()->id();
+        $data['notifications'] = config('notifications');
 
         return $data;
     }

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\MaintenanceResource\Pages;
 
 use App\Filament\Resources\MaintenanceResource;
 use App\Models\Maintenance;
-use Filament\Infolists;
+use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\IconEntry\IconEntrySize;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -22,7 +22,7 @@ class ViewMaintenance extends ViewRecord
 
         return $infolist
             ->schema([
-                Infolists\Components\Fieldset::make('maintenance')
+                Fieldset::make('maintenance')
                     ->label(__('Maintenance'))
                     ->schema([
                         TextEntry::make('vehicle_id')
@@ -38,7 +38,7 @@ class ViewMaintenance extends ViewRecord
                             ->placeholder(__('Unknown'))
                             ->icon('mdi-garage'),
                     ]),
-                Infolists\Components\Fieldset::make('tasks')
+                Fieldset::make('tasks')
                     ->label(__('Tasks'))
                     ->schema([
                         TextEntry::make('type_maintenance')
@@ -85,6 +85,7 @@ class ViewMaintenance extends ViewRecord
                             ->icon('mdi-hand-coin-outline')
                             ->money('EUR'),
                         RepeatableEntry::make('tasks')
+                            ->label(__('Tasks'))
                             ->schema([
                                 IconEntry::make('icon')
                                     ->hiddenLabel()
@@ -96,7 +97,7 @@ class ViewMaintenance extends ViewRecord
                                     ->hidden(fn(?string $state): bool => empty($state))
                                     ->hiddenLabel(),
                                 TextEntry::make('price')
-                                    ->hidden(fn(?string $state): bool => empty($state))
+                                    ->hidden(fn(?string $state): bool => ! isset($state))
                                     ->money('EUR')
                                     ->default(0.00)
                                     ->hiddenLabel(),

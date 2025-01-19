@@ -327,10 +327,12 @@
                                     <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
                                     € {{ $item->price }}
                                 </div>
-                                <div class="flex gap-2 items-center">
-                                    <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500" />
-                                    {{ $item->location }}
-                                </div>
+                                @if($item->location)
+                                    <div class="flex gap-2 items-center">
+                                        <x-gmdi-location-on-r class="w-6 text-gray-400 dark:text-gray-500" />
+                                        {{ $item->location }}
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex gap-2 flex-col">
                                 @foreach($item->type as $key => $type)

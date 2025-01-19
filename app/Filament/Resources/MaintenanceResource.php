@@ -72,6 +72,7 @@ class MaintenanceResource extends Resource
                             ->default(now())
                             ->label(__('Date')),
                     ])
+                    ->modalSubmitActionLabel(__('Save'))
                     ->action(function (array $data): void {
                         Maintenance::create([
                             'vehicle_id' => Session::get('vehicle_id'),
@@ -278,7 +279,8 @@ class MaintenanceResource extends Resource
                                     ->prefix('€')
                                     ->step(0.01),
                                 TextInput::make('icon')
-                                    ->label(__('Icon')),
+                                    ->label(__('Icon'))
+                                    ->helperText(str('<a href="https://blade-ui-kit.com/blade-icons#search" target="_blank">Voorbeelden</a>')->toHtmlString()),
                             ])
                             ->columnSpan(2)
                             ->columns(),

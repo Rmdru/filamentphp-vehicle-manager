@@ -4,10 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\Vehicle;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\ToggleButtons;
@@ -24,11 +27,11 @@ class VehicleResource extends Resource
 {
     protected static ?string $model = Vehicle::class;
 
-    protected static ?string $navigationIcon = 'gmdi-directions-car-filled-r';
+    protected static ?string $navigationIcon = 'mdi-garage';
 
     public static function getNavigationLabel(): string
     {
-        return __('Manage my vehicles');
+        return __('My garage');
     }
 
     public static function getPluralModelLabel(): string
@@ -61,119 +64,178 @@ class VehicleResource extends Resource
 
         return $form
             ->schema([
-                Fieldset::make('basic')
-                    ->label(__('Basic'))
-                    ->schema([
-                        Select::make('brand')
-                            ->label(__('Brand'))
-                            ->required()
-                            ->native(false)
-                            ->searchable()
-                            ->options(config('vehicles.brands')),
-                        TextInput::make('model')
-                            ->label(__('Model'))
-                            ->required()
-                            ->maxLength(50),
-                        TextInput::make('version')
-                            ->label(__('Version'))
-                            ->required()
-                            ->maxLength(50),
-                        TextInput::make('engine')
-                            ->label(__('Engine'))
-                            ->maxLength(50),
-                        Select::make('powertrain')
-                            ->label(__('Powertrain'))
-                            ->native(false)
-                            ->searchable()
-                            ->options($powertrainsOptions)
-                            ->reactive()
-                            ->afterStateUpdated(fn(callable $set, $state) => $set('powertrain', $state)),
-                        Select::make('fuel_types')
-                            ->required()
-                            ->label(__('Compatible fuel types'))
-                            ->multiple()
-                            ->options($fuelTypes),
-                    ]),
-                Fieldset::make('ownership')
-                    ->label(__('Ownership'))
-                    ->schema([
-                        TextInput::make('mileage_start')
-                            ->label(__('Mileage on purchase'))
-                            ->suffix(' km')
-                            ->numeric()
-                            ->minValue(0),
-                        DatePicker::make('purchase_date')
-                            ->label(__('Purchase date'))
-                            ->native(false)
-                            ->displayFormat('d-m-Y')
-                            ->maxDate(now()),
-                        TextInput::make('purchase_price')
-                            ->label(__('Purchase price'))
-                            ->mask(RawJs::make('$money($input)'))
-                            ->stripCharacters(',')
-                            ->prefix('€')
-                            ->step(0.01),
-                        Select::make('country_registration')
-                            ->label(__('Country of registration'))
-                            ->searchable()
-                            ->native(false)
-                            ->required()
-                            ->options($countriesOptions)
-                            ->reactive()
-                            ->afterStateUpdated(fn(callable $set, $state) => $set('license_plate_prefix', $state))
-                            ->helperText(__('Is used for the license plate layout')),
-                        TextInput::make('license_plate')
-                            ->label(__('License plate'))
-                            ->required()
-                            ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false),
-                        ToggleButtons::make('status')
-                            ->label(__('Status'))
-                            ->inline()
-                            ->required()
-                            ->options([
-                                'drivable' => __('Drivable'),
-                                'suspended' => __('Suspended'),
-                                'wok' => __('WOK status'),
-                                'apk' => __('Invalid MOT'),
-                                'seized' => __('Seized'),
-                                'stolen' => __('Stolen'),
-                                'sold' => __('Sold'),
-                                'not_rollable' => __('Not rollable'),
-                                'destroyed' => __('Destroyed'),
-                            ])
-                            ->icons([
-                                'drivable' => 'mdi-speedometer',
-                                'suspended' => 'mdi-garage',
-                                'wok' => 'mdi-shield-off',
-                                'apk' => 'mdi-shield-alert',
-                                'seized' => 'maki-police',
-                                'stolen' => 'mdi-lock-open-alert',
-                                'sold' => 'gmdi-local-offer',
-                                'not_rollable' => 'fas-car-crash',
-                                'destroyed' => 'mdi-fire',
-                            ]),
-                    ]),
-                Fieldset::make('privacy')
-                    ->label(__('Privacy'))
-                    ->schema([
-                        Toggle::make('is_private')
-                            ->label(__('Private')),
-                    ]),
-                Fieldset::make('specifications')
-                    ->label(__('Specifications'))
-                    ->schema([
-                        Repeater::make('specifications')
-                            ->hiddenLabel()
+                Tabs::make('vehicle_tabs')
+                    ->columnSpan(2)
+                    ->tabs([
+                        Tabs\Tab::make('data')
+                            ->label(__('Data'))
+                            ->icon('gmdi-directions-car-filled-r')
                             ->schema([
-                                TextInput::make('name')
-                                    ->label(__('Name')),
-                                TextInput::make('value')
-                                    ->label(__('Value')),
-                                TextInput::make('icon')
-                                    ->label(__('Icon')),
-                            ])
-                            ->columnSpan(2)
-                            ->columns(),
+                                Fieldset::make('basic')
+                                    ->label(__('Basic'))
+                                    ->schema([
+                                        Select::make('brand')
+                                            ->label(__('Brand'))
+                                            ->required()
+                                            ->native(false)
+                                            ->searchable()
+                                            ->options(config('vehicles.brands')),
+                                        TextInput::make('model')
+                                            ->label(__('Model'))
+                                            ->required()
+                                            ->maxLength(50),
+                                        TextInput::make('version')
+                                            ->label(__('Version'))
+                                            ->required()
+                                            ->maxLength(50),
+                                        TextInput::make('engine')
+                                            ->label(__('Engine'))
+                                            ->maxLength(50),
+                                        Select::make('powertrain')
+                                            ->label(__('Powertrain'))
+                                            ->native(false)
+                                            ->searchable()
+                                            ->options($powertrainsOptions)
+                                            ->reactive()
+                                            ->afterStateUpdated(fn(callable $set, $state) => $set('powertrain', $state)),
+                                        Select::make('fuel_types')
+                                            ->required()
+                                            ->label(__('Compatible fuel types'))
+                                            ->multiple()
+                                            ->options($fuelTypes),
+                                    ]),
+                                Fieldset::make('ownership')
+                                    ->label(__('Ownership'))
+                                    ->schema([
+                                        TextInput::make('mileage_start')
+                                            ->label(__('Mileage on purchase'))
+                                            ->suffix(' km')
+                                            ->numeric()
+                                            ->minValue(0),
+                                        DatePicker::make('purchase_date')
+                                            ->label(__('Purchase date'))
+                                            ->native(false)
+                                            ->displayFormat('d-m-Y')
+                                            ->maxDate(now()),
+                                        TextInput::make('purchase_price')
+                                            ->label(__('Purchase price'))
+                                            ->mask(RawJs::make('$money($input)'))
+                                            ->stripCharacters(',')
+                                            ->prefix('€')
+                                            ->step(0.01),
+                                        Select::make('country_registration')
+                                            ->label(__('Country of registration'))
+                                            ->searchable()
+                                            ->native(false)
+                                            ->required()
+                                            ->options($countriesOptions)
+                                            ->reactive()
+                                            ->afterStateUpdated(fn(callable $set, $state) => $set('license_plate_prefix', $state))
+                                            ->helperText(__('Is used for the license plate layout')),
+                                        TextInput::make('license_plate')
+                                            ->label(__('License plate'))
+                                            ->required()
+                                            ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false),
+                                        ToggleButtons::make('status')
+                                            ->label(__('Status'))
+                                            ->inline()
+                                            ->required()
+                                            ->options([
+                                                'drivable' => __('Drivable'),
+                                                'suspended' => __('Suspended'),
+                                                'wok' => __('WOK status'),
+                                                'apk' => __('Invalid MOT'),
+                                                'seized' => __('Seized'),
+                                                'stolen' => __('Stolen'),
+                                                'sold' => __('Sold'),
+                                                'not_rollable' => __('Not rollable'),
+                                                'destroyed' => __('Destroyed'),
+                                            ])
+                                            ->icons([
+                                                'drivable' => 'mdi-speedometer',
+                                                'suspended' => 'mdi-garage',
+                                                'wok' => 'mdi-shield-off',
+                                                'apk' => 'mdi-shield-alert',
+                                                'seized' => 'maki-police',
+                                                'stolen' => 'mdi-lock-open-alert',
+                                                'sold' => 'gmdi-local-offer',
+                                                'not_rollable' => 'fas-car-crash',
+                                                'destroyed' => 'mdi-fire',
+                                            ]),
+                                    ]),
+                                Fieldset::make('privacy')
+                                    ->label(__('Privacy'))
+                                    ->schema([
+                                        Toggle::make('is_private')
+                                            ->label(__('Private')),
+                                    ]),
+                            ]),
+                        Tabs\Tab::make('specifications')
+                            ->label(__('Specifications'))
+                            ->icon('mdi-engine')
+                            ->schema([
+                                Repeater::make('specifications')
+                                    ->hiddenLabel()
+                                    ->defaultItems(0)
+                                    ->schema([
+                                        TextInput::make('name')
+                                            ->label(__('Name')),
+                                        TextInput::make('value')
+                                            ->label(__('Value')),
+                                        TextInput::make('icon')
+                                            ->label(__('Icon')),
+                                    ])
+                                    ->columnSpan(2)
+                                    ->columns(),
+                            ]),
+                        Tabs\Tab::make('notifications')
+                            ->label(__('Notifications'))
+                            ->icon('gmdi-notifications-active-r')
+                            ->schema([
+                                Section::make(__('Maintenance'))
+                                    ->icon('mdi-car-wrench')
+                                    ->collapsible()
+                                    ->schema([
+                                        Checkbox::make('notifications.maintenance.maintenance')
+                                            ->label(__('Maintenance reminder')),
+                                        Checkbox::make('notifications.maintenance.apk')
+                                            ->label(__('MOT reminder')),
+                                        Checkbox::make('notifications.maintenance.airco_check')
+                                            ->label(__('Airco check reminder')),
+                                        Checkbox::make('notifications.maintenance.liquids_check')
+                                            ->label(__('Liquids check reminder')),
+                                        Checkbox::make('notifications.maintenance.tire_pressure_check')
+                                            ->label(__('Tire pressure check reminder')),
+                                    ]),
+                                Section::make(__('Reconditioning'))
+                                    ->icon('mdi-car-wash')
+                                    ->collapsible()
+                                    ->schema([
+                                        Checkbox::make('notifications.reconditioning.washing')
+                                            ->label(__('Washing reminder')),
+                                    ]),
+                                Section::make(__('Refuelings'))
+                                    ->icon('gmdi-local-gas-station-r')
+                                    ->collapsible()
+                                    ->schema([
+                                        Checkbox::make('notifications.refueling.old_fuel')
+                                            ->label(__('Outdated fuel (only premium unleaded (E10))')),
+                                    ]),
+                                Section::make(__('Insurances'))
+                                    ->icon('mdi-shield-car')
+                                    ->collapsible()
+                                    ->schema([
+                                        Checkbox::make('notifications.insurance.status')
+                                            ->label(__('Insurance status reminder')),
+                                    ]),
+                                Section::make(__('Road taxes'))
+                                    ->icon('mdi-highway')
+                                    ->collapsible()
+                                    ->schema([
+                                        Checkbox::make('notifications.tax.period_reminder')
+                                            ->label(__('Road tax period info')),
+                                    ]),
+                            ]),
                     ]),
             ]);
     }
@@ -213,7 +275,7 @@ class VehicleResource extends Resource
                             ->label(__('Powertrain'))
                             ->formatStateUsing(fn(string $state) => $powertrains[$state]['name'] ?? $state),
                     ])
-                        ->space(1),
+                        ->space(),
                     Stack::make([
                         TextColumn::make('license_plate')
                             ->sortable()

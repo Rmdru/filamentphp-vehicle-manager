@@ -6,13 +6,13 @@
         </div>
         <livewire:license-plate :vehicleId="$vehicle->id" />
     </div>
-    <x-filament::section icon="gmdi-notifications-r" collapsible>
+    <x-filament::section icon="gmdi-notifications-active-r" collapsible>
         <x-slot name="heading">
             <span class="flex gap-2">
                 {{ __('Notifications') }}
             </span>
         </x-slot>
-        <livewire:status-notification :vehicleId="$vehicle->id" />
+        <livewire:status-notification />
     </x-filament::section>
     <x-filament::section icon="mdi-list-status" collapsible>
         <x-slot name="heading">

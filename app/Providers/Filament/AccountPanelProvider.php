@@ -14,7 +14,6 @@ use App\Filament\Resources\TaxResource;
 use App\Filament\Resources\TollResource;
 use App\Filament\Resources\VehicleResource;
 use App\Http\Middleware\CreateFirstVehicle;
-use App\Models\Reconditioning;
 use App\Models\Vehicle;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -42,6 +41,7 @@ class AccountPanelProvider extends PanelProvider
             ->default()
             ->id('account')
             ->path('account')
+            ->registration()
             ->login()
             ->colors([
                 'primary' => Color::Blue,

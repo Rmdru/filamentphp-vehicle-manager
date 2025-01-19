@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-language-switch": "^3.1",
+        "codeat3/blade-carbon-icons": "^2.31",
         "codeat3/blade-forkawesome": "^1.10",
         "codeat3/blade-game-icons": "^1.4",
         "codeat3/blade-google-material-design-icons": "^1.19",

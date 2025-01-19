@@ -6,13 +6,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::table('refuelings', function (Blueprint $table) {
             $table->string('payment_method', 20)->nullable()->after('avg_speed');
-            $table->float('discount')->nullable()->after('avg_speed');
+            $table->string('discount', 255)->nullable()->after('avg_speed');
         });
     }
 
