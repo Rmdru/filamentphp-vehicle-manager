@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Vehicle;
-use Filament\Support\Colors\Color;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -22,7 +21,7 @@ class StatusBadge extends Component
     {
         $badge = Vehicle::getStatusBadge($this->vehicleId);
 
-        return view('livewire.->placeholder(__('Unknown')-badge', [
+        return view('livewire.status-badge', [
             'badge' => $badge,
         ]);
     }

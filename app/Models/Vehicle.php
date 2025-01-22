@@ -99,18 +99,18 @@ class Vehicle extends Model
         return $brands[$this->brand] . ' ' . $this->model;
     }
 
-    public function getFuelStatusAttribute(): ?int
+    public function getFuelStatusAttribute(): int
     {
-        if ($this->refuelings->isNotEmpty() && $this->refuelings->where('fuel_type', 'Premium Unleaded')->count() > 0) {
+        if ($this->refuelings->isNotEmpty() && $this->refuelings->where('fuel_type', 'Premium Unleaded (E10)')->count() > 0) {
             $latestRefueling = $this->refuelings->sortByDesc('date')->first();
 
-            if (! empty($latestRefueling) && $latestRefueling->fuel_type = 'Premium Unleaded') {
+            if (! empty($latestRefueling) && $latestRefueling->fuel_type = 'Premium Unleaded (E10)') {
                 $diff = Carbon::parse($latestRefueling->date)->addMonths(2)->diffInDays(now());
                 return (int) max(0, $diff - ($diff * 2));
             }
         }
 
-        return null;
+        return 0;
     }
 
     public function getMaintenanceStatusAttribute(): array
@@ -334,36 +334,35 @@ class Vehicle extends Model
         ];
 
         if (
-            (! is_null($timeTillRefueling) && $timeTillRefueling < 10)
-            || $maintenanceStatus['time'] < 31
-            || $maintenanceStatus['distance'] < 1500
-            || $timeTillApk < 31
-            || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 31)
-            || $timeTillInsuranceEndDate < 31
+            (! empty($timeTillRefueling) && $timeTillRefueling < 10)
+            || (! empty($maintenanceStatus['time']) && $maintenanceStatus['time'] < 31)
+            || (! empty($maintenanceStatus['distance']) && $maintenanceStatus['distance'] < 1500)
+            || (! empty($timeTillApk) && $timeTillApk < 62)
+            || (! empty($timeTillAircoCheck) && $timeTillAircoCheck < 31)
+            || (! empty($timeTillInsuranceEndDate) && $timeTillInsuranceEndDate < 31)
         ) {
             return ! empty($item) ? $priorities['critical'][$item] : $priorities['critical'];
         }
 
         if (
-            (! is_null($timeTillRefueling) && $timeTillRefueling < 30)
-            || $maintenanceStatus['time'] < 62
-            || $maintenanceStatus['distance'] < 3000
-            || $timeTillApk < 62
-            || (! is_null($timeTillAircoCheck) && $timeTillAircoCheck < 62)
-            || $timeTillInsuranceEndDate < 62
-            || $timeTillWashing < 5
-            || $timeTillTirePressure < 10
-            || $timeTillLiquidsCheck < 5
+            (! empty($timeTillRefueling) && $timeTillRefueling < 30)
+            || (! empty($maintenanceStatus['time']) && $maintenanceStatus['time'] < 62)
+            || (! empty($maintenanceStatus['distance']) && $maintenanceStatus['distance'] < 3000)
+            || (! empty($timeTillApk) && $timeTillApk < 62)
+            || (! empty($timeTillAircoCheck) && $timeTillAircoCheck < 62)
+            || (! empty($timeTillInsuranceEndDate) && $timeTillInsuranceEndDate < 62)
+            || (! empty($timeTillWashing) && $timeTillWashing < 5)
+            || (! empty($timeTillTirePressure) && $timeTillTirePressure < 10)
+            || (! empty($timeTillLiquidsCheck) && $timeTillLiquidsCheck < 5)
         ) {
             return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
         }
 
         if (
-            $timeTillInsuranceEndDate < 62
-            || ($timeTillTaxEndDate > 0 && $timeTillTaxEndDate < 31)
-            || $timeTillWashing < 10
-            || $timeTillTirePressure < 20
-            || $timeTillLiquidsCheck < 10
+            (! empty($timeTillTaxEndDate) && $timeTillTaxEndDate < 31)
+            || (! empty($timeTillWashing) && $timeTillWashing < 10)
+            || (! empty($timeTillTirePressure) && $timeTillTirePressure < 20)
+            || (! empty($timeTillLiquidsCheck) && $timeTillLiquidsCheck < 10)
         ) {
             return ! empty($item) ? $priorities['info'][$item] : $priorities['info'];
         }

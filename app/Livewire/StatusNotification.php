@@ -176,9 +176,8 @@ class StatusNotification extends Component
     private function getRefuelingNotification(Vehicle $vehicle): void
     {
         $timeTillRefueling = $vehicle->fuel_status;
-        $refuelingsCount = $vehicle->refuelings->where('fuel_type', 'Premium Unleaded (E10)')->count();
 
-        if (! $timeTillRefueling && ! $refuelingsCount) {
+        if (empty($timeTillRefueling)) {
             return;
         }
 
