@@ -117,9 +117,9 @@ class Vehicle extends Model
     {
         $maintenanceTypes = ['small_maintenance', 'maintenance', 'big_maintenance'];
 
-        if ($this->maintenances->isNotEmpty() && in_array($this->maintenances, $maintenanceTypes)) {
-            $latestMaintenance = $this->maintenances->whereIn('type_maintenance', $maintenanceTypes)->sortByDesc('date')->first();
+        $latestMaintenance = $this->maintenances->whereIn('type_maintenance', $maintenanceTypes)->sortByDesc('date')->first();
 
+        if (! empty($latestMaintenance) && in_array($latestMaintenance->type_maintenance, $maintenanceTypes)) {
             $maintenanceDate = Carbon::parse($latestMaintenance->date ?? now())->addYear();
             $maintenanceDiff = $maintenanceDate->diffInDays(now());
             $timeDiffHumans = $maintenanceDate->diffForHumans();
@@ -129,7 +129,7 @@ class Vehicle extends Model
             $distanceTillMaintenance = 15000 + $latestMaintenance->mileage_start - $this->mileage_latest;
         }
 
-        if ($this->maintenances->isEmpty() || ! in_array($this->maintenances, $maintenanceTypes)) {
+        if (empty($latestMaintenance) || ! in_array($latestMaintenance->type_maintenance, $maintenanceTypes)) {
             $maintenanceDate = now()->addYear();
             $maintenanceDiff = $maintenanceDate->diffInDays(now());
             $timeTillMaintenance = max(0, $maintenanceDiff - ($maintenanceDiff * 2));
