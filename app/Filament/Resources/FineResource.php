@@ -26,6 +26,7 @@ use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BuilderQuery;
 use Illuminate\Support\Facades\Blade;
@@ -375,10 +376,15 @@ class FineResource extends Resource
                             ->maxLength(100),
                         Textarea::make('description')
                             ->label(__('Description')),
-                        TextInput::make('icon')
+                        IconPicker::make('icon')
                             ->label(__('Icon'))
-                            ->helperText(str('<a href="https://blade-ui-kit.com/blade-icons#search" target="_blank">Voorbeelden</a>')->toHtmlString())
-                            ->maxLength(50),
+                            ->sets([
+                                'fontawesome-solid',
+                                'google-material-design-icons',
+                                'simple-icons',
+                                'blade-mdi',
+                            ])
+                            ->columns(3),
                     ]),
                 Fieldset::make('Location')
                     ->label(__('Location'))

@@ -27,6 +27,7 @@ use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
 
@@ -285,9 +286,15 @@ class MaintenanceResource extends Resource
                                     ->stripCharacters(',')
                                     ->prefix('€')
                                     ->step(0.01),
-                                TextInput::make('icon')
+                                IconPicker::make('icon')
                                     ->label(__('Icon'))
-                                    ->helperText(str('<a href="https://blade-ui-kit.com/blade-icons#search" target="_blank">Voorbeelden</a>')->toHtmlString()),
+                                    ->sets([
+                                        'fontawesome-solid',
+                                        'google-material-design-icons',
+                                        'simple-icons',
+                                        'blade-mdi',
+                                    ])
+                                    ->columns(3),
                             ])
                             ->columnSpan(2)
                             ->columns(),

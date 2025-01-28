@@ -21,6 +21,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Guava\FilamentIconPicker\Forms\IconPicker;
 use Livewire\Livewire;
 
 class VehicleResource extends Resource
@@ -182,8 +183,15 @@ class VehicleResource extends Resource
                                             ->label(__('Name')),
                                         TextInput::make('value')
                                             ->label(__('Value')),
-                                        TextInput::make('icon')
-                                            ->label(__('Icon')),
+                                        IconPicker::make('icon')
+                                            ->label(__('Icon'))
+                                            ->sets([
+                                                'fontawesome-solid',
+                                                'google-material-design-icons',
+                                                'simple-icons',
+                                                'blade-mdi',
+                                            ])
+                                            ->columns(3),
                                     ])
                                     ->columnSpan(2)
                                     ->columns(),
@@ -197,43 +205,52 @@ class VehicleResource extends Resource
                                     ->collapsible()
                                     ->schema([
                                         Checkbox::make('notifications.maintenance.maintenance')
-                                            ->label(__('Maintenance reminder')),
+                                            ->label(__('Maintenance reminder'))
+                                            ->default(true),
                                         Checkbox::make('notifications.maintenance.apk')
-                                            ->label(__('MOT reminder')),
+                                            ->label(__('MOT reminder'))
+                                            ->default(true),
                                         Checkbox::make('notifications.maintenance.airco_check')
-                                            ->label(__('Airco check reminder')),
+                                            ->label(__('Airco check reminder'))
+                                            ->default(true),
                                         Checkbox::make('notifications.maintenance.liquids_check')
-                                            ->label(__('Liquids check reminder')),
+                                            ->label(__('Liquids check reminder'))
+                                            ->default(true),
                                         Checkbox::make('notifications.maintenance.tire_pressure_check')
-                                            ->label(__('Tire pressure check reminder')),
+                                            ->label(__('Tire pressure check reminder'))
+                                            ->default(true),
                                     ]),
                                 Section::make(__('Reconditioning'))
                                     ->icon('mdi-car-wash')
                                     ->collapsible()
                                     ->schema([
                                         Checkbox::make('notifications.reconditioning.washing')
-                                            ->label(__('Washing reminder')),
+                                            ->label(__('Washing reminder'))
+                                            ->default(true),
                                     ]),
                                 Section::make(__('Refuelings'))
                                     ->icon('gmdi-local-gas-station-r')
                                     ->collapsible()
                                     ->schema([
                                         Checkbox::make('notifications.refueling.old_fuel')
-                                            ->label(__('Outdated fuel (only premium unleaded (E10))')),
+                                            ->label(__('Outdated fuel (only premium unleaded (E10))'))
+                                            ->default(true),
                                     ]),
                                 Section::make(__('Insurances'))
                                     ->icon('mdi-shield-car')
                                     ->collapsible()
                                     ->schema([
                                         Checkbox::make('notifications.insurance.status')
-                                            ->label(__('Insurance status reminder')),
+                                            ->label(__('Insurance status reminder'))
+                                            ->default(true),
                                     ]),
                                 Section::make(__('Road taxes'))
                                     ->icon('mdi-highway')
                                     ->collapsible()
                                     ->schema([
                                         Checkbox::make('notifications.tax.period_reminder')
-                                            ->label(__('Road tax period info')),
+                                            ->label(__('Road tax period info'))
+                                            ->default(true),
                                     ]),
                             ]),
                     ]),

@@ -20,6 +20,7 @@
         "codeat3/blade-simple-icons": "^3.12",
         "codeat3/blade-unicons": "^1.8",
         "filament/filament": "^3.2",
+        "guava/filament-icon-picker": "^2.2",
         "laravel-frontend-presets/tall": "^8.0",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
