@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\MaintenancePaymentMethod;
 use App\Filament\Resources\MaintenanceResource\Pages;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
@@ -36,7 +38,7 @@ class MaintenanceResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Maintenance');
+        return __('Maintenance & repairs');
     }
 
     public static function getPluralModelLabel(): string
@@ -240,7 +242,7 @@ class MaintenanceResource extends Resource
                 Fieldset::make('tasks')
                     ->label(__('Tasks'))
                     ->schema([
-                        Forms\Components\ToggleButtons::make('type_maintenance')
+                        ToggleButtons::make('type_maintenance')
                             ->label(__('Type maintenance'))
                             ->inline()
                             ->grouped()
@@ -267,6 +269,11 @@ class MaintenanceResource extends Resource
                             ->required()
                             ->prefix('€')
                             ->step(0.01),
+                        ToggleButtons::make('payment_method')
+                            ->label(__('Payment method'))
+                            ->inline()
+                            ->grouped()
+                            ->options(MaintenancePaymentMethod::class),
                         Repeater::make('tasks')
                             ->label(__('Tasks'))
                             ->schema([

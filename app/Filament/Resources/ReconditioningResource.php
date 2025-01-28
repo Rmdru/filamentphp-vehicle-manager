@@ -32,7 +32,7 @@ class ReconditioningResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('Reconditioning');
+        return __('Reconditioning & washing');
     }
 
     public static function getPluralModelLabel(): string

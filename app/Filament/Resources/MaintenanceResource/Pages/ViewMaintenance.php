@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MaintenanceResource\Pages;
 
+use App\Enums\MaintenancePaymentMethod;
 use App\Filament\Resources\MaintenanceResource;
 use App\Models\Maintenance;
 use Filament\Infolists\Components\Fieldset;
@@ -84,6 +85,9 @@ class ViewMaintenance extends ViewRecord
                             ->placeholder(__('Unknown'))
                             ->icon('mdi-hand-coin-outline')
                             ->money('EUR'),
+                        TextEntry::make('payment_method')
+                            ->label(__('Payment method'))
+                            ->placeholder(__('None')),
                         RepeatableEntry::make('tasks')
                             ->label(__('Tasks'))
                             ->schema([

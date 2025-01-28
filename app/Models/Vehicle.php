@@ -126,7 +126,7 @@ class Vehicle extends Model
 
             $timeTillMaintenance = max(0, $maintenanceDiff - ($maintenanceDiff * 2));
 
-            $distanceTillMaintenance = 15000 + $latestMaintenance->mileage_start - $this->mileage_latest;
+            $distanceTillMaintenance = 15000 + $latestMaintenance->mileage - $this->mileage_latest;
         }
 
         if (empty($latestMaintenance) || ! in_array($latestMaintenance->type_maintenance, $maintenanceTypes)) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\MaintenancePaymentMethod;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,7 @@ class Maintenance extends Model
         'tasks',
         'total_price',
         'mileage',
+        'payment_method',
     ];
 
     protected $casts = [
@@ -40,6 +42,7 @@ class Maintenance extends Model
         'apk' => 'boolean',
         'apk_date' => 'date:Y-m-d',
         'tasks' => 'array',
+        'payment_method' => MaintenancePaymentMethod::class,
     ];
 
     /**
