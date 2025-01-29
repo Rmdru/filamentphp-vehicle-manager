@@ -64,6 +64,10 @@ class ParkingResource extends Resource
                     ->label(__('Location'))
                     ->sortable()
                     ->icon('gmdi-location-on-r'),
+                TextColumn::make('company')
+                    ->label(__('Company'))
+                    ->sortable()
+                    ->icon('mdi-office-building'),
                 TextColumn::make('price')
                     ->label(__('Price'))
                     ->icon('mdi-hand-coin-outline')
@@ -199,6 +203,9 @@ class ParkingResource extends Resource
                         TextInput::make('location')
                             ->label(__('Location'))
                             ->required()
+                            ->maxLength(100),
+                        TextInput::make('company')
+                            ->label(__('Company'))
                             ->maxLength(100),
                     ]),
                 Fieldset::make('Period')

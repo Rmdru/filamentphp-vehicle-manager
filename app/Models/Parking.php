@@ -24,6 +24,7 @@ class Parking extends Model
         'location',
         'payment_method',
         'price',
+        'company',
     ];
 
     protected $casts = [
