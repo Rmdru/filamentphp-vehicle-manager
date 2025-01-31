@@ -2,51 +2,52 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\InsuranceResource\Pages;
-use App\Filament\Resources\InsuranceResource\RelationManagers;
-use App\Models\Insurance;
+use App\Filament\Resources\VignetteResource\Pages;
 use App\Models\Vehicle;
+use App\Models\Vignette;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Panel;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Livewire\Livewire;
 
-class InsuranceResource extends Resource
+class VignetteResource extends Resource
 {
-    protected static ?string $model = Insurance::class;
+    protected static ?string $model = Vignette::class;
 
-    protected static ?string $navigationIcon = 'mdi-shield-car';
+    protected static ?string $navigationIcon = 'mdi-sticker-text';
 
     public static function getNavigationLabel(): string
     {
-        return __('Insurances');
+        return __('Vignette');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('Insurances');
+        return __('Vignettes');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Insurance');
+        return __('Vignette');
     }
 
     public static function table(Table $table): Table
     {
-        $insuranceTypes = config('insurances.types');
-
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
@@ -54,46 +55,51 @@ class InsuranceResource extends Resource
                 });
             })
             ->columns([
-                Tables\Columns\Layout\Split::make([
-                    TextColumn::make('start_date')
+                Split::make([
+                    TextColumn::make('country')
                         ->sortable()
+                        ->formatStateUsing(function ($record) {
+                            return Livewire::mount('CountryFlag', [
+                                'country' => $record->country,
+                                'showName' => true,
+                            ]);
+                        })
+                        ->html()
+                        ->label(__('Country')),
+                    TextColumn::make('start_date')
                         ->label(__('Start date'))
+                        ->sortable()
                         ->date()
-                        ->formatStateUsing(function (Insurance $insurance) {
-                            if (empty($insurance->end_date)) {
-                                $insurance->end_date = __('Unknown');
+                        ->toggledHiddenByDefault()
+                        ->icon('gmdi-calendar-month-r')
+                        ->formatStateUsing(function (Vignette $vignette) {
+                            if (empty($vignette->end_date)) {
+                                $vignette->end_date = __('Unknown');
                             }
 
-                            return $insurance->start_date->isoFormat('MMM D, Y') . ' - ' . $insurance->end_date->isoFormat('MMM D, Y');
-                        })
-                        ->icon('gmdi-calendar-month-r'),
-                    TextColumn::make('type')
-                        ->label(__('Type'))
-                        ->sortable()
-                        ->badge()
-                        ->default('')
-                        ->formatStateUsing(fn(string $state): string => $insuranceTypes[$state]['name'] ?? __('Unknown'))
-                        ->icon(fn(string $state): string => $insuranceTypes[$state]['icon'])
-                        ->color('gray'),
-                    TextColumn::make('insurance_company')
-                        ->label(__('Insurance company'))
-                        ->sortable()
-                        ->icon('mdi-office-building'),
+                            return $vignette->start_date->isoFormat('MMM D, Y') . ' - ' . $vignette->end_date->isoFormat('MMM D, Y');
+                        }),
                     TextColumn::make('price')
-                        ->label(__('Price per month'))
+                        ->label(__('Price'))
                         ->icon('mdi-hand-coin-outline')
                         ->sortable()
                         ->money('EUR')
                         ->summarize([
-                            Average::make()->label(__('Total price average')),
-                            Range::make()->label(__('Total price range')),
+                            Average::make()->label(__('Price average')),
+                            Range::make()->label(__('Price range')),
                         ]),
-                    TextColumn::make('invoice_day')
-                        ->label(__('Invoice day'))
-                        ->icon('gmdi-calendar-month-r')
+                ])
+                    ->from('lg'),
+                Panel::make([
+                    TextColumn::make('areas')
+                        ->label(__('Areas'))
                         ->sortable()
-                        ->suffix(__('th of the month')),
-                ]),
+                        ->icon('mdi-map-marker-radius'),
+                    TextColumn::make('comments')
+                        ->icon('gmdi-text-fields-r')
+                        ->label(__('Comments')),
+                ])
+                    ->collapsible(),
             ])
             ->filters([
                 Filter::make('date')
@@ -145,16 +151,22 @@ class InsuranceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->defaultSort('start_date', 'desc');
+            ]);
     }
 
     public static function form(Form $form): Form
     {
+        $countries = config('countries');
+        $countriesOptions = [];
+
+        foreach ($countries as $key => $value) {
+            $countriesOptions[$key] = $value['name'];
+        }
+
         return $form
             ->schema([
-                Fieldset::make('Basic')
-                    ->label(__('Basic'))
+                Fieldset::make('vignette')
+                    ->label(__('Vignette'))
                     ->schema([
                         Select::make('vehicle_id')
                             ->disabled()
@@ -173,59 +185,56 @@ class InsuranceResource extends Resource
 
                                 return $vehicles->pluck('car', 'id');
                             }),
-                        TextInput::make('insurance_company')
-                            ->label(__('Insurance company'))
-                            ->required()
-                            ->maxLength(50),
-                        Select::make('type')
-                            ->label(__('Type'))
-                            ->required()
-                            ->searchable()
-                            ->native(false)
-                            ->options(array_column(config('insurances.types'), 'name')),
-                    ]),
-                Fieldset::make('Payment')
-                    ->label(__('Payment'))
-                    ->schema([
                         TextInput::make('price')
-                            ->label(__('Price per month'))
+                            ->label(__('Price'))
                             ->numeric()
                             ->mask(RawJs::make('$money($input)'))
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
                             ->step(0.01),
-                        TextInput::make('invoice_day')
-                            ->label(__('Invoice day'))
-                            ->numeric()
-                            ->minValue(1)
-                            ->maxValue(31)
-                            ->required()
-                            ->suffix(__('th of the month')),
                     ]),
-                Fieldset::make('Period')
-                    ->label(__('Period'))
+                Fieldset::make('validity')
+                    ->label(__('Validity'))
                     ->schema([
                         DatePicker::make('start_date')
                             ->label(__('Start date'))
-                            ->required()
                             ->native(false)
-                            ->displayFormat('d-m-Y')
-                            ->maxDate(now()),
+                            ->displayFormat('d-m-Y'),
                         DatePicker::make('end_date')
                             ->label(__('End date'))
                             ->native(false)
                             ->displayFormat('d-m-Y'),
+                        Select::make('country')
+                            ->label(__('Country'))
+                            ->searchable()
+                            ->native(false)
+                            ->options($countriesOptions),
+                        Textarea::make('areas')
+                            ->label(__('Areas')),
+                    ]),
+                Fieldset::make('other')
+                    ->label(__('Other'))
+                    ->schema([
+                        Textarea::make('comments')
+                            ->label(__('Comments')),
                     ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInsurances::route('/'),
-            'create' => Pages\CreateInsurance::route('/create'),
-            'edit' => Pages\EditInsurance::route('/{record}/edit'),
+            'index' => Pages\ListVignettes::route('/'),
+            'create' => Pages\CreateVignette::route('/create'),
+            'edit' => Pages\EditVignette::route('/{record}/edit'),
         ];
     }
 }

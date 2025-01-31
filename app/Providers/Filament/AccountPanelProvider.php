@@ -13,6 +13,7 @@ use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\TaxResource;
 use App\Filament\Resources\TollResource;
 use App\Filament\Resources\VehicleResource;
+use App\Filament\Resources\VignetteResource;
 use App\Http\Middleware\CreateFirstVehicle;
 use App\Models\Vehicle;
 use Filament\Http\Middleware\Authenticate;
@@ -97,6 +98,7 @@ class AccountPanelProvider extends PanelProvider
                             ...ParkingResource::getNavigationItems(),
                             ...TollResource::getNavigationItems(),
                             ...FineResource::getNavigationItems(),
+                            ...VignetteResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))

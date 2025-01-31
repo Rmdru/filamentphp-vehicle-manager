@@ -53,7 +53,7 @@ class Timeline extends Page
                     $query->whereIn('type_maintenance', [
                         'small_maintenance',
                         'maintenance',
-                        'big_maintenance'
+                        'big_maintenance',
                     ]);
                 },
                 'refuelings',
@@ -63,6 +63,7 @@ class Timeline extends Page
                 'tolls',
                 'fines',
                 'reconditionings',
+                'vignettes',
             ])
             ->latest()
             ->first();
@@ -144,7 +145,6 @@ class Timeline extends Page
         }
 
         foreach ($vehicle->reconditionings as $reconditionings) {
-
             $typeIcon = [];
             $type = [];
 
@@ -169,13 +169,21 @@ class Timeline extends Page
             $reconditionings->icon = 'mdi-car-wash';
             $reconditionings->typeIcon = $typeIcon;
             $reconditionings->type = $type;
-            $reconditionings->executor = match($reconditionings->executor) {
+            $reconditionings->executor = match ($reconditionings->executor) {
                 'myself' => __('Myself'),
                 'someone' => __('Someone else'),
                 'company' => __('Company'),
             };
 
             $vehicle->maintenances->push($reconditionings);
+        }
+
+        foreach ($vehicle->vignettes as $vignette) {
+            $vignette->typeIcon = 'mdi-sticker-text';
+            $vignette->icon° = 'mdi-sticker-text';
+            $vignette->date = $vignette->start_date;
+
+            $vehicle->maintenances->push($vignette);
         }
 
         $items = $vehicle->maintenances->merge($vehicle->refuelings)
@@ -204,7 +212,7 @@ class Timeline extends Page
                     ->whereIn('type_maintenance', [
                         'small_maintenance',
                         'maintenance',
-                        'big_maintenance'
+                        'big_maintenance',
                     ])
                     ->orderByDesc('date')
                     ->limit(1),

@@ -6,7 +6,6 @@ use App\Models\Vehicle;
 use Filament\Actions\Concerns\InteractsWithRecord;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Set;
 use Filament\Pages\Dashboard\Actions\FilterAction;
 use Filament\Pages\Dashboard\Concerns\HasFiltersAction;
@@ -49,7 +48,6 @@ class Dashboard extends Page
                             ->button()
                             ->action(function (Set $set) {
                                 $this->filters = [];
-                                $set('vehicleId', null);
                                 $set('startDate', null);
                                 $set('endDate', null);
 
@@ -57,22 +55,12 @@ class Dashboard extends Page
                             })
                             ->color('gray'),
                     ]),
-                    Select::make('vehicleId')
-                        ->native(false)
-                        ->label(__('Vehicle'))
-                        ->options(function (Vehicle $vehicle) {
-                            $vehicles = Vehicle::get();
-
-                            $vehicles->car = $vehicles->map(function ($index) {
-                                return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
-                            });
-
-                            return $vehicles->pluck('car', 'id');
-                        }),
                     DatePicker::make('startDate')
+                        ->label(__('Start date'))
                         ->native(false)
                         ->maxDate(now()),
                     DatePicker::make('endDate')
+                        ->label(__('End date'))
                         ->native(false)
                         ->maxDate(now()),
                 ]),

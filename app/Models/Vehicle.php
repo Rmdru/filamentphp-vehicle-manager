@@ -429,4 +429,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Reconditioning::class);
     }
+
+    public function vignettes(): HasMany
+    {
+        return $this->hasMany(Vignette::class);
+    }
 }

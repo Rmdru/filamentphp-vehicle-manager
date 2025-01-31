@@ -6,10 +6,10 @@ use App\Filament\Resources\RefuelingResource\Pages;
 use App\Models\Refueling;
 use App\Models\Vehicle;
 use Carbon\Carbon;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
@@ -162,11 +162,7 @@ class RefuelingResource extends Resource
                             ->sortable()
                             ->label(__('Fuel consumption'))
                             ->icon(function (Refueling $refueling) {
-                                if (str($refueling->fuel_type)->contains('electric', true)) {
-                                    return 'fas-charging-station';
-                                }
-
-                                return 'gmdi-local-gas-station-r';
+                                return 'mdi-engine';
                             })
                             ->badge()
                             ->color(function (Refueling $refueling) {
@@ -191,7 +187,7 @@ class RefuelingResource extends Resource
                             ->label(__('Amount'))
                             ->icon(function (Refueling $refueling) {
                                 if (str($refueling->fuel_type)->contains('electric', true)) {
-                                    return 'gmdi-electric-bolt-r';
+                                    return 'gmdi-battery-full-r';
                                 }
 
                                 return 'mdi-fuel';
@@ -580,7 +576,7 @@ class RefuelingResource extends Resource
                             ->label(__('Average speed'))
                             ->numeric()
                             ->suffix('km/h'),
-                        Forms\Components\Textarea::make('comments')
+                        Textarea::make('comments')
                             ->label(__('Comments')),
                     ]),
                 Fieldset::make('payment')
