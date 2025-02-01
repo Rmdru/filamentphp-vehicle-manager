@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\VignetteResource\Pages;
+use App\Filament\Resources\EnvironmentalStickerResource\Pages;
+use App\Filament\Resources\EnvironmentalStickerResource\RelationManagers;
+use App\Models\EnvironmentalSticker;
 use App\Models\Vehicle;
-use App\Models\Vignette;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -25,25 +26,25 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Livewire;
 
-class VignetteResource extends Resource
+class EnvironmentalStickerResource extends Resource
 {
-    protected static ?string $model = Vignette::class;
+    protected static ?string $model = EnvironmentalSticker::class;
 
-    protected static ?string $navigationIcon = 'mdi-sticker-text';
+    protected static ?string $navigationIcon = 'fas-leaf';
 
     public static function getNavigationLabel(): string
     {
-        return __('Vignette');
+        return __('Environmental sticker');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('Vignettes');
+        return __('Environmental stickers');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Vignette');
+        return __('Environmental sticker');
     }
 
     public static function table(Table $table): Table
@@ -70,14 +71,14 @@ class VignetteResource extends Resource
                         ->label(__('Start date'))
                         ->sortable()
                         ->date()
-                        ->hidden(fn(Vignette $vignette) => empty($vignette->start_date) || empty($vignette->end_date))
+                        ->hidden(fn(EnvironmentalSticker $environmentalSticker) => empty($environmentalSticker->start_date) || empty($environmentalSticker->end_date))
                         ->icon('gmdi-calendar-month-r')
-                        ->formatStateUsing(function (Vignette $vignette) {
-                            if (empty($vignette->end_date)) {
-                                $vignette->end_date = __('Unknown');
+                        ->formatStateUsing(function (EnvironmentalSticker $environmentalSticker) {
+                            if (empty($environmentalSticker->end_date)) {
+                                $environmentalSticker->end_date = __('Unknown');
                             }
 
-                            return $vignette->start_date->isoFormat('MMM D, Y') . ' - ' . $vignette->end_date->isoFormat('MMM D, Y');
+                            return $environmentalSticker->start_date->isoFormat('MMM D, Y') . ' - ' . $environmentalSticker->end_date->isoFormat('MMM D, Y');
                         }),
                     TextColumn::make('price')
                         ->label(__('Price'))
@@ -165,8 +166,8 @@ class VignetteResource extends Resource
 
         return $form
             ->schema([
-                Fieldset::make('vignette')
-                    ->label(__('Vignette'))
+                Fieldset::make('environmental_sticker')
+                    ->label(__('Environmental sticker'))
                     ->schema([
                         Select::make('vehicle_id')
                             ->disabled()
@@ -232,9 +233,9 @@ class VignetteResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListVignettes::route('/'),
-            'create' => Pages\CreateVignette::route('/create'),
-            'edit' => Pages\EditVignette::route('/{record}/edit'),
+            'index' => Pages\ListEnvironmentalStickers::route('/'),
+            'create' => Pages\CreateEnvironmentalSticker::route('/create'),
+            'edit' => Pages\EditEnvironmentalSticker::route('/{record}/edit'),
         ];
     }
 }

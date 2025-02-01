@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\Timeline;
+use App\Filament\Resources\EnvironmentalStickerResource;
 use App\Filament\Resources\FineResource;
 use App\Filament\Resources\InsuranceResource;
 use App\Filament\Resources\MaintenanceResource;
@@ -99,6 +100,7 @@ class AccountPanelProvider extends PanelProvider
                             ...TollResource::getNavigationItems(),
                             ...FineResource::getNavigationItems(),
                             ...VignetteResource::getNavigationItems(),
+                            ...EnvironmentalStickerResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))
