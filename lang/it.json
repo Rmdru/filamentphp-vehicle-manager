@@ -276,10 +276,12 @@
     "Winter": "Inverno",
     "Winter tires": "Pneumatici invernali",
     "auth.failed": "auth.failed",
+    "forever": "per sempre",
     "pagination.goto_page": "pagination.goto_page",
     "pagination.next": "pagination.next",
     "pagination.previous": "pagination.previous",
     "powertrain": "powertrain",
     "status": "status",
-    "th of the month": "il giorno del mese"
+    "th of the month": "il giorno del mese",
+    "unknown": "sconosciuto"
 }

@@ -275,10 +275,12 @@
     "Winter": "Winter",
     "Winter tires": "Winterbanden",
     "auth.failed": "auth.failed",
+    "forever": "voor altijd",
     "pagination.goto_page": "pagination.goto_page",
     "pagination.next": "pagination.next",
     "pagination.previous": "pagination.previous",
     "powertrain": "powertrain",
     "status": "status",
-    "th of the month": "de van de maand"
+    "th of the month": "de van de maand",
+    "unknown": "onbekend"
 }
