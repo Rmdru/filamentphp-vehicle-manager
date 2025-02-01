@@ -434,4 +434,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Vignette::class);
     }
+
+    public function environmentalStickers(): HasMany
+    {
+        return $this->hasMany(EnvironmentalSticker::class);
+    }
 }

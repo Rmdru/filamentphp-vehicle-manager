@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('environmental_stickers', function (Blueprint $table) {
             $table->uuid('id');
             $table->foreignUuid('vehicle_id');
-            $table->date('start_date')->nullable();
+            $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->float('price');
             $table->string('country', 255)->nullable();

@@ -64,6 +64,7 @@ class Timeline extends Page
                 'fines',
                 'reconditionings',
                 'vignettes',
+                'environmentalStickers',
             ])
             ->latest()
             ->first();
@@ -180,10 +181,18 @@ class Timeline extends Page
 
         foreach ($vehicle->vignettes as $vignette) {
             $vignette->typeIcon = 'mdi-sticker-text';
-            $vignette->icon° = 'mdi-sticker-text';
+            $vignette->icon = 'mdi-sticker-text';
             $vignette->date = $vignette->start_date;
 
             $vehicle->maintenances->push($vignette);
+        }
+
+        foreach ($vehicle->environmentalStickers as $environmentalSticker) {
+            $environmentalSticker->typeIcon = 'mdi-sticker-text';
+            $environmentalSticker->icon = 'mdi-sticker-text';
+            $environmentalSticker->date = $environmentalSticker->start_date;
+
+            $vehicle->maintenances->push($environmentalSticker);
         }
 
         $items = $vehicle->maintenances->merge($vehicle->refuelings)

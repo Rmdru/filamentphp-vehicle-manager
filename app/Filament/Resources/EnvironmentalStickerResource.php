@@ -71,14 +71,14 @@ class EnvironmentalStickerResource extends Resource
                         ->label(__('Start date'))
                         ->sortable()
                         ->date()
-                        ->hidden(fn(EnvironmentalSticker $environmentalSticker) => empty($environmentalSticker->start_date) || empty($environmentalSticker->end_date))
                         ->icon('gmdi-calendar-month-r')
                         ->formatStateUsing(function (EnvironmentalSticker $environmentalSticker) {
-                            if (empty($environmentalSticker->end_date)) {
-                                $environmentalSticker->end_date = __('Unknown');
-                            }
-
-                            return $environmentalSticker->start_date->isoFormat('MMM D, Y') . ' - ' . $environmentalSticker->end_date->isoFormat('MMM D, Y');
+                            return $environmentalSticker->start_date->isoFormat('MMM D, Y')
+                                . ' - ' .
+                                (! empty($environmentalSticker->end_date)
+                                    ? $environmentalSticker->end_date->isoFormat('MMM D, Y')
+                                    : __('forever')
+                                );
                         }),
                     TextColumn::make('price')
                         ->label(__('Price'))
@@ -200,6 +200,7 @@ class EnvironmentalStickerResource extends Resource
                     ->schema([
                         DatePicker::make('start_date')
                             ->label(__('Start date'))
+                            ->required()
                             ->native(false)
                             ->displayFormat('d-m-Y'),
                         DatePicker::make('end_date')

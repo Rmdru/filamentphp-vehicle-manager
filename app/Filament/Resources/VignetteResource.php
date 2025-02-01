@@ -70,14 +70,14 @@ class VignetteResource extends Resource
                         ->label(__('Start date'))
                         ->sortable()
                         ->date()
-                        ->hidden(fn(Vignette $vignette) => empty($vignette->start_date) || empty($vignette->end_date))
                         ->icon('gmdi-calendar-month-r')
                         ->formatStateUsing(function (Vignette $vignette) {
-                            if (empty($vignette->end_date)) {
-                                $vignette->end_date = __('Unknown');
-                            }
-
-                            return $vignette->start_date->isoFormat('MMM D, Y') . ' - ' . $vignette->end_date->isoFormat('MMM D, Y');
+                            return $vignette->start_date->isoFormat('MMM D, Y')
+                                . ' - ' .
+                                (! empty($vignette->end_date)
+                                    ? $vignette->end_date->isoFormat('MMM D, Y')
+                                    : __('forever')
+                                );
                         }),
                     TextColumn::make('price')
                         ->label(__('Price'))
@@ -199,6 +199,7 @@ class VignetteResource extends Resource
                     ->schema([
                         DatePicker::make('start_date')
                             ->label(__('Start date'))
+                            ->required()
                             ->native(false)
                             ->displayFormat('d-m-Y'),
                         DatePicker::make('end_date')

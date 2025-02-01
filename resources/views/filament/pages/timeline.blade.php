@@ -208,7 +208,7 @@
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
-                        {{ $item->start_time->isoFormat('MMM D, Y H:mm') . ' - ' . $item->end_time->isoFormat('MMM D, Y H:mm') }}
+                        {{ $item->start_time->isoFormat('MMM D, Y H:mm') . ' - ' . (! empty($item->end_date) ? $item->end_date->isoFormat('MMM D, Y') : __('unknown')) }}
                     </div>
                     <div class="flex gap-2 items-center">
                         <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
@@ -364,7 +364,7 @@
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
-                        {{ $item->start_date->isoFormat('MMM D, Y') . ' - ' . $item->end_date->isoFormat('MMM D, Y') }}
+                        {{ $item->start_date->isoFormat('MMM D, Y') . ' - ' . (! empty($item->end_date) ? $item->end_date->isoFormat('MMM D, Y') : __('forever')) }}
                     </div>
                     <div class="flex gap-2 items-center">
                         <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
@@ -372,6 +372,31 @@
                     </div>
                 </div>
                 <x-filament::link href="/account/vignettes/{{ $item->id }}/edit" color="white"
+                                  icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                    {{ __('Edit') }}
+                </x-filament::link>
+            </div>
+        </x-filament::section>
+        @elseif($item instanceof App\Models\EnvironmentalSticker)
+        <x-filament::section icon="mdi-sticker-text" class="mt-6" collapsible>
+            <x-slot name="heading">
+                {{ __('Environmental sticker') }}
+            </x-slot>
+            <div class="flex gap-8 items-center">
+                <div class="flex gap-2 flex-col">
+                    <livewire:country-flag :country="$item->country" :showName="true" />
+                </div>
+                <div class="flex gap-2 flex-col">
+                    <div class="flex gap-2 items-center">
+                        <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
+                        {{ $item->start_date->isoFormat('MMM D, Y') . ' - ' . (! empty($item->end_date) ? $item->end_date->isoFormat('MMM D, Y') : __('forever')) }}
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
+                        € {{ $item->price }}
+                    </div>
+                </div>
+                <x-filament::link href="/account/environmental-stickers/{{ $item->id }}/edit" color="white"
                                   icon="gmdi-edit-r" class="last-of-type:ml-auto">
                     {{ __('Edit') }}
                 </x-filament::link>
