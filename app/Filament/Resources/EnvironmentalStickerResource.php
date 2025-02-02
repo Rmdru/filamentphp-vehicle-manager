@@ -3,9 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EnvironmentalStickerResource\Pages;
-use App\Filament\Resources\EnvironmentalStickerResource\RelationManagers;
 use App\Models\EnvironmentalSticker;
 use App\Models\Vehicle;
+use App\Traits\CountryOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -28,13 +28,15 @@ use Livewire\Livewire;
 
 class EnvironmentalStickerResource extends Resource
 {
+    use CountryOptions;
+
     protected static ?string $model = EnvironmentalSticker::class;
 
     protected static ?string $navigationIcon = 'fas-leaf';
 
     public static function getNavigationLabel(): string
     {
-        return __('Environmental sticker');
+        return __('Environmental stickers');
     }
 
     public static function getPluralModelLabel(): string
@@ -157,13 +159,6 @@ class EnvironmentalStickerResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $countries = config('countries');
-        $countriesOptions = [];
-
-        foreach ($countries as $key => $value) {
-            $countriesOptions[$key] = $value['name'];
-        }
-
         return $form
             ->schema([
                 Fieldset::make('environmental_sticker')
@@ -181,10 +176,10 @@ class EnvironmentalStickerResource extends Resource
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                        return $index->full_name_with_license_plate;
                                 });
 
-                                return $vehicles->pluck('car', 'id');
+                    return $vehicles->pluck('full_name_with_license_plate', 'id');
                             }),
                         TextInput::make('price')
                             ->label(__('Price'))
@@ -211,7 +206,7 @@ class EnvironmentalStickerResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
-                            ->options($countriesOptions),
+                ->options((new self())->getCountryOptions()),
                         Textarea::make('areas')
                             ->label(__('Areas')),
                     ]),
@@ -222,13 +217,6 @@ class EnvironmentalStickerResource extends Resource
                             ->label(__('Comments')),
                     ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

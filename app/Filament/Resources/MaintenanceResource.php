@@ -7,7 +7,6 @@ use App\Filament\Resources\MaintenanceResource\Pages;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
 use Carbon\Carbon;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
@@ -216,14 +215,14 @@ class MaintenanceResource extends Resource
                             ->native(false)
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
-                            ->options(function (Vehicle $vehicle) use ($brands) {
+                            ->options(function (Vehicle $vehicle) {
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
-                                $vehicles->car = $vehicles->map(function ($index) use ($brands) {
-                                    return $index->car = $brands[$index->brand] . ' ' . $index->model . ' (' . $index->license_plate . ')';
+                                $vehicles->car = $vehicles->map(function ($index) {
+                                    return $index->full_name_with_license_plate;
                                 });
 
-                                return $vehicles->pluck('car', 'id');
+                                return $vehicles->pluck('full_name_with_license_plate', 'id');
                             }),
                         DatePicker::make('date')
                             ->label(__('Date'))

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\RefuelingResource\Pages;
 use App\Models\Refueling;
 use App\Models\Vehicle;
+use App\Traits\FuelTypeOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -33,6 +34,8 @@ use Illuminate\Support\HtmlString;
 
 class RefuelingResource extends Resource
 {
+    use FuelTypeOptions;
+
     protected static ?string $model = Refueling::class;
 
     protected static ?string $navigationIcon = 'gmdi-local-gas-station';
@@ -91,17 +94,18 @@ class RefuelingResource extends Resource
                             ->sortable()
                             ->icon('gmdi-location-on-s')
                             ->searchable()
-                            ->summarize(Summarizer::make()
-                                ->label(__('Most visited gas station'))
-                                ->using(function (BuilderQuery $query): string {
-                                    return $query->select('gas_station')
-                                        ->selectRaw('COUNT(*) as count')
-                                        ->groupBy('gas_station')
-                                        ->orderByDesc('count')
-                                        ->limit(1)
-                                        ->pluck('gas_station')
-                                        ->first();
-                                })
+                            ->summarize(
+                                Summarizer::make()
+                                    ->label(__('Most visited gas station'))
+                                    ->using(function (BuilderQuery $query): string {
+                                        return $query->select('gas_station')
+                                            ->selectRaw('COUNT(*) as count')
+                                            ->groupBy('gas_station')
+                                            ->orderByDesc('count')
+                                            ->limit(1)
+                                            ->pluck('gas_station')
+                                            ->first();
+                                    })
                             ),
                     ])
                         ->space(1),
@@ -271,14 +275,12 @@ class RefuelingResource extends Resource
                                 'country_road' => 'success',
                                 'city' => 'warning',
                                 'trailer' => 'danger',
-
                             })
                             ->icon(fn(string $state): string => match ($state) {
                                 'motorway' => 'mdi-highway',
                                 'country_road' => 'gmdi-landscape-s',
                                 'city' => 'gmdi-location-city-r',
                                 'trailer' => 'mdi-truck-trailer',
-
                             })
                             ->listWithLineBreaks()
                             ->formatStateUsing(fn(string $state) => match ($state) {
@@ -392,12 +394,6 @@ class RefuelingResource extends Resource
     {
         $vehicle = Vehicle::selected()->onlyDrivable()->first();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
-        $fuelTypes = trans('fuel_types');
-        $fuelTypeOptions = [];
-
-        foreach ($vehicle->fuel_types as $value) {
-            $fuelTypeOptions[$value] = $fuelTypes[$value];
-        }
 
         return $form
             ->schema([
@@ -416,10 +412,10 @@ class RefuelingResource extends Resource
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                    return $index->full_name_with_license_plate;
                                 });
 
-                                return $vehicles->pluck('car', 'id');
+                                return $vehicles->pluck('full_name_with_license_plate', 'id');
                             }),
                         DatePicker::make('date')
                             ->label(__('Date'))
@@ -440,7 +436,7 @@ class RefuelingResource extends Resource
                             ->label(__('Fuel type'))
                             ->required()
                             ->native(false)
-                            ->options($fuelTypeOptions),
+                            ->options((new self())->getFuelTypeOptions()),
                         TextInput::make('amount')
                             ->label(__('Amount'))
                             ->numeric()

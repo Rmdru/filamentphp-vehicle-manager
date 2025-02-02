@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TaxResource\Pages;
-use App\Filament\Resources\TaxResource\RelationManagers;
 use App\Models\Tax;
 use App\Models\Vehicle;
 use Carbon\Carbon;
@@ -150,10 +149,10 @@ class TaxResource extends Resource
                         $vehicles = Vehicle::onlyDrivable()->get();
 
                         $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                            return $index->full_name_with_license_plate;
                         });
 
-                        return $vehicles->pluck('car', 'id');
+                        return $vehicles->pluck('full_name_with_license_plate', 'id');
                     }),
                 DatePicker::make('start_date')
                     ->label(__('Start date'))

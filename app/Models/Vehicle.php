@@ -99,6 +99,13 @@ class Vehicle extends Model
         return $brands[$this->brand] . ' ' . $this->model;
     }
 
+    public function getFullNameWithLicensePlateAttribute(): string
+    {
+        $brands = config('vehicles.brands');
+
+        return $brands[$this->brand] . ' ' . $this->model . ' (' . $this->license_plate . ')';
+    }
+
     public function getFuelStatusAttribute(): int
     {
         if ($this->refuelings->isNotEmpty() && $this->refuelings->where('fuel_type', 'Premium Unleaded (E10)')->count() > 0) {

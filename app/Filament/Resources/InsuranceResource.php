@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\InsuranceResource\Pages;
-use App\Filament\Resources\InsuranceResource\RelationManagers;
 use App\Models\Insurance;
 use App\Models\Vehicle;
 use Carbon\Carbon;
@@ -168,10 +167,10 @@ class InsuranceResource extends Resource
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                    return $index->full_name_with_license_plate;
                                 });
 
-                                return $vehicles->pluck('car', 'id');
+                                return $vehicles->pluck('full_name_with_license_plate', 'id');
                             }),
                         TextInput::make('insurance_company')
                             ->label(__('Insurance company'))

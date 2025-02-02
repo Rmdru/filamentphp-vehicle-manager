@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\VignetteResource\Pages;
 use App\Models\Vehicle;
 use App\Models\Vignette;
+use App\Traits\CountryOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -27,13 +28,15 @@ use Livewire\Livewire;
 
 class VignetteResource extends Resource
 {
+    use CountryOptions;
+
     protected static ?string $model = Vignette::class;
 
     protected static ?string $navigationIcon = 'mdi-sticker-text';
 
     public static function getNavigationLabel(): string
     {
-        return __('Vignette');
+        return __('Vignettes');
     }
 
     public static function getPluralModelLabel(): string
@@ -156,13 +159,6 @@ class VignetteResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $countries = config('countries');
-        $countriesOptions = [];
-
-        foreach ($countries as $key => $value) {
-            $countriesOptions[$key] = $value['name'];
-        }
-
         return $form
             ->schema([
                 Fieldset::make('vignette')
@@ -180,10 +176,10 @@ class VignetteResource extends Resource
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                    return $index->full_name_with_license_plate;
                                 });
 
-                                return $vehicles->pluck('car', 'id');
+                                return $vehicles->pluck('full_name_with_license_plate', 'id');
                             }),
                         TextInput::make('price')
                             ->label(__('Price'))
@@ -210,7 +206,7 @@ class VignetteResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
-                            ->options($countriesOptions),
+                            ->options((new self())->getCountryOptions()),
                         Textarea::make('areas')
                             ->label(__('Areas')),
                     ]),

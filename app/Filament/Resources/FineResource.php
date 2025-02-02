@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FineResource\Pages;
 use App\Models\Fine;
 use App\Models\Vehicle;
+use App\Traits\CountryOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -35,6 +36,8 @@ use Livewire\Livewire;
 
 class FineResource extends Resource
 {
+    use CountryOptions;
+
     protected static ?string $model = Fine::class;
 
     protected static ?string $navigationIcon = 'maki-police';
@@ -292,13 +295,6 @@ class FineResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $countries = config('countries');
-        $countriesOptions = [];
-
-        foreach ($countries as $key => $value) {
-            $countriesOptions[$key] = $value['name'];
-        }
-
         return $form
             ->schema([
                 Fieldset::make('Basic')
@@ -316,10 +312,10 @@ class FineResource extends Resource
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                    return $index->full_name_with_license_plate;
                                 });
 
-                                return $vehicles->pluck('car', 'id');
+                                return $vehicles->pluck('full_name_with_license_plate', 'id');
                             }),
                         ToggleButtons::make('type')
                             ->label(__('Type'))
@@ -393,7 +389,7 @@ class FineResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
-                            ->options($countriesOptions),
+                            ->options((new self())->getCountryOptions()),
                         TextInput::make('location')
                             ->label(__('Location'))
                             ->maxLength(100),

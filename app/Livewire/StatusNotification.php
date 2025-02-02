@@ -60,7 +60,7 @@ class StatusNotification extends Component
         $timeTillInsurance = $vehicle->insurance_status['time'] ?? null;
 
         if (! $timeTillInsurance) {
-            $this->createNotification('critical', __('No insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
+            $this->createNotification('critical', __('No active insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
             return;
         }
 

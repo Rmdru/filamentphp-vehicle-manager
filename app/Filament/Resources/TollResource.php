@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TollResource\Pages;
 use App\Models\Toll;
 use App\Models\Vehicle;
+use App\Traits\CountryOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -29,6 +30,8 @@ use Livewire\Livewire;
 
 class TollResource extends Resource
 {
+    use CountryOptions;
+
     protected static ?string $model = Toll::class;
 
     protected static ?string $navigationIcon = 'maki-toll';
@@ -210,13 +213,6 @@ class TollResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $countries = config('countries');
-        $countriesOptions = [];
-
-        foreach ($countries as $key => $value) {
-            $countriesOptions[$key] = $value['name'];
-        }
-
         return $form
             ->schema([
                 Fieldset::make('Basic')
@@ -234,10 +230,10 @@ class TollResource extends Resource
                                 $vehicles = Vehicle::onlyDrivable()->get();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->car = $index->full_name . ' (' . $index->license_plate . ')';
+                                    return $index->full_name_with_license_plate;
                                 });
 
-                                return $vehicles->pluck('car', 'id');
+                                return $vehicles->pluck('full_name_with_license_plate', 'id');
                             }),
                         DatePicker::make('date')
                             ->label(__('Date'))
@@ -271,7 +267,7 @@ class TollResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
-                            ->options($countriesOptions),
+                            ->options((new self())->getCountryOptions()),
                         ToggleButtons::make('road_type')
                             ->label(__('Road type'))
                             ->inline()
@@ -349,13 +345,6 @@ class TollResource extends Resource
                             ]),
                     ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\Vehicle;
+use App\Traits\CountryOptions;
+use App\Traits\PowerTrainOptions;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -26,6 +28,9 @@ use Livewire\Livewire;
 
 class VehicleResource extends Resource
 {
+    use CountryOptions;
+    use PowerTrainOptions;
+
     protected static ?string $model = Vehicle::class;
 
     protected static ?string $navigationIcon = 'mdi-garage';
@@ -47,21 +52,7 @@ class VehicleResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $countries = config('countries');
-        $countriesOptions = [];
-        $powertrains = trans('powertrains');
-        $powertrainsOptions = [];
-        $fuelConsumptionUnits = [];
         $fuelTypes = trans('fuel_types');
-
-        foreach ($countries as $key => $value) {
-            $countriesOptions[$key] = $value['name'];
-        }
-
-        foreach ($powertrains as $key => $value) {
-            $powertrainsOptions[$key] = $value['name'];
-            $fuelConsumptionUnits[$key] = $value['fuel_consumption_unit'] ?? 'l/100km';
-        }
 
         return $form
             ->schema([
@@ -96,7 +87,7 @@ class VehicleResource extends Resource
                                             ->label(__('Powertrain'))
                                             ->native(false)
                                             ->searchable()
-                                            ->options($powertrainsOptions)
+                                            ->options((new self())->getPowerTrainOptions())
                                             ->reactive()
                                             ->afterStateUpdated(fn(callable $set, $state) => $set('powertrain', $state)),
                                         Select::make('fuel_types')
@@ -129,7 +120,7 @@ class VehicleResource extends Resource
                                             ->searchable()
                                             ->native(false)
                                             ->required()
-                                            ->options($countriesOptions)
+                                            ->options((new self())->getCountryOptions())
                                             ->reactive()
                                             ->afterStateUpdated(fn(callable $set, $state) => $set('license_plate_prefix', $state))
                                             ->helperText(__('Is used for the license plate layout')),
