@@ -75,56 +75,23 @@ class EnvironmentalStickerResource extends Resource
                         ->date()
                         ->icon('gmdi-calendar-month-r')
                         ->formatStateUsing(function (EnvironmentalSticker $environmentalSticker) {
-                            return $environmentalSticker->start_date->isoFormat('MMM D, Y')
-                                . ' - ' .
-                                (! empty($environmentalSticker->end_date)
-                                    ? $environmentalSticker->end_date->isoFormat('MMM D, Y')
-                                    : __('forever')
-                                );
+                            return $environmentalSticker->start_date->isoFormat('MMM D, Y') . ' - ' . (!empty($environmentalSticker->end_date) ? $environmentalSticker->end_date->isoFormat('MMM D, Y') : __('forever'));
                         }),
                     TextColumn::make('price')
                         ->label(__('Price'))
                         ->icon('mdi-hand-coin-outline')
                         ->sortable()
                         ->money('EUR')
-                        ->summarize([
-                            Average::make()->label(__('Price average')),
-                            Range::make()->label(__('Price range')),
-                        ]),
-                ])
-                    ->from('lg'),
-                Panel::make([
-                    TextColumn::make('areas')
-                        ->label(__('Areas'))
-                        ->sortable()
-                        ->icon('mdi-map-marker-radius'),
-                    TextColumn::make('comments')
-                        ->icon('gmdi-text-fields-r')
-                        ->label(__('Comments')),
-                ])
-                    ->collapsible(),
+                        ->summarize([Average::make()->label(__('Price average')), Range::make()->label(__('Price range'))]),
+                ])->from('lg'),
+                Panel::make([TextColumn::make('areas')->label(__('Areas'))->sortable()->icon('mdi-map-marker-radius'), TextColumn::make('comments')->icon('gmdi-text-fields-r')->label(__('Comments'))])->collapsible(),
             ])
             ->filters([
                 Filter::make('date')
                     ->label(__('Date'))
-                    ->form([
-                        DatePicker::make('start_date')
-                            ->label(__('Start date'))
-                            ->native(false),
-                        DatePicker::make('end_date')
-                            ->label(__('End date'))
-                            ->native(false),
-                    ])
+                    ->form([DatePicker::make('start_date')->label(__('Start date'))->native(false), DatePicker::make('end_date')->label(__('End date'))->native(false)])
                     ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['start_date'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date),
-                            )
-                            ->when(
-                                $data['end_date'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
-                            );
+                        return $query->when($data['start_date'], fn(Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date))->when($data['end_date'], fn(Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date));
                     })
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
@@ -134,11 +101,11 @@ class EnvironmentalStickerResource extends Resource
                                 'start' => Carbon::parse($data['start_date'])->isoFormat('MMM D, Y'),
                                 'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
                             ]);
-                        } else if ($data['start_date']) {
+                        } elseif ($data['start_date']) {
                             $indicators['date'] = __('Date from :start', [
                                 'start' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
                             ]);
-                        } else if ($data['end_date']) {
+                        } elseif ($data['end_date']) {
                             $indicators['date'] = __('Date until :end', [
                                 'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
                             ]);
@@ -147,76 +114,51 @@ class EnvironmentalStickerResource extends Resource
                         return $indicators;
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->actions([Tables\Actions\EditAction::make()])
+            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
     }
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Fieldset::make('environmental_sticker')
-                    ->label(__('Environmental sticker'))
-                    ->schema([
-                        Select::make('vehicle_id')
-                            ->disabled()
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native(false)
-                            ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
-                            ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::onlyDrivable()->get();
+        return $form->schema([
+            Fieldset::make('environmental_sticker')
+                ->label(__('Environmental sticker'))
+                ->schema([
+                    Select::make('vehicle_id')
+                        ->disabled()
+                        ->label(__('Vehicle'))
+                        ->required()
+                        ->searchable()
+                        ->native(false)
+                        ->relationship('vehicle')
+                        ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
+                        ->options(function (Vehicle $vehicle) {
+                            $vehicles = Vehicle::onlyDrivable()->get();
 
-                                $vehicles->car = $vehicles->map(function ($index) {
-                        return $index->full_name_with_license_plate;
-                                });
+                            $vehicles->car = $vehicles->map(function ($index) {
+                                return $index->full_name_with_license_plate;
+                            });
 
-                    return $vehicles->pluck('full_name_with_license_plate', 'id');
-                            }),
-                        TextInput::make('price')
-                            ->label(__('Price'))
-                            ->numeric()
-                            ->mask(RawJs::make('$money($input)'))
-                            ->stripCharacters(',')
-                            ->required()
-                            ->prefix('€')
-                            ->step(0.01),
-                    ]),
-                Fieldset::make('validity')
-                    ->label(__('Validity'))
-                    ->schema([
-                        DatePicker::make('start_date')
-                            ->label(__('Start date'))
-                            ->required()
-                            ->native(false)
-                            ->displayFormat('d-m-Y'),
-                        DatePicker::make('end_date')
-                            ->label(__('End date'))
-                            ->native(false)
-                            ->displayFormat('d-m-Y'),
-                        Select::make('country')
-                            ->label(__('Country'))
-                            ->searchable()
-                            ->native(false)
-                ->options((new self())->getCountryOptions()),
-                        Textarea::make('areas')
-                            ->label(__('Areas')),
-                    ]),
-                Fieldset::make('other')
-                    ->label(__('Other'))
-                    ->schema([
-                        Textarea::make('comments')
-                            ->label(__('Comments')),
-                    ]),
-            ]);
+                            return $vehicles->pluck('full_name_with_license_plate', 'id');
+                        }),
+                    TextInput::make('price')->label(__('Price'))->numeric()->mask(RawJs::make('$money($input)'))->stripCharacters(',')->required()->prefix('€')->step(0.01),
+                ]),
+            Fieldset::make('validity')
+                ->label(__('Validity'))
+                ->schema([
+                    DatePicker::make('start_date')->label(__('Start date'))->required()->native(false)->displayFormat('d-m-Y'),
+                    DatePicker::make('end_date')->label(__('End date'))->native(false)->displayFormat('d-m-Y'),
+                    Select::make('country')
+                        ->label(__('Country'))
+                        ->searchable()
+                        ->native(false)
+                        ->options((new self())->getCountryOptions()),
+                    Textarea::make('areas')->label(__('Areas')),
+                ]),
+            Fieldset::make('other')
+                ->label(__('Other'))
+                ->schema([Textarea::make('comments')->label(__('Comments'))]),
+        ]);
     }
 
     public static function getPages(): array

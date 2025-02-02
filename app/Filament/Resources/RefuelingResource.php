@@ -5,8 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\RefuelingResource\Pages;
 use App\Models\Refueling;
 use App\Models\Vehicle;
+use App\Traits\CountryOptions;
 use App\Traits\FuelTypeOptions;
 use Carbon\Carbon;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -31,10 +33,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BuilderQuery;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
+use Livewire\Livewire;
 
 class RefuelingResource extends Resource
 {
     use FuelTypeOptions;
+    use CountryOptions;
 
     protected static ?string $model = Refueling::class;
 
@@ -80,7 +84,7 @@ class RefuelingResource extends Resource
 
                                 $logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
 
-                                return new HtmlString('<div class="w-5/12 min-h-16 flex items-center bg-white rounded p-2"><img src="' . $logo . '" /></div>');
+                                return new HtmlString('<div class="w-5/12 min-h-16 max-h-40 flex items-center bg-white rounded p-2"><img class="max-h-40" src="' . $logo . '" /></div>');
                             }
                         ),
                     Stack::make([
@@ -191,7 +195,7 @@ class RefuelingResource extends Resource
                             ->label(__('Amount'))
                             ->icon(function (Refueling $refueling) {
                                 if (str($refueling->fuel_type)->contains('electric', true)) {
-                                    return 'gmdi-battery-full-r';
+                                    return 'mdi-battery-charging';
                                 }
 
                                 return 'mdi-fuel';
@@ -219,9 +223,21 @@ class RefuelingResource extends Resource
                             ->suffix(' l/100km'),
                     ])
                         ->space(),
-                ]),
+                ])
+                    ->from('xl'),
                 Panel::make([
                     Split::make([
+                        TextColumn::make('country')
+                            ->sortable()
+                            ->formatStateUsing(function ($record) {
+                                return Livewire::mount('CountryFlag', [
+                                    'country' => $record->country,
+                                    'showName' => true,
+                                ]);
+                            })
+                            ->html()
+                            ->label(__('Country'))
+                            ->hidden(fn($state) => empty($state)),
                         TextColumn::make('tires')
                             ->sortable()
                             ->badge()
@@ -240,7 +256,8 @@ class RefuelingResource extends Resource
                                 'all_season' => __('All season tires'),
                                 'summer' => __('Summer tires'),
                                 'winter' => __('Winter tires'),
-                            }),
+                            })
+                            ->hidden(fn($state) => empty($state)),
                         TextColumn::make('climate_control')
                             ->sortable()
                             ->badge()
@@ -265,7 +282,8 @@ class RefuelingResource extends Resource
                                 'heater' => __('Heater'),
                                 'demisting' => __('Demisting'),
                                 'defrost' => __('Defrost'),
-                            }),
+                            })
+                            ->hidden(fn($state) => empty($state)),
                         TextColumn::make('routes')
                             ->sortable()
                             ->badge()
@@ -288,7 +306,8 @@ class RefuelingResource extends Resource
                                 'country_road' => __('Country road'),
                                 'city' => __('City'),
                                 'trailer' => __('Trailer'),
-                            }),
+                            })
+                            ->hidden(fn($state) => empty($state)),
                         TextColumn::make('driving_style')
                             ->sortable()
                             ->badge()
@@ -308,7 +327,8 @@ class RefuelingResource extends Resource
                                 'slow' => __('Slow'),
                                 'average' => __('Average'),
                                 'fast' => __('Fast'),
-                            }),
+                            })
+                            ->hidden(fn($state) => empty($state)),
                         TextColumn::make('payment_method')
                             ->label(__('Payment method'))
                             ->sortable()
@@ -326,10 +346,25 @@ class RefuelingResource extends Resource
                                 'loyalty_program' => __('Loyality program'),
                                 'fuel_card' => __('Fuel card'),
                                 'app' => __('App'),
-                            }),
+                            })
+                            ->hidden(fn($state) => empty($state)),
                         TextColumn::make('discount')
-                            ->label(__('Discount')),
-                    ]),
+                            ->label(__('Discount'))
+                            ->hidden(fn($state) => empty($state)),
+                        TextColumn::make('service_by_attendant')
+                            ->label(__('Service by attendant'))
+                            ->badge()
+                            ->color('success')
+                            ->icon('gmdi-local-gas-station-r')
+                            ->formatStateUsing(fn(bool $state) => __('Service by attendant'))
+                            ->hidden(fn($state) => empty($state)),
+                        TextColumn::make('charge_time')
+                            ->label(__('Charge time'))
+                            ->icon('mdi-battery-clock')
+                            ->suffix(' ' . __('minutes'))
+                            ->hidden(fn($state) => empty($state)),
+                    ])
+                        ->from('lg'),
                 ])
                     ->collapsible(),
             ])
@@ -423,6 +458,11 @@ class RefuelingResource extends Resource
                             ->native(false)
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
+                        Select::make('country')
+                            ->label(__('Country'))
+                            ->searchable()
+                            ->native(false)
+                            ->options((new self())->getCountryOptions()),
                         TextInput::make('gas_station')
                             ->label(__('Gas station'))
                             ->required()
@@ -436,7 +476,9 @@ class RefuelingResource extends Resource
                             ->label(__('Fuel type'))
                             ->required()
                             ->native(false)
-                            ->options((new self())->getFuelTypeOptions()),
+                            ->options((new self())->getFuelTypeOptions())
+                            ->reactive()
+                            ->afterStateUpdated(fn($state, callable $set) => $set('fuel_type', $state)),
                         TextInput::make('amount')
                             ->label(__('Amount'))
                             ->numeric()
@@ -460,6 +502,29 @@ class RefuelingResource extends Resource
                             ->required()
                             ->prefix('€')
                             ->step(0.01),
+                        TextInput::make('charge_time')
+                            ->label(__('Charge time'))
+                            ->numeric()
+                            ->minValue(1)
+                            ->visible(fn($get) => in_array($get('fuel_type'), [
+                                __('Electricity >= 50 kW'),
+                                __('Electricity < 50 kW'),
+                            ])),
+                        Checkbox::make('service_by_attendant')
+                            ->label(__('Service by attendant'))
+                            ->visible(fn($get) => in_array($get('fuel_type'), [
+                                __('Premium Unleaded (E10)'),
+                                __('Premium Unleaded (E5)'),
+                                __('Super Plus 98'),
+                                __('Super Plus 100'),
+                                __('Super Plus 102'),
+                                __('Diesel'),
+                                __('Premium diesel'),
+                                __('Adblue'),
+                                __('LPG'),
+                                __('CNG'),
+                                __('E85'),
+                            ])),
                     ]),
                 Fieldset::make('car')
                     ->label(__('Car'))

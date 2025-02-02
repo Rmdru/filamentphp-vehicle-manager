@@ -16,14 +16,10 @@ class Refueling extends Model
     use HasUuids;
     use SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'vehicle_id',
         'date',
+        'country',
         'gas_station',
         'fuel_type',
         'amount',
@@ -41,6 +37,8 @@ class Refueling extends Model
         'avg_speed',
         'discount',
         'payment_method',
+        'service_by_attendant',
+        'charge_time',
         'comments',
     ];
 
@@ -48,11 +46,9 @@ class Refueling extends Model
         'date' => 'date:Y-m-d',
         'climate_control' => 'array',
         'routes' => 'array',
+        'servie_by_attendant' => 'boolean',
     ];
 
-    /**
-     * Get the vehicle of this refueling.
-     */
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class);
