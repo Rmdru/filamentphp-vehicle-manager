@@ -141,7 +141,8 @@ class MaintenanceResource extends Resource
                             Average::make()->label(__('Total price average')),
                             Range::make()->label(__('Total price range')),
                         ]),
-                ]),
+                ])
+                    ->from('xl'),
             ])
             ->filters([
                 Filter::make('date')
@@ -200,8 +201,6 @@ class MaintenanceResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $brands = config('vehicles.brands');
-
         return $form
             ->schema([
                 Fieldset::make('maintenance')
@@ -245,7 +244,6 @@ class MaintenanceResource extends Resource
                         ToggleButtons::make('type_maintenance')
                             ->label(__('Type maintenance'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'maintenance' => __('Maintenance'),
                                 'small_maintenance' => __('Small maintenance'),
@@ -272,7 +270,6 @@ class MaintenanceResource extends Resource
                         ToggleButtons::make('payment_method')
                             ->label(__('Payment method'))
                             ->inline()
-                            ->grouped()
                             ->options(MaintenancePaymentMethod::class),
                         Repeater::make('tasks')
                             ->label(__('Tasks'))
@@ -295,9 +292,9 @@ class MaintenanceResource extends Resource
                                     ])
                                     ->columns(3),
                             ])
-                            ->columnSpan(2)
-                            ->columns(),
-                    ]),
+                    ])
+                        ->columnSpan(2)
+                        ->columns(),
             ]);
     }
 

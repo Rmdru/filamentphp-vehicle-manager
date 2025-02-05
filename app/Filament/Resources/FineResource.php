@@ -237,7 +237,8 @@ class FineResource extends Resource
                             }),
                     ])
                         ->space(),
-                ]),
+                ])
+                    ->from('xl'),
             ])
             ->filters([
                 Filter::make('date')
@@ -399,7 +400,6 @@ class FineResource extends Resource
                         ToggleButtons::make('road_type')
                             ->label(__('Road type'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'highway' => __('Highway'),
                                 'secondary' => __('Secondary'),

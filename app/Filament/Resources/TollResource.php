@@ -155,7 +155,8 @@ class TollResource extends Resource
                             }),
                     ])
                         ->space(),
-                ]),
+                ])
+                    ->from('xl'),
             ])
             ->filters([
                 Filter::make('date')
@@ -248,7 +249,6 @@ class TollResource extends Resource
                         ToggleButtons::make('type')
                             ->label(__('Type'))
                             ->inline()
-                            ->grouped()
                             ->required()
                             ->options([
                                 'location' => __('Location'),
@@ -271,7 +271,6 @@ class TollResource extends Resource
                         ToggleButtons::make('road_type')
                             ->label(__('Road type'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'highway' => __('Highway'),
                                 'secondary' => __('Secondary'),
@@ -316,7 +315,6 @@ class TollResource extends Resource
                         ToggleButtons::make('payment_circumstances')
                             ->label(__('Payment circumstances'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'toll_gate' => __('Toll gate'),
                                 'camera' => __('Camera'),
@@ -328,7 +326,6 @@ class TollResource extends Resource
                         ToggleButtons::make('payment_method')
                             ->label(__('Payment method'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'cash' => __('Cash'),
                                 'bank_card' => __('Bank card'),

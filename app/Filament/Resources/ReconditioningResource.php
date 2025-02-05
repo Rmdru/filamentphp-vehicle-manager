@@ -103,7 +103,8 @@ class ReconditioningResource extends Resource
                         ->label(__('Location'))
                         ->icon('gmdi-location-on-r')
                         ->sortable(),
-                ]),
+                ])
+                    ->from('lg'),
                 Panel::make([
                     TextColumn::make('description')
                         ->label(__('Description')),

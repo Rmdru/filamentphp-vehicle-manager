@@ -77,7 +77,8 @@ class TaxResource extends Resource
                         ->label(__('Invoice day'))
                         ->icon('gmdi-calendar-month-r')
                         ->suffix(__('th of the month')),
-                ]),
+                ])
+                    ->from('lg'),
             ])
             ->filters([
                 Filter::make('date')

@@ -551,7 +551,6 @@ class RefuelingResource extends Resource
                         ToggleButtons::make('tires')
                             ->label(__('Tires'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'all_season' => __('All season'),
                                 'summer' => __('Summer'),
@@ -617,7 +616,6 @@ class RefuelingResource extends Resource
                         ToggleButtons::make('driving_style')
                             ->label(__('Driving style'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'slow' => __('Slow'),
                                 'average' => __('Average'),

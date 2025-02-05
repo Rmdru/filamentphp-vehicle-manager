@@ -92,7 +92,8 @@ class InsuranceResource extends Resource
                         ->icon('gmdi-calendar-month-r')
                         ->sortable()
                         ->suffix(__('th of the month')),
-                ]),
+                ])
+                    ->from('xl'),
             ])
             ->filters([
                 Filter::make('date')

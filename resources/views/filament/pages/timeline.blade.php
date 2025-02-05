@@ -11,7 +11,7 @@
             <x-slot name="heading">
                 {{ $item->title }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div
                     class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon ?? $item->categoryIcon)
@@ -50,7 +50,7 @@
             <x-slot name="heading">
                 {{ __('Maintenance') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div
                     class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon)
@@ -98,7 +98,7 @@
             <x-slot name="heading">
                 {{ __('Refueling') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div class="p-2 rounded-full bg-white w-5/12 max-w-12 h-12 flex items-center"><img
                         src="{{ $item->icon }}" /></div>
                 <div class="flex gap-2 flex-col">
@@ -137,7 +137,7 @@
             <x-slot name="heading">
                 {{ __('Insurance') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div
                     class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon)
@@ -174,7 +174,7 @@
             <x-slot name="heading">
                 {{ __('Road tax') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div
                     class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon)
@@ -200,7 +200,7 @@
             <x-slot name="heading">
                 {{ __('Parking') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div
                     class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon)
@@ -231,7 +231,7 @@
             <x-slot name="heading">
                 {{ __('Toll') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div class="flex gap-2 flex-col">
                     <livewire:country-flag :country="$item->country" />
                     <livewire:road-badge :roadType="$item->road_type" :road="$item->road" :country="$item->country" />
@@ -268,7 +268,7 @@
             <x-slot name="heading">
                 {{ __('Fine') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div
                     class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon)
@@ -313,7 +313,7 @@
             <x-slot name="heading">
                 {{ __('Reconditioning') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div
                     class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon)
@@ -357,7 +357,7 @@
             <x-slot name="heading">
                 {{ __('Vignette') }}
             </x-slot>
-            <div class="flex gap-8 items-center">
+            <div class="flex flex-wrap gap-8 items-center">
                 <div class="flex gap-2 flex-col">
                     <livewire:country-flag :country="$item->country" :showName="true" />
                 </div>
@@ -383,7 +383,7 @@
                 {{ __('Environmental sticker') }}
             </x-slot>
             <div class="flex gap-8 items-center">
-                <div class="flex gap-2 flex-col">
+                <div class="flex flex-wrap gap-2 flex-col">
                     <livewire:country-flag :country="$item->country" :showName="true" />
                 </div>
                 <div class="flex gap-2 flex-col">

@@ -15,6 +15,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
@@ -52,63 +53,70 @@ class ParkingResource extends Resource
                 });
             })
             ->columns([
-                TextColumn::make('start_time')
-                    ->label(__('Date and time'))
-                    ->sortable()
-                    ->date()
-                    ->formatStateUsing(function (Parking $parking) {
-                        return $parking->start_time->isoFormat('MMM D, Y  H:mm') . ' - ' . $parking->end_time->isoFormat('MMM D, Y H:mm');
-                    })
-                    ->icon('gmdi-calendar-month-r'),
-                TextColumn::make('location')
-                    ->label(__('Location'))
-                    ->sortable()
-                    ->icon('gmdi-location-on-r'),
-                TextColumn::make('company')
-                    ->label(__('Company'))
-                    ->sortable()
-                    ->icon('mdi-office-building'),
-                TextColumn::make('price')
-                    ->label(__('Price'))
-                    ->icon('mdi-hand-coin-outline')
-                    ->sortable()
-                    ->money('EUR')
-                    ->summarize([
-                        Average::make()->label(__('Price average')),
-                        Range::make()->label(__('Price range')),
-                    ]),
-                TextColumn::make('type')
-                    ->label(__('Type'))
-                    ->badge()
-                    ->sortable()
-                    ->color('gray')
-                    ->icon(fn(string $state): string => match ($state) {
-                        'street' => 'maki-parking-paid',
-                        'garage' => 'maki-parking-garage',
-                        default => '',
-                    })
-                    ->formatStateUsing(fn(string $state) => match ($state) {
-                        'street' => __('Street'),
-                        'garage' => __('Parking garage'),
-                    }),
-                TextColumn::make('payment_method')
-                    ->label(__('Payment method'))
-                    ->badge()
-                    ->sortable()
-                    ->color('gray')
-                    ->icon(fn(string $state): string => match ($state) {
-                        'cash' => 'mdi-hand-coin-outline',
-                        'bank_card' => 'gmdi-credit-card',
-                        'app' => 'mdi-cellphone-wireless',
-                        'online' => 'gmdi-qr-code',
-                        default => '',
-                    })
-                    ->formatStateUsing(fn(string $state) => match ($state) {
-                        'cash' => __('Cash'),
-                        'bank_card' => __('Bank card'),
-                        'app' => __('App'),
-                        'online' => __('Online'),
-                    }),
+                Grid::make([
+                    'xl' => 6,
+                    'lg' => 4,
+                    'md' => 2,
+                ])
+                ->schema([
+                    TextColumn::make('start_time')
+                        ->label(__('Date and time'))
+                        ->sortable()
+                        ->date()
+                        ->formatStateUsing(function (Parking $parking) {
+                            return $parking->start_time->isoFormat('MMM D, Y  H:mm') . ' - ' . $parking->end_time->isoFormat('MMM D, Y H:mm');
+                        })
+                        ->icon('gmdi-calendar-month-r'),
+                    TextColumn::make('location')
+                        ->label(__('Location'))
+                        ->sortable()
+                        ->icon('gmdi-location-on-r'),
+                    TextColumn::make('company')
+                        ->label(__('Company'))
+                        ->sortable()
+                        ->icon('mdi-office-building'),
+                    TextColumn::make('price')
+                        ->label(__('Price'))
+                        ->icon('mdi-hand-coin-outline')
+                        ->sortable()
+                        ->money('EUR')
+                        ->summarize([
+                            Average::make()->label(__('Price average')),
+                            Range::make()->label(__('Price range')),
+                        ]),
+                    TextColumn::make('type')
+                        ->label(__('Type'))
+                        ->badge()
+                        ->sortable()
+                        ->color('gray')
+                        ->icon(fn(string $state): string => match ($state) {
+                            'street' => 'maki-parking-paid',
+                            'garage' => 'maki-parking-garage',
+                            default => '',
+                        })
+                        ->formatStateUsing(fn(string $state) => match ($state) {
+                            'street' => __('Street'),
+                            'garage' => __('Parking garage'),
+                        }),
+                    TextColumn::make('payment_method')
+                        ->label(__('Payment method'))
+                        ->badge()
+                        ->sortable()
+                        ->color('gray')
+                        ->icon(fn(string $state): string => match ($state) {
+                            'cash' => 'mdi-hand-coin-outline',
+                            'bank_card' => 'gmdi-credit-card',
+                            'app' => 'mdi-cellphone-wireless',
+                            'online' => 'gmdi-qr-code',
+                            default => '',
+                        })
+                        ->formatStateUsing(fn(string $state) => match ($state) {
+                            'cash' => __('Cash'),
+                            'bank_card' => __('Bank card'),
+                            'app' => __('App'),
+                            'online' => __('Online'),
+                        }),
+                ])
             ])
             ->filters([
                 Filter::make('time')
@@ -191,7 +199,6 @@ class ParkingResource extends Resource
                         ToggleButtons::make('type')
                             ->label(__('Type'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'street' => __('Street'),
                                 'garage' => __('Parking garage'),
@@ -235,7 +242,6 @@ class ParkingResource extends Resource
                         ToggleButtons::make('payment_method')
                             ->label(__('Payment method'))
                             ->inline()
-                            ->grouped()
                             ->options([
                                 'cash' => __('Cash'),
                                 'bank_card' => __('Bank card'),
