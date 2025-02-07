@@ -96,6 +96,11 @@ class ViewVehicle extends ViewRecord
                                             ->date()
                                             ->placeholder(__('Unknown'))
                                             ->label(__('Purchase date')),
+                                        TextEntry::make('construction_date')
+                                            ->icon('fas-industry')
+                                            ->date()
+                                            ->placeholder(__('Unknown'))
+                                            ->label(__('Construction date')),
                                         TextEntry::make('purchase_price')
                                             ->icon('gmdi-local-offer-r')
                                             ->placeholder(__('Unknown'))

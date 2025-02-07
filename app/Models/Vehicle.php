@@ -35,6 +35,7 @@ class Vehicle extends Model
         'mileage_start',
         'mileage_latest',
         'purchase_date',
+        'construction_date',
         'purchase_price',
         'license_plate',
         'powertrain',
@@ -48,6 +49,7 @@ class Vehicle extends Model
 
     protected $casts = [
         'purchase_date' => 'date:Y-m-d',
+        'construction_date' => 'date:Y-m-d',
         'private' => 'boolean',
         'fuel_types' => 'array',
         'specifications' => 'array',

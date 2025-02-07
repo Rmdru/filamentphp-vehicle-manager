@@ -109,6 +109,11 @@ class VehicleResource extends Resource
                                             ->native(false)
                                             ->displayFormat('d-m-Y')
                                             ->maxDate(now()),
+                                        DatePicker::make('construction_date')
+                                            ->label(__('Construction date'))
+                                            ->native(false)
+                                            ->displayFormat('d-m-Y')
+                                            ->maxDate(now()),
                                         TextInput::make('purchase_price')
                                             ->label(__('Purchase price'))
                                             ->mask(RawJs::make('$money($input)'))
@@ -275,13 +280,14 @@ class VehicleResource extends Resource
                             ->suffix(' km')
                             ->label(__('Mileage'))
                             ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
-                        TextColumn::make('powertrain')
+                        TextColumn::make('construction_date')
                             ->sortable()
-                            ->icon('gmdi-local-gas-station')
-                            ->placeholder(__('Unknown'))
-                            ->sortable()
-                            ->label(__('Powertrain'))
-                            ->formatStateUsing(fn(string $state) => $powertrains[$state]['name'] ?? $state),
+                            ->searchable()
+                            ->icon('fas-birthday-cake')
+                            ->date()
+                            ->label(__('Construction date'))
+                            ->suffix(' ' . __('years old'))
+                            ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->construction_date->age),
                     ])
                         ->space(),
                     Stack::make([
