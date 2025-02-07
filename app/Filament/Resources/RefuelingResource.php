@@ -507,23 +507,23 @@ class RefuelingResource extends Resource
                             ->numeric()
                             ->minValue(1)
                             ->visible(fn($get) => in_array($get('fuel_type'), [
-                                __('Electricity >= 50 kW'),
-                                __('Electricity < 50 kW'),
+                                'Electricity >= 50 kW',
+                                'Electricity < 50 kW',
                             ])),
                         Checkbox::make('service_by_attendant')
                             ->label(__('Service by attendant'))
                             ->visible(fn($get) => in_array($get('fuel_type'), [
-                                __('Premium Unleaded (E10)'),
-                                __('Premium Unleaded (E5)'),
-                                __('Super Plus 98'),
-                                __('Super Plus 100'),
-                                __('Super Plus 102'),
-                                __('Diesel'),
-                                __('Premium diesel'),
-                                __('Adblue'),
-                                __('LPG'),
-                                __('CNG'),
-                                __('E85'),
+                                'Premium Unleaded (E10)',
+                                'Premium Unleaded (E5)',
+                                'Super Plus 98',
+                                'Super Plus 1',
+                                'Super Plus 102',
+                                'Diesel',
+                                'Premium diesel',
+                                'Adblue',
+                                'LPG',
+                                'CNG',
+                                'E85',
                             ])),
                     ]),
                 Fieldset::make('car')
