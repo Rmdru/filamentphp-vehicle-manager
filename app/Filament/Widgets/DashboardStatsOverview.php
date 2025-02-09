@@ -9,6 +9,7 @@ use App\Models\Vehicle;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Flowframe\Trend\Trend;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
@@ -106,126 +107,27 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAverageMonthlyCosts(bool $thisMonth = false): int
     {
-        $vehicleId = Vehicle::selected()->first()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
+        $vehicle = Vehicle::selected()->first();
+        $startDate = $this->filters['startDate'] ?? '';
+        $endDate = $this->filters['endDate'] ?? '';
 
         if ($thisMonth) {
             $startDate = now()->startOfMonth()->toDateString();
             $endDate = now()->endOfMonth()->toDateString();
         }
 
-        $vehicle = Vehicle::where('id', $vehicleId)
-            ->with([
-                'maintenances',
-                'refuelings',
-                'insurances',
-                'taxes',
-                'parkings',
-                'tolls',
-                'fines',
-            ])
-            ->first();
+        $costData = $vehicle->calculateMonthlyCosts($startDate, $endDate);
 
-        if ($vehicle) {
-            $maintenances = $vehicle->maintenances;
-            $refuelings = $vehicle->refuelings;
-            $insurances = $vehicle->insurances;
-            $taxes = $vehicle->taxes;
-            $parkings = $vehicle->parkings;
-            $tolls = $vehicle->tolls;
-            $fines = $vehicle->fines;
+        $totalCosts = 0;
+        $uniqueMonths = count($costData['labels']);
 
-            if ($startDate) {
-                $maintenances = $maintenances->where('date', '>=', $startDate);
-                $refuelings = $refuelings->where('date', '>=', $startDate);
-                $parkings = $parkings->where('end_time', '>=', $startDate);
-                $tolls = $tolls->where('date', '>=', $startDate);
-                $fines = $fines->where('date', '>=', $startDate);
+        foreach ($costData['monthlyCosts'] as $costs) {
+            foreach ($costs as $cost) {
+                $totalCosts += $cost;
             }
-
-            if ($startDate && ! $thisMonth) {
-                $insurances = $insurances->where('start_date', '>=', $startDate);
-                $taxes = $taxes->where('start_date', '>=', $startDate);
-            }
-
-            if ($endDate) {
-                $maintenances = $maintenances->where('date', '<=', $endDate);
-                $refuelings = $refuelings->where('date', '<=', $endDate);
-                $parkings = $parkings->where('end_time', '<=', $endDate);
-                $tolls = $tolls->where('date', '<=', $endDate);
-                $fines = $fines->where('date', '<=', $endDate);
-            }
-
-            if ($endDate && ! $thisMonth) {
-                $insurances = $insurances->where('end_date', '<=', $endDate);
-                $taxes = $insurances->where('end_date', '<=', $endDate);
-            }
-
-
-            $totalInsurancePrice = 0;
-            $totalInsuranceMonths = collect();
-            $totalTaxPrice = 0;
-            $totalTaxMonths = collect();
-
-            if (! $insurances) {
-                $insurance = new Insurance();
-
-                $insurance->months = collect();
-                $insurance->price = 0;
-            }
-
-            foreach ($insurances as $insurance) {
-                $totalInsuranceMonths = $totalInsuranceMonths->merge($insurance->months);
-                $totalInsurancePrice += $insurance->months->count() * $insurance->price;
-            }
-
-            if (! $taxes) {
-                $tax = new Tax();
-
-                $tax->months = collect();
-                $tax->price = 0;
-            }
-
-            foreach ($taxes as $tax) {
-                $totalTaxMonths = $totalTaxMonths->merge($tax->months);
-                $totalTaxPrice += $tax->months->count() * $tax->price;
-            }
-
-            if ($thisMonth && $totalInsurancePrice) {
-                $totalInsuranceMonths = $totalInsuranceMonths->last();
-                $totalInsurancePrice = $insurances->first()->price;
-            }
-
-            if ($thisMonth && $totalTaxPrice) {
-                $totalTaxMonths = $totalTaxMonths->last();
-                $totalTaxPrice = $taxes->first()->price;
-            }
-
-            $totalCosts = $maintenances->sum('total_price') + $refuelings->sum('total_price')
-                + $totalInsurancePrice + $totalTaxPrice + $parkings->sum('price') + $tolls->sum('price')
-                + $fines->sum('price');
-
-            $maintenanceMonths = $maintenances->pluck('date');
-            $refuelingMonths = $refuelings->pluck('date');
-            $parkingMonths = $parkings->pluck('end_time');
-            $tollMonths = $tolls->pluck('date');
-            $fineMonths = $fines->pluck('date');
-
-            $uniqueMonths = $maintenanceMonths->merge($refuelingMonths)
-                ->merge($totalTaxMonths)
-                ->merge($totalInsuranceMonths)
-                ->merge($parkingMonths)
-                ->merge($tollMonths)
-                ->merge($fineMonths)
-                ->groupBy(function ($month) {
-                    return Carbon::parse($month)->format('Y-m');
-                })->count();
-
-            return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
-        } else {
-            return 0;
         }
+
+        return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
     }
 
     private function calculateCostsPerKilometer(bool $thisMonth = false): float

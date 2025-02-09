@@ -15,7 +15,7 @@ class User extends Authenticatable implements FilamentUser
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
-    
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;

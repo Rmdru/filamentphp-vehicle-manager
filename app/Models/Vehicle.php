@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -377,6 +379,124 @@ class Vehicle extends Model
         }
 
         return ! empty($item) ? $priorities['success'][$item] : $priorities['success'];
+    }
+
+    public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
+    {
+        if (empty($startDate)) {
+            $startDate = now()->startOfYear();
+        }
+
+        if (empty($endDate)) {
+            $endDate = now()->endOfYear();
+        }
+
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
+
+        $costTypes = [
+            'Fuel' => [
+                'model' => Refueling::class,
+                'field' => 'total_price'
+            ],
+            'Maintenance' => [
+                'model' => Maintenance::class,
+                'field' => 'total_price'
+            ],
+            'Insurance' => [
+                'model' => Insurance::class,
+                'field' => 'price',
+                'monthly' => true
+            ],
+            'Tax' => [
+                'model' => Tax::class,
+                'field' => 'price',
+                'monthly' => true
+            ],
+            'Parking' => [
+                'model' => Parking::class,
+                'field' => 'price'
+            ],
+            'Toll' => [
+                'model' => Toll::class,
+                'field' => 'price'
+            ],
+            'Fine' => [
+                'model' => Fine::class,
+                'field' => 'price'
+            ],
+            'Vignette' => [
+                'model' => Vignette::class,
+                'field' => 'price'
+            ],
+            'Environmental sticker' => [
+                'model' => EnvironmentalSticker::class,
+                'field' => 'price'
+            ],
+        ];
+
+        $monthlyCosts = [];
+        $labels = [];
+
+        foreach ($costTypes as $label => $config) {
+            $model = $config['model'];
+            $field = $config['field'];
+            $monthly = $config['monthly'] ?? false;
+
+            if (empty($monthly)) {
+                $data = Trend::model($model)
+                    ->between(
+                        start: $startDate,
+                        end: $endDate,
+                    )
+                    ->perMonth()
+                    ->average($field);
+
+                foreach ($data as $value) {
+                    $month = Carbon::parse($value->date)->isoFormat('Y-MM');
+                    if (! isset($monthlyCosts[$month])) {
+                        $monthlyCosts[$month] = [];
+                    }
+                    if (! isset($monthlyCosts[$month][$label])) {
+                        $monthlyCosts[$month][$label] = 0;
+                    }
+                    $monthlyCosts[$month][$label] += $value->aggregate;
+                }
+
+                if (empty($labels)) {
+                    $labels = $data->map(fn (TrendValue $value) => str(Carbon::parse($value->date)->isoFormat('MMMM'))->ucfirst());
+                }
+            }
+
+            if (! empty($monthly)) {
+                $records = $model::whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate])
+                    ->get();
+
+                foreach ($records as $record) {
+                    $start = Carbon::parse($record->start_date)->startOfMonth();
+                    $end = Carbon::parse($record->end_date)->endOfMonth();
+
+                    while ($start <= $end) {
+                        $month = $start->isoFormat('Y-MM');
+                        if (! isset($monthlyCosts[$month])) {
+                            $monthlyCosts[$month] = [];
+                        }
+                        if (! isset($monthlyCosts[$month][$label])) {
+                            $monthlyCosts[$month][$label] = 0;
+                        }
+                        $monthlyCosts[$month][$label] += $record->$field;
+                        $start->addMonth();
+                    }
+                }
+
+            }
+        }
+
+        return [
+            'monthlyCosts' => $monthlyCosts,
+            'labels' => $labels,
+        ];
     }
 
     /**
