@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\VehicleResource\Pages;
 
+use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource;
 use App\Models\Vehicle;
 use Filament\Infolists\Components\Fieldset;
@@ -107,16 +108,9 @@ class ViewVehicle extends ViewRecord
                                             ->money('EUR')
                                             ->label(__('Purchase price')),
                                         TextEntry::make('status')
-                                            ->icon('mdi-list-status')
+                                            ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon())
                                             ->placeholder(__('Unknown'))
-                                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                                'drivable' => __('Drivable'),
-                                                'suspended' => __('Suspended'),
-                                                'seized' => __('Seized'),
-                                                'stolen' => __('Stolen'),
-                                                'sold' => __('Sold'),
-                                                'destroyed' => __('Destroyed'),
-                                            })
+                                            ->formatStateUsing(fn(string $state) => VehicleStatus::from($state)->getLabel())
                                             ->label(__('Status')),
                                     ]),
                                 Fieldset::make('Privacy')

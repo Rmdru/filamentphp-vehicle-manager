@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\Vehicle;
 use App\Traits\CountryOptions;
@@ -112,6 +113,7 @@ class VehicleResource extends Resource
                                         DatePicker::make('construction_date')
                                             ->label(__('Construction date'))
                                             ->native(false)
+                                            ->required()
                                             ->displayFormat('d-m-Y')
                                             ->maxDate(now()),
                                         TextInput::make('purchase_price')
@@ -137,28 +139,7 @@ class VehicleResource extends Resource
                                             ->label(__('Status'))
                                             ->inline()
                                             ->required()
-                                            ->options([
-                                                'drivable' => __('Drivable'),
-                                                'suspended' => __('Suspended'),
-                                                'wok' => __('WOK status'),
-                                                'apk' => __('Invalid MOT'),
-                                                'seized' => __('Seized'),
-                                                'stolen' => __('Stolen'),
-                                                'sold' => __('Sold'),
-                                                'not_rollable' => __('Not rollable'),
-                                                'destroyed' => __('Destroyed'),
-                                            ])
-                                            ->icons([
-                                                'drivable' => 'mdi-speedometer',
-                                                'suspended' => 'mdi-garage',
-                                                'wok' => 'mdi-shield-off',
-                                                'apk' => 'mdi-shield-alert',
-                                                'seized' => 'maki-police',
-                                                'stolen' => 'mdi-lock-open-alert',
-                                                'sold' => 'gmdi-local-offer',
-                                                'not_rollable' => 'fas-car-crash',
-                                                'destroyed' => 'mdi-fire',
-                                            ]),
+                                            ->options(VehicleStatus::class),
                                     ]),
                                 Fieldset::make('privacy')
                                     ->label(__('Privacy'))
@@ -299,7 +280,7 @@ class VehicleResource extends Resource
                             })
                             ->html()
                             ->label(__('License plate')),
-                        TextColumn::make('status')
+                        TextColumn::make('status_badge')
                             ->icon(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'icon'))
                             ->badge()
                             ->sortable()
@@ -308,29 +289,8 @@ class VehicleResource extends Resource
                             ->color(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
                             ->label(__('Status')),
                         TextColumn::make('status')
-                            ->icon(fn(string $state): string => match ($state) {
-                                'drivable' => 'mdi-speedometer',
-                                'suspended' => 'mdi-garage',
-                                'wok' => 'mdi-shield-off',
-                                'apk' => 'mdi-shield-alert',
-                                'seized' => 'maki-police',
-                                'stolen' => 'mdi-lock-open-alert',
-                                'sold' => 'gmdi-local-offer',
-                                'not_rollable' => 'fas-car-crash',
-                                'destroyed' => 'mdi-fire',
-                                default => '',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'drivable' => __('Drivable'),
-                                'suspended' => __('Suspended'),
-                                'wok' => __('WOK status'),
-                                'apk' => __('Invalid MOT'),
-                                'seized' => __('Seized'),
-                                'stolen' => __('Stolen'),
-                                'sold' => __('Sold'),
-                                'not_rollable' => __('Not rollable'),
-                                'destroyed' => __('Destroyed'),
-                            })
+                            ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon())
+                            ->formatStateUsing(fn(string $state) => VehicleStatus::from($state)->getLabel())
                             ->badge()
                             ->default('drivable')
                             ->color('gray')
