@@ -198,6 +198,7 @@ class ViewRefueling extends ViewRecord
                     ]),
                 Section::make('cirumstances')
                     ->columns()
+                    ->hidden(fn (Refueling $refueling) => empty($refueling->tires) && empty($refueling->climate_control) && empty($refueling->routes) && empty($refueling->driving_style))
                     ->icon('fas-cloud-sun-rain')
                     ->heading(__('Circumstances'))
                     ->schema([
@@ -232,6 +233,7 @@ class ViewRefueling extends ViewRecord
                     ]),
                 Section::make('payment')
                     ->columns()
+                    ->hidden(fn (Refueling $refueling) => empty($refueling->payment_method) && empty($refueling->discount))
                     ->icon('mdi-bank-transfer')
                     ->heading(__('Payment'))
                     ->schema([
