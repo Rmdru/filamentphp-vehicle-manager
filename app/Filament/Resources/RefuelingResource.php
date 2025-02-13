@@ -2,6 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\RefuelingClimateControl;
+use App\Enums\RefuelingDrivingStyle;
+use App\Enums\RefuelingPaymentMethod;
+use App\Enums\RefuelingRoutes;
+use App\Enums\RefuelingTires;
 use App\Filament\Resources\RefuelingResource\Pages;
 use App\Models\Refueling;
 use App\Models\Vehicle;
@@ -19,6 +24,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -63,7 +69,7 @@ class RefuelingResource extends Resource
     {
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
-        $vehicle = Vehicle::selected()->onlyDrivable()->first();
+        $vehicle = Vehicle::selected()->first();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return $table
@@ -86,287 +92,74 @@ class RefuelingResource extends Resource
 
                                 return new HtmlString('<div class="w-5/12 min-h-16 max-h-40 flex items-center bg-white rounded p-2"><img class="max-h-40" src="' . $logo . '" /></div>');
                             }
-                        ),
-                    Stack::make([
-                        TextColumn::make('date')
-                            ->sortable()
-                            ->label(__('Date'))
-                            ->date()
-                            ->icon('gmdi-calendar-month-r'),
-                        TextColumn::make('gas_station')
-                            ->label(__('Gas station'))
-                            ->sortable()
-                            ->icon('gmdi-location-on-s')
-                            ->searchable()
-                            ->summarize(
-                                Summarizer::make()
-                                    ->label(__('Most visited gas station'))
-                                    ->using(function (BuilderQuery $query): string {
-                                        return $query->select('gas_station')
-                                            ->selectRaw('COUNT(*) as count')
-                                            ->groupBy('gas_station')
-                                            ->orderByDesc('count')
-                                            ->limit(1)
-                                            ->pluck('gas_station')
-                                            ->first();
-                                    })
-                            ),
-                    ])
-                        ->space(1),
-                    Stack::make([
-                        TextColumn::make('total_price')
-                            ->sortable()
-                            ->label(__('Total price'))
-                            ->icon('mdi-hand-coin-outline')
-                            ->money('EUR')
-                            ->summarize([
-                                Average::make()->label(__('Total price average')),
-                                Range::make()->label(__('Total price range')),
-                            ]),
-                        TextColumn::make('unit_price')
-                            ->sortable()
-                            ->label(__('Unit price'))
-                            ->icon('gmdi-local-offer')
-                            ->prefix('€ ')
-                            ->suffix('/' . $powertrain['unit_short'])
-                            ->summarize([
-                                Average::make()->label(__('Unit price average')),
-                                Range::make()->label(__('Unit price range')),
-                            ]),
-                        TextColumn::make('costs_per_kilometer')
-                            ->sortable()
-                            ->label(__('Costs per kilometer'))
-                            ->icon('uni-euro-circle-o')
-                            ->money('EUR')
-                            ->suffix('/km')
-                            ->summarize([
-                                Average::make()->label(__('Costs per kilomenter average')),
-                                Range::make()->label(__('Costs per kilomenter range')),
-                            ]),
+                    ),
+                TextColumn::make('date')
+                ->sortable()
+                ->label(__('Date'))
+                ->date()
+                ->icon('gmdi-calendar-month-r'),
+                TextColumn::make('gas_station')
+                ->label(__('Gas station'))
+                ->sortable()
+                ->icon('gmdi-location-on-s')
+                ->searchable()
+                ->summarize(
+                    Summarizer::make()
+                        ->label(__('Most visited gas station'))
+                        ->using(function (BuilderQuery $query): string {
+                            return $query->select('gas_station')
+                                ->selectRaw('COUNT(*) as count')
+                                ->groupBy('gas_station')
+                                ->orderByDesc('count')
+                                ->limit(1)
+                                ->pluck('gas_station')
+                                ->first();
+                        })
+                ),
+                TextColumn::make('total_price')
+                ->sortable()
+                ->label(__('Total price'))
+                ->icon('mdi-hand-coin-outline')
+                ->money('EUR')
+                ->summarize([
+                    Average::make()->label(__('Total price average')),
+                    Range::make()->label(__('Total price range')),
+                ]),
+                TextColumn::make('fuel_consumption')
+                ->sortable()
+                ->label(__('Fuel consumption'))
+                ->icon(function (Refueling $refueling) {
+                    $fuelConsumption = $refueling->fuel_consumption;
+                    $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
 
-                    ])
-                        ->space(1),
-                    Stack::make([
-                        TextColumn::make('mileage_end')
-                            ->sortable()
-                            ->label(__('Mileage end'))
-                            ->icon('gmdi-route')
-                            ->suffix(' km'),
-                        TextColumn::make('distance')
-                            ->default('0')
-                            ->sortable()
-                            ->label(__('Distance'))
-                            ->icon('gmdi-add')
-                            ->suffix(' km'),
-                        TextColumn::make('avg_speed')
-                            ->sortable()
-                            ->label(__('Average speed'))
-                            ->icon('mdi-speedometer')
-                            ->suffix(' km/h'),
-                    ])
-                        ->space(1),
-                    Stack::make([
-                        TextColumn::make('fuel_consumption')
-                            ->sortable()
-                            ->label(__('Fuel consumption'))
-                            ->icon(function (Refueling $refueling) {
-                                return 'mdi-engine';
-                            })
-                            ->badge()
-                            ->color(function (Refueling $refueling) {
-                                $fuelConsumption = $refueling->fuel_consumption;
-                                $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
+                    if ($fuelConsumption > $avgFuelConsumption) {
+                        return 'gmdi-trending-up-r';
+                    } else if ($fuelConsumption < $avgFuelConsumption) {
+                        return 'gmdi-trending-down-r';
+                    } else {
+                        return 'mdi-approximately-equal';
+                    }
+                })
+                ->badge()
+                    ->color(function (Refueling $refueling) {
+                        $fuelConsumption = $refueling->fuel_consumption;
+                        $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
 
-                                if ($fuelConsumption > $avgFuelConsumption) {
-                                    return 'danger';
-                                } else if ($fuelConsumption < $avgFuelConsumption) {
-                                    return 'success';
-                                } else {
-                                    return 'warning';
-                                }
-                            })
-                            ->suffix($powertrain['consumption_unit'])
-                            ->summarize([
-                                Average::make()->label(__('Fuel consumption average')),
-                                Range::make()->label(__('Fuel consumption range')),
-                            ]),
-                        TextColumn::make('amount')
-                            ->sortable()
-                            ->label(__('Amount'))
-                            ->icon(function (Refueling $refueling) {
-                                if (str($refueling->fuel_type)->contains('electric', true)) {
-                                    return 'mdi-battery-charging';
-                                }
-
-                                return 'mdi-fuel';
-                            })
-                            ->suffix($powertrain['unit_short'])
-                            ->summarize([
-                                Average::make()->label(__('Amount average')),
-                                Range::make()->label(__('Amount range')),
-                            ]),
-                        TextColumn::make('fuel_type')
-                            ->sortable()
-                            ->label(__('Fuel type'))
-                            ->icon(function (Refueling $refueling) {
-                                if (str($refueling->fuel_type)->contains('electric', true)) {
-                                    return 'fas-charging-station';
-                                }
-
-                                return 'gmdi-local-gas-station-r';
-                            })
-                            ->formatStateUsing(fn(Refueling $refueling) => $fuelTypes[$refueling->fuel_type]),
-                        TextColumn::make('fuel_consumption_onboard_computer')
-                            ->sortable()
-                            ->label(__('Fuel consumption onboard computer'))
-                            ->icon('gmdi-dashboard-r')
-                            ->suffix(' l/100km'),
-                    ])
-                        ->space(),
+                        if ($fuelConsumption > $avgFuelConsumption) {
+                            return 'danger';
+                        } else if ($fuelConsumption < $avgFuelConsumption) {
+                            return 'success';
+                        } else {
+                            return 'warning';
+                        }
+                    })
+                    ->suffix($powertrain['consumption_unit'])
+                    ->summarize([
+                        Average::make()->label(__('Fuel consumption average')),
+                        Range::make()->label(__('Fuel consumption range')),
                 ])
-                    ->from('xl'),
-                Panel::make([
-                    Split::make([
-                        TextColumn::make('country')
-                            ->sortable()
-                            ->formatStateUsing(function ($record) {
-                                return Livewire::mount('CountryFlag', [
-                                    'country' => $record->country,
-                                    'showName' => true,
-                                ]);
-                            })
-                            ->html()
-                            ->label(__('Country'))
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('tires')
-                            ->sortable()
-                            ->badge()
-                            ->label(__('Tires'))
-                            ->color(fn(string $state): string => match ($state) {
-                                'all_season' => 'danger',
-                                'summer' => 'warning',
-                                'winter' => 'info',
-                            })
-                            ->icon(fn(string $state): string => match ($state) {
-                                'all_season' => 'gmdi-sunny-snowing',
-                                'summer' => 'gmdi-wb-sunny-o',
-                                'winter' => 'forkawesome-snowflake-o',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'all_season' => __('All season tires'),
-                                'summer' => __('Summer tires'),
-                                'winter' => __('Winter tires'),
-                            })
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('climate_control')
-                            ->sortable()
-                            ->badge()
-                            ->label(__('Climate control'))
-                            ->color(fn(string $state): string => match ($state) {
-                                'automatically' => 'warning',
-                                'airco' => 'info',
-                                'heater' => 'danger',
-                                'demisting' => 'success',
-                                'defrost' => 'info',
-                            })
-                            ->icon(fn(string $state): string => match ($state) {
-                                'automatically' => 'fas-temperature-high',
-                                'airco' => 'mdi-air-conditioner',
-                                'heater' => 'mdi-heat-wave',
-                                'demisting' => 'mdi-wiper',
-                                'defrost' => 'forkawesome-snowflake-o',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'automatically' => __('Automatically'),
-                                'airco' => __('Airco'),
-                                'heater' => __('Heater'),
-                                'demisting' => __('Demisting'),
-                                'defrost' => __('Defrost'),
-                            })
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('routes')
-                            ->sortable()
-                            ->badge()
-                            ->label(__('Routes'))
-                            ->color(fn(string $state): string => match ($state) {
-                                'motorway' => 'info',
-                                'country_road' => 'success',
-                                'city' => 'warning',
-                                'trailer' => 'danger',
-                            })
-                            ->icon(fn(string $state): string => match ($state) {
-                                'motorway' => 'mdi-highway',
-                                'country_road' => 'gmdi-landscape-s',
-                                'city' => 'gmdi-location-city-r',
-                                'trailer' => 'mdi-truck-trailer',
-                            })
-                            ->listWithLineBreaks()
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'motorway' => __('Motorway'),
-                                'country_road' => __('Country road'),
-                                'city' => __('City'),
-                                'trailer' => __('Trailer'),
-                            })
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('driving_style')
-                            ->sortable()
-                            ->badge()
-                            ->label(__('Driving style'))
-                            ->color(fn(string $state): string => match ($state) {
-                                'slow' => 'warning',
-                                'average' => 'success',
-                                'fast' => 'primary',
-                            })
-                            ->icon(fn(string $state): string => match ($state) {
-                                'slow' => 'mdi-speedometer-slow',
-                                'average' => 'mdi-speedometer-medium',
-                                'fast' => 'mdi-speedometer',
-                            })
-                            ->listWithLineBreaks()
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'slow' => __('Slow'),
-                                'average' => __('Average'),
-                                'fast' => __('Fast'),
-                            })
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('payment_method')
-                            ->label(__('Payment method'))
-                            ->sortable()
-                            ->badge()
-                            ->icon(fn(string $state) => match ($state) {
-                                'cash' => 'mdi-hand-coin-outline',
-                                'bank_card' => 'gmdi-credit-card',
-                                'loyalty_program' => 'mdi-gift',
-                                'fuel_card' => 'gmdi-local-gas-station-r',
-                                'app' => 'mdi-cellphone-wireless',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'cash' => __('Cash'),
-                                'bank_card' => __('Bank card'),
-                                'loyalty_program' => __('Loyality program'),
-                                'fuel_card' => __('Fuel card'),
-                                'app' => __('App'),
-                            })
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('discount')
-                            ->label(__('Discount'))
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('service_by_attendant')
-                            ->label(__('Service by attendant'))
-                            ->badge()
-                            ->color('success')
-                            ->icon('gmdi-local-gas-station-r')
-                            ->formatStateUsing(fn(bool $state) => __('Service by attendant'))
-                            ->hidden(fn($state) => empty($state)),
-                        TextColumn::make('charge_time')
-                            ->label(__('Charge time'))
-                            ->icon('mdi-battery-clock')
-                            ->suffix(' ' . __('minutes'))
-                            ->hidden(fn($state) => empty($state)),
-                    ])
-                        ->from('lg'),
                 ])
-                    ->collapsible(),
+            ->from('xl'),
             ])
             ->filters([
                 Filter::make('date')
@@ -416,6 +209,7 @@ class RefuelingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -427,7 +221,7 @@ class RefuelingResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $vehicle = Vehicle::selected()->onlyDrivable()->first();
+        $vehicle = Vehicle::selected()->first();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return $form
@@ -444,7 +238,7 @@ class RefuelingResource extends Resource
                             ->relationship('vehicle')
                             ->default($vehicle->id ?? null)
                             ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::onlyDrivable()->get();
+                                $vehicles = Vehicle::all();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
                                     return $index->full_name_with_license_plate;
@@ -516,7 +310,7 @@ class RefuelingResource extends Resource
                                 'Premium Unleaded (E10)',
                                 'Premium Unleaded (E5)',
                                 'Super Plus 98',
-                                'Super Plus 1',
+                                'Super Plus 100',
                                 'Super Plus 102',
                                 'Diesel',
                                 'Premium diesel',
@@ -534,7 +328,7 @@ class RefuelingResource extends Resource
                             ->required()
                             ->suffix(' km')
                             ->numeric()
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->mileage_latest ?? null),
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->mileage_latest ?? null),
                         TextInput::make('mileage_end')
                             ->label(__('Mileage end'))
                             ->required()
@@ -551,86 +345,21 @@ class RefuelingResource extends Resource
                         ToggleButtons::make('tires')
                             ->label(__('Tires'))
                             ->inline()
-                            ->options([
-                                'all_season' => __('All season'),
-                                'summer' => __('Summer'),
-                                'winter' => __('Winter'),
-                            ])
-                            ->icons([
-                                'all_season' => 'gmdi-sunny-snowing',
-                                'summer' => 'gmdi-wb-sunny-o',
-                                'winter' => 'forkawesome-snowflake-o',
-                            ])
-                            ->colors([
-                                'all_season' => 'danger',
-                                'summer' => 'warning',
-                                'winter' => 'info',
-                            ]),
+                            ->options(RefuelingTires::class),
                         ToggleButtons::make('climate_control')
                             ->label(__('Climate control'))
                             ->multiple()
                             ->inline()
-                            ->options([
-                                'automatically' => __('Automatically'),
-                                'airco' => __('Airco'),
-                                'heater' => __('Heater'),
-                                'demisting' => __('Demisting'),
-                                'defrost' => __('Defrost'),
-                            ])
-                            ->icons([
-                                'automatically' => 'fas-temperature-high',
-                                'airco' => 'mdi-air-conditioner',
-                                'heater' => 'mdi-heat-wave',
-                                'demisting' => 'mdi-wiper',
-                                'defrost' => 'forkawesome-snowflake-o',
-                            ])
-                            ->colors([
-                                'automatically' => 'warning',
-                                'airco' => 'info',
-                                'heater' => 'danger',
-                                'demisting' => 'success',
-                                'defrost' => 'info',
-                            ]),
+                            ->options(RefuelingClimateControl::class),
                         ToggleButtons::make('routes')
                             ->label(__('Routes'))
                             ->inline()
                             ->multiple()
-                            ->options([
-                                'motorway' => __('Motorway'),
-                                'country_road' => __('Country road'),
-                                'city' => __('City'),
-                                'trailer' => __('Trailer'),
-                            ])
-                            ->icons([
-                                'motorway' => 'mdi-highway',
-                                'country_road' => 'gmdi-landscape-s',
-                                'city' => 'gmdi-location-city-r',
-                                'trailer' => 'mdi-truck-trailer',
-                            ])
-                            ->colors([
-                                'motorway' => 'info',
-                                'country_road' => 'success',
-                                'city' => 'warning',
-                                'trailer' => 'danger',
-                            ]),
+                            ->options(RefuelingRoutes::class),
                         ToggleButtons::make('driving_style')
                             ->label(__('Driving style'))
                             ->inline()
-                            ->options([
-                                'slow' => __('Slow'),
-                                'average' => __('Average'),
-                                'fast' => __('Fast'),
-                            ])
-                            ->icons([
-                                'slow' => 'mdi-speedometer-slow',
-                                'average' => 'mdi-speedometer-medium',
-                                'fast' => 'mdi-speedometer',
-                            ])
-                            ->colors([
-                                'slow' => 'warning',
-                                'average' => 'success',
-                                'fast' => 'primary',
-                            ]),
+                            ->options(RefuelingDrivingStyle::class),
                         TextInput::make('avg_speed')
                             ->label(__('Average speed'))
                             ->numeric()
@@ -644,20 +373,7 @@ class RefuelingResource extends Resource
                         ToggleButtons::make('payment_method')
                             ->label(__('Payment method'))
                             ->inline()
-                            ->icons([
-                                'cash' => 'mdi-hand-coin-outline',
-                                'bank_card' => 'gmdi-credit-card',
-                                'loyalty_program' => 'mdi-gift',
-                                'fuel_card' => 'gmdi-local-gas-station-r',
-                                'app' => 'mdi-cellphone-wireless',
-                            ])
-                            ->options([
-                                'cash' => __('Cash'),
-                                'bank_card' => __('Bank card'),
-                                'loyalty_program' => __('Loyality program'),
-                                'fuel_card' => __('Fuel card'),
-                                'app' => __('App'),
-                            ]),
+                            ->options(RefuelingPaymentMethod::class),
                         TextInput::make('discount')
                             ->label(__('Discount')),
                     ]),
@@ -669,6 +385,7 @@ class RefuelingResource extends Resource
         return [
             'index' => Pages\ListRefuelings::route('/'),
             'create' => Pages\CreateRefueling::route('/create'),
+            'view' => Pages\ViewRefueling::route('/{record}'),
             'edit' => Pages\EditRefueling::route('/{record}/edit'),
         ];
     }

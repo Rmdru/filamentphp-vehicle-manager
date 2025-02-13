@@ -5,6 +5,7 @@ namespace App\Providers;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
                     'es' => url('https://flagsapi.com/ES/flat/64.png'),
                 ]);
         });
+
+        DB::prohibitDestructiveCommands(app()->isProduction());
     }
 
     private function configureDates(): void

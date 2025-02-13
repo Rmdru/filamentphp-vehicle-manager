@@ -2,12 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Filament\Resources\VehicleResource;
-use App\Filament\Resources\VehicleResource\Pages\CreateVehicle;
-use App\Models\User;
 use App\Models\Vehicle;
-use Livewire\Livewire;
-
+use App\Filament\Resources\VehicleResource\Pages\ListVehicles;
 use function Pest\Livewire\livewire;
 
 test('it redirects to vehicle create when user have no vehicles', function () {
@@ -26,6 +22,6 @@ it('can view vehicle index page', function () {
     $response->assertStatus(200);
     $response->assertSee(__('Vehicles'));
 
-    livewire(VehicleResource\Pages\ListVehicles::class)
+    livewire(ListVehicles::class)
         ->assertCanSeeTableRecords($vehicles);
 });

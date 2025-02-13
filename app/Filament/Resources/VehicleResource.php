@@ -90,6 +90,7 @@ class VehicleResource extends Resource
                                             ->searchable()
                                             ->options((new self())->getPowerTrainOptions())
                                             ->reactive()
+                                            ->required()
                                             ->afterStateUpdated(fn(callable $set, $state) => $set('powertrain', $state)),
                                         Select::make('fuel_types')
                                             ->required()

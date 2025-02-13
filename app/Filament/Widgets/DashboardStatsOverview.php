@@ -19,7 +19,7 @@ class DashboardStatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $vehicle = Vehicle::selected()->onlyDrivable()->first();
+        $vehicle = Vehicle::selected()->first();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return [

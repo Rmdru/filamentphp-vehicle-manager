@@ -226,9 +226,9 @@ class TollResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->onlyDrivable()->first()->id ?? null)
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::onlyDrivable()->get();
+                                $vehicles = Vehicle::all();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
                                     return $index->full_name_with_license_plate;

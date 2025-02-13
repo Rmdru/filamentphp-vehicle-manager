@@ -10,7 +10,7 @@ trait FuelTypeOptions
 {
     public function getFuelTypeOptions(): array
     {
-        $vehicle = Vehicle::selected()->onlyDrivable()->first();
+        $vehicle = Vehicle::selected()->first();
         $fuelTypes = trans('fuel_types');
         $fuelTypeOptions = [];
 

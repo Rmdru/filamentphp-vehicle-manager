@@ -89,7 +89,7 @@ class Vehicle extends Model
         ]);
     }
 
-    public function scopeOnlyDrivable(Builder $query): void
+    public function scopeOnlyDriveable(Builder $query): void
     {
         $query->where([
             'status' => 'drivable',

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\VehicleStatus;
+use App\Models\Refueling;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -63,9 +65,11 @@ class VehicleFactory extends Factory
             'country_registration' => $this->faker->randomElement(array_keys($countries)),
             'is_private' => $this->faker->boolean(),
             'status' => $this->faker->randomElement(collect(VehicleStatus::cases())->pluck('value')->toArray()),
-            'fuel_types' => collect(range(1, 5))->map(function () use ($fuelTypes) {
-                return $this->faker->randomElement($fuelTypes);
-            })->toArray(),
+            'fuel_types' => $this->faker->randomElements(
+                array: array_keys($fuelTypes),
+                count: $this->faker->numberBetween(1, 3),
+                allowDuplicates: false,
+            ),
             'specifications' => collect(range(1, 5))->map(function () {
                 return [
                     'name' => $this->faker->word(),
@@ -74,10 +78,26 @@ class VehicleFactory extends Factory
                         $this->faker->numberBetween(0, 9999),
                         $this->faker->boolean(),
                     ]),
-                    'icon' => $this->faker->word(),
+                    'icon' => $this->faker->randomElement([
+                        'gmdi-directions-car-filled-r',
+                        'gmdi-star',
+                        'mdi-engine',
+                        'gmdi-local-gas-station',
+                        'gmdi-route',
+                        'gmdi-calendar-month-r',
+                        'fas-industry',
+                        'gmdi-local-offer-r',
+                    ]),
                 ];
             })->toArray(),
             'notifications' => $notifications,
         ];
+    }
+
+    public function withRefuelings(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Refueling::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
     }
 }

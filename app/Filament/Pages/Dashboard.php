@@ -71,6 +71,7 @@ class Dashboard extends Page
     {
         $vehicle = Vehicle::selected()->first();
         $brands = config('vehicles.brands');
+
         $vehicle->brand = $brands[$vehicle->brand];
 
         return [
