@@ -128,7 +128,7 @@ class AccountPanelProvider extends PanelProvider
                 ->badge($vehicle->license_plate, $countries[$vehicle->country_registration]['license_plate']['filament_color'])
                 ->url(fn(): string => route('switch-vehicle', ['vehicleId' => $vehicle->id]))
                 ->isActiveWhen(fn(): bool => Session::get('vehicle_id') === $vehicle->id)
-                ->icon('si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower());
+                ->icon('si-' . str($brands[$vehicle->brand])->replace([' ', '-'], '')->lower()->ascii());
         }
 
         return $menuItems;

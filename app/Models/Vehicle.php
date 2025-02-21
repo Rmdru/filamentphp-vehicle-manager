@@ -345,26 +345,26 @@ class Vehicle extends Model
         ];
 
         if (
-            (! empty($timeTillRefueling) && $timeTillRefueling < 10)
-            || (! empty($maintenanceStatus['time']) && $maintenanceStatus['time'] < 31)
-            || (! empty($maintenanceStatus['distance']) && $maintenanceStatus['distance'] < 1500)
-            || (! empty($timeTillApk) && $timeTillApk < 62)
-            || (! empty($timeTillAircoCheck) && $timeTillAircoCheck < 31)
-            || (! empty($timeTillInsuranceEndDate) && $timeTillInsuranceEndDate < 31)
+            (! $timeTillRefueling && $timeTillRefueling < 10)
+            || (! $maintenanceStatus['time'] && $maintenanceStatus['time'] < 31)
+            || (! $maintenanceStatus['distance'] && $maintenanceStatus['distance'] < 1500)
+            || (! $timeTillApk && $timeTillApk < 62)
+            || (! $timeTillAircoCheck && $timeTillAircoCheck < 31)
+            || (! $timeTillInsuranceEndDate && $timeTillInsuranceEndDate < 31)
         ) {
             return ! empty($item) ? $priorities['critical'][$item] : $priorities['critical'];
         }
 
         if (
-            (! empty($timeTillRefueling) && $timeTillRefueling < 30)
-            || (! empty($maintenanceStatus['time']) && $maintenanceStatus['time'] < 62)
-            || (! empty($maintenanceStatus['distance']) && $maintenanceStatus['distance'] < 3000)
-            || (! empty($timeTillApk) && $timeTillApk < 62)
-            || (! empty($timeTillAircoCheck) && $timeTillAircoCheck < 62)
-            || (! empty($timeTillInsuranceEndDate) && $timeTillInsuranceEndDate < 62)
-            || (! empty($timeTillWashing) && $timeTillWashing < 5)
-            || (! empty($timeTillTirePressure) && $timeTillTirePressure < 10)
-            || (! empty($timeTillLiquidsCheck) && $timeTillLiquidsCheck < 5)
+            (! $timeTillRefueling && $timeTillRefueling < 30)
+            || (! $maintenanceStatus['time'] && $maintenanceStatus['time'] < 62)
+            || (! $maintenanceStatus['distance'] && $maintenanceStatus['distance'] < 3000)
+            || (! $timeTillApk && $timeTillApk < 62)
+            || (! $timeTillAircoCheck && $timeTillAircoCheck < 62)
+            || (! $timeTillInsuranceEndDate && $timeTillInsuranceEndDate < 62)
+            || (! $timeTillWashing && $timeTillWashing < 5)
+            || (! $timeTillTirePressure && $timeTillTirePressure < 10)
+            || (! $timeTillLiquidsCheck && $timeTillLiquidsCheck < 5)
         ) {
             return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
         }

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\ReconditioningExecutor;
+use App\Enums\ReconditioningType;
 use App\Models\Maintenance;
 use App\Models\Reconditioning;
 use App\Models\Vehicle;
@@ -145,38 +147,17 @@ class Timeline extends Page
             $vehicle->maintenances->push($fine);
         }
 
-        foreach ($vehicle->reconditionings as $reconditionings) {
+        foreach ($vehicle->reconditionings as $reconditioning) {
             $typeIcon = [];
-            $type = [];
 
-            foreach ($reconditionings->type as $reconditioningType) {
-                $typeIcon[] = match ($reconditioningType) {
-                    'carwash' => 'mdi-car-wash',
-                    'interior_cleaning' => 'mdi-vacuum',
-                    'exterior_cleaning' => 'gmdi-cleaning-services-r',
-                    'engine_bay_cleaning' => 'mdi-engine',
-                    'damage_repair' => 'mdi-spray',
-                };
+            $type = ReconditioningType::from($reconditioning->type)->getLabel(0);
 
-                $type[] = match ($reconditioningType) {
-                    'carwash' => __('Carwash'),
-                    'exterior_cleaning' => __('Exterior cleaning'),
-                    'interior_cleaning' => __('Interior cleaning'),
-                    'engine_bay_cleaning' => __('Engine bay cleaning'),
-                    'damage_repair' => __('Damage repair'),
-                };
-            }
+            $reconditioning->icon = 'mdi-car-wash';
+            $reconditioning->typeIcon = $typeIcon;
+            $reconditioning->type = $type;
+            $reconditioning->executor = ReconditioningExecutor::from($reconditioning->executor)->getLabel();
 
-            $reconditionings->icon = 'mdi-car-wash';
-            $reconditionings->typeIcon = $typeIcon;
-            $reconditionings->type = $type;
-            $reconditionings->executor = match ($reconditionings->executor) {
-                'myself' => __('Myself'),
-                'someone' => __('Someone else'),
-                'company' => __('Company'),
-            };
-
-            $vehicle->maintenances->push($reconditionings);
+            $vehicle->maintenances->push($reconditioning);
         }
 
         foreach ($vehicle->vignettes as $vignette) {
@@ -261,7 +242,7 @@ class Timeline extends Page
 
             if ($maintenance->apk) {
                 $maintenance->badges->push([
-                    'color' => 'gray',
+                    'color' => 'primary',
                     'title' => __('MOT'),
                     'icon' => 'gmdi-security',
                 ]);
@@ -269,7 +250,7 @@ class Timeline extends Page
 
             if ($maintenance->type_maintenance) {
                 $maintenance->badges->push([
-                    'color' => 'gray',
+                    'color' => 'primary',
                     'title' => __('Maintenance'),
                     'icon' => 'mdi-car-wrench',
                 ]);
@@ -291,7 +272,7 @@ class Timeline extends Page
 
                 if ($insurance->type) {
                     $insurance->badges->push([
-                        'color' => 'gray',
+                        'color' => 'primary',
                         'title' => $insuranceType[$insurance->type]['name'],
                         'icon' => $insuranceType[$insurance->type]['icon'],
                     ]);

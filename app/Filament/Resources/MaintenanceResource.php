@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\MaintenancePaymentMethod;
+use App\Enums\MaintenanceTypeMaintenance;
 use App\Filament\Resources\MaintenanceResource\Pages;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
@@ -102,22 +103,7 @@ class MaintenanceResource extends Resource
                         ->label(__('Type maintenance'))
                         ->badge()
                         ->default('')
-                        ->formatStateUsing(fn(string $state) => match ($state) {
-                            'tire_pressure' => __('Tire pressure checked'),
-                            'liquids_checked' => __('Liquids checked'),
-                            'maintenance' => __('Maintenance'),
-                            'small_maintenance' => __('Small maintenance'),
-                            'big_maintenance' => __('Big maintenance'),
-                            default => __('No maintenance'),
-                        })
-                        ->icon(fn(string $state): string => match ($state) {
-                            'tire_pressure' => 'mdi-car-tire-alert',
-                            'liquids_checked' => 'mdi-oil',
-                            'maintenance' => 'mdi-car-wrench',
-                            'small_maintenance' => 'mdi-oil',
-                            'big_maintenance' => 'mdi-engine',
-                            default => 'gmdi-close-r',
-                        })
+                        ->formatStateUsing(fn(string $state) => MaintenanceTypeMaintenance::from($state)->getLabel() ?? '')
                         ->color('gray'),
                     TextColumn::make('apk')
                         ->icon(fn(Maintenance $maintenance) => $maintenance->apk ? 'gmdi-security' : 'gmdi-close-r')
@@ -244,11 +230,7 @@ class MaintenanceResource extends Resource
                         ToggleButtons::make('type_maintenance')
                             ->label(__('Type maintenance'))
                             ->inline()
-                            ->options([
-                                'maintenance' => __('Maintenance'),
-                                'small_maintenance' => __('Small maintenance'),
-                                'big_maintenance' => __('Big maintenance'),
-                            ]),
+                            ->options(MaintenanceTypeMaintenance::class),
                         Toggle::make('apk')
                             ->label(__('MOT')),
                         DatePicker::make('apk_date')

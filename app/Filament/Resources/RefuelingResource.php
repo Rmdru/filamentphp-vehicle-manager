@@ -24,10 +24,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
-use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\Summarizers\Summarizer;
@@ -94,72 +91,72 @@ class RefuelingResource extends Resource
                             }
                     ),
                 TextColumn::make('date')
-                ->sortable()
-                ->label(__('Date'))
-                ->date()
-                ->icon('gmdi-calendar-month-r'),
+                    ->sortable()
+                    ->label(__('Date'))
+                    ->date()
+                    ->icon('gmdi-calendar-month-r'),
                 TextColumn::make('gas_station')
-                ->label(__('Gas station'))
-                ->sortable()
-                ->icon('gmdi-location-on-s')
-                ->searchable()
-                ->summarize(
-                    Summarizer::make()
-                        ->label(__('Most visited gas station'))
-                        ->using(function (BuilderQuery $query): string {
-                            return $query->select('gas_station')
-                                ->selectRaw('COUNT(*) as count')
-                                ->groupBy('gas_station')
-                                ->orderByDesc('count')
-                                ->limit(1)
-                                ->pluck('gas_station')
-                                ->first();
-                        })
-                ),
+                    ->label(__('Gas station'))
+                    ->sortable()
+                    ->icon('gmdi-location-on-s')
+                    ->searchable()
+                    ->summarize(
+                        Summarizer::make()
+                            ->label(__('Most visited gas station'))
+                            ->using(function (BuilderQuery $query): string {
+                                return $query->select('gas_station')
+                                    ->selectRaw('COUNT(*) as count')
+                                    ->groupBy('gas_station')
+                                    ->orderByDesc('count')
+                                    ->limit(1)
+                                    ->pluck('gas_station')
+                                    ->first();
+                            })
+                    ),
                 TextColumn::make('total_price')
-                ->sortable()
-                ->label(__('Total price'))
-                ->icon('mdi-hand-coin-outline')
-                ->money('EUR')
-                ->summarize([
-                    Average::make()->label(__('Total price average')),
-                    Range::make()->label(__('Total price range')),
-                ]),
+                    ->sortable()
+                    ->label(__('Total price'))
+                    ->icon('mdi-hand-coin-outline')
+                    ->money('EUR')
+                    ->summarize([
+                        Average::make()->label(__('Total price average')),
+                        Range::make()->label(__('Total price range')),
+                    ]),
                 TextColumn::make('fuel_consumption')
-                ->sortable()
-                ->label(__('Fuel consumption'))
-                ->icon(function (Refueling $refueling) {
-                    $fuelConsumption = $refueling->fuel_consumption;
-                    $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
-
-                    if ($fuelConsumption > $avgFuelConsumption) {
-                        return 'gmdi-trending-up-r';
-                    } else if ($fuelConsumption < $avgFuelConsumption) {
-                        return 'gmdi-trending-down-r';
-                    } else {
-                        return 'mdi-approximately-equal';
-                    }
-                })
-                ->badge()
-                    ->color(function (Refueling $refueling) {
+                    ->sortable()
+                    ->label(__('Fuel consumption'))
+                    ->icon(function (Refueling $refueling) {
                         $fuelConsumption = $refueling->fuel_consumption;
                         $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
 
                         if ($fuelConsumption > $avgFuelConsumption) {
-                            return 'danger';
+                            return 'gmdi-trending-up-r';
                         } else if ($fuelConsumption < $avgFuelConsumption) {
-                            return 'success';
+                            return 'gmdi-trending-down-r';
                         } else {
-                            return 'warning';
+                            return 'mdi-approximately-equal';
                         }
                     })
-                    ->suffix($powertrain['consumption_unit'])
-                    ->summarize([
-                        Average::make()->label(__('Fuel consumption average')),
-                        Range::make()->label(__('Fuel consumption range')),
+                    ->badge()
+                        ->color(function (Refueling $refueling) {
+                            $fuelConsumption = $refueling->fuel_consumption;
+                            $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
+
+                            if ($fuelConsumption > $avgFuelConsumption) {
+                                return 'danger';
+                            } else if ($fuelConsumption < $avgFuelConsumption) {
+                                return 'success';
+                            } else {
+                                return 'warning';
+                            }
+                        })
+                        ->suffix($powertrain['consumption_unit'])
+                        ->summarize([
+                            Average::make()->label(__('Fuel consumption average')),
+                            Range::make()->label(__('Fuel consumption range')),
+                    ])
                 ])
-                ])
-            ->from('xl'),
+                    ->from('xl'),
             ])
             ->filters([
                 Filter::make('date')

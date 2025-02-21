@@ -43,7 +43,7 @@ class ViewVehicle extends ViewRecord
                                     ->schema([
                                         TextEntry::make('brand')
                                             ->label(__('Brand'))
-                                            ->icon(fn(Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower())
+                                            ->icon(fn(Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace([' ', '-'], '')->lower()->ascii())
                                             ->formatStateUsing(fn(Vehicle $vehicle) => $brands[$vehicle->brand]),
                                         TextEntry::make('model')
                                             ->icon('gmdi-directions-car-filled-r')
@@ -108,9 +108,9 @@ class ViewVehicle extends ViewRecord
                                             ->money('EUR')
                                             ->label(__('Purchase price')),
                                         TextEntry::make('status')
-                                            ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon())
+                                            ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon() ?? null)
                                             ->placeholder(__('Unknown'))
-                                            ->formatStateUsing(fn(string $state) => VehicleStatus::from($state)->getLabel())
+                                            ->formatStateUsing(fn(string $state) => VehicleStatus::from($state)->getLabel() ?? '')
                                             ->label(__('Status')),
                                     ]),
                                 Fieldset::make('Privacy')

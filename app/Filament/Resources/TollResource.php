@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\RoadType;
+use App\Enums\TollPaymentCircumstances;
+use App\Enums\TollPaymentMethod;
+use App\Enums\TollType;
 use App\Filament\Resources\TollResource\Pages;
 use App\Models\Toll;
 use App\Models\Vehicle;
@@ -125,34 +129,14 @@ class TollResource extends Resource
                             ->label(__('Payment circumstances'))
                             ->color('gray')
                             ->badge()
-                            ->icon(fn(string $state): string => match ($state) {
-                                'toll_gate' => 'maki-toll',
-                                'camera' => 'iconpark-surveillancecamerastwo',
-                                default => '',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'toll_gate' => __('Toll gate'),
-                                'camera' => __('Camera'),
-                            }),
+                            ->icon(fn(string $state): string => TollPaymentCircumstances::from($state)->getIcon())
+                            ->formatStateUsing(fn(string $state) => TollPaymentCircumstances::from($state)->getLabel()),
                         TextColumn::make('payment_method')
                             ->label(__('Payment method'))
                             ->color('gray')
                             ->badge()
-                            ->icon(fn(string $state): string => match ($state) {
-                                'cash' => 'mdi-hand-coin-outline',
-                                'bank_card' => 'gmdi-credit-card',
-                                'online' => 'gmdi-qr-code',
-                                'toll_badge' => 'mdi-car-connected',
-                                'app' => 'mdi-cellphone-wireless',
-                                default => '',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'cash' => __('Cash'),
-                                'bank_card' => __('Bank card'),
-                                'online' => __('Online'),
-                                'toll_badge' => __('Toll badge'),
-                                'app' => __('App'),
-                            }),
+                            ->icon(fn(string $state): string => TollPaymentMethod::from($state)->getIcon())
+                            ->formatStateUsing(fn(string $state) => TollPaymentMethod::from($state)->getLabel()),
                     ])
                         ->space(),
                 ])
@@ -250,14 +234,7 @@ class TollResource extends Resource
                             ->label(__('Type'))
                             ->inline()
                             ->required()
-                            ->options([
-                                'location' => __('Location'),
-                                'section' => __('Section'),
-                            ])
-                            ->icons([
-                                'location' => 'gmdi-location-on-r',
-                                'section' => 'gmdi-route-r',
-                            ])
+                            ->options(TollType::class)
                             ->reactive()
                             ->afterStateUpdated(fn($state, callable $set) => $set('type', $state)),
                         TextInput::make('toll_company')
@@ -267,31 +244,17 @@ class TollResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
-                            ->options((new self())->getCountryOptions()),
+                            ->options((new self())->getCountryOptions())
+                            ->required(fn(callable $get) => $get('road') ?? false),
                         ToggleButtons::make('road_type')
                             ->label(__('Road type'))
                             ->inline()
-                            ->options([
-                                'highway' => __('Highway'),
-                                'secondary' => __('Secondary'),
-                                'ring' => __('Ring'),
-                                'provincial' => __('Provincial'),
-                                'other' => __('Other'),
-                            ])
-                            ->icons([
-                                'highway' => 'mdi-highway',
-                                'secondary' => 'mdi-tunnel',
-                                'ring' => 'mdi-reload',
-                                'provincial' => 'fas-road',
-                            ])
-                            ->colors([
-                                'highway' => 'danger',
-                                'secondary' => 'info',
-                                'ring' => 'success',
-                                'provincial' => 'warning',
-                            ]),
+                            ->options(RoadType::class)
+                            ->required(fn(callable $get) => $get('road') ?? false),
                         TagsInput::make('road')
-                            ->label(__('Road')),
+                            ->label(__('Road'))
+                            ->reactive()
+                            ->afterStateUpdated(fn(callable $set, $state) => $set('road', $state)),
                         TextInput::make('start_location')
                             ->label(__('Start location'))
                             ->required()
@@ -315,31 +278,11 @@ class TollResource extends Resource
                         ToggleButtons::make('payment_circumstances')
                             ->label(__('Payment circumstances'))
                             ->inline()
-                            ->options([
-                                'toll_gate' => __('Toll gate'),
-                                'camera' => __('Camera'),
-                            ])
-                            ->icons([
-                                'toll_gate' => 'maki-toll',
-                                'camera' => 'iconpark-surveillancecamerastwo',
-                            ]),
+                            ->options(TollPaymentCircumstances::class),
                         ToggleButtons::make('payment_method')
                             ->label(__('Payment method'))
                             ->inline()
-                            ->options([
-                                'cash' => __('Cash'),
-                                'bank_card' => __('Bank card'),
-                                'online' => __('Online'),
-                                'toll_badge' => __('Toll badge'),
-                                'app' => __('App'),
-                            ])
-                            ->icons([
-                                'cash' => 'mdi-hand-coin-outline',
-                                'bank_card' => 'gmdi-credit-card',
-                                'online' => 'gmdi-qr-code',
-                                'toll_badge' => 'mdi-car-connected',
-                                'app' => 'mdi-cellphone-wireless',
-                            ]),
+                            ->options(TollPaymentMethod::class),
                     ]),
             ]);
     }

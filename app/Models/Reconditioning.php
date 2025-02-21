@@ -28,7 +28,6 @@ class Reconditioning extends Model
 
     protected $casts = [
         'date' => 'date:Y-m-d',
-        'type' => 'array',
     ];
 
     public function vehicle(): BelongsTo

@@ -28,8 +28,8 @@ class ViewMaintenance extends ViewRecord
                     ->schema([
                         TextEntry::make('vehicle_id')
                             ->label(__('Vehicle'))
-                            ->icon(fn(Maintenance $maintenance) => 'si-' . str($brands[$maintenance->vehicle->brand])->replace(' ', '')->lower())
-                            ->formatStateUsing(fn(Maintenance $maintenance) => $brands[$maintenance->vehicle->brand] . " " . $maintenance->vehicle->model),
+                            ->icon(fn(Maintenance $maintenance) => 'si-' . str($brands[$maintenance->vehicle->brand])->replace([' ', '-'], '')->lower()->ascii())
+                            ->formatStateUsing(fn(Maintenance $maintenance) => $brands[$maintenance->vehicle->brand] . ' ' . $maintenance->vehicle->model),
                         TextEntry::make('date')
                             ->label(__('Date'))
                             ->date()

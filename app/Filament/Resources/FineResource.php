@@ -2,6 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\FinePaymentMethod;
+use App\Enums\FineProvider;
+use App\Enums\FineSanction;
+use App\Enums\FineType;
+use App\Enums\RoadType;
 use App\Filament\Resources\FineResource\Pages;
 use App\Models\Fine;
 use App\Models\Vehicle;
@@ -152,22 +157,8 @@ class FineResource extends Resource
                             ->sortable(),
                         TextColumn::make('payment_method')
                             ->label(__('Payment method'))
-                            ->icon(fn(string $state): string => match ($state) {
-                                'cash' => 'mdi-hand-coin-outline',
-                                'bank_card' => 'gmdi-credit-card',
-                                'online' => 'gmdi-qr-code',
-                                'direct_debit' => 'fas-file-invoice-dollar',
-                                'bank_transfer' => 'mdi-bank-transfer',
-                                default => '',
-                            })
-                            ->formatStateUsing(fn(string $state): string => match ($state) {
-                                'cash' => __('Cash'),
-                                'bank_card' => __('Bank card'),
-                                'online' => __('Online'),
-                                'direct_debit' => __('Direct debit'),
-                                'bank_transfer' => __('Bank transfer'),
-                                default => '',
-                            })
+                            ->icon(fn(string $state): string => FinePaymentMethod::from($state)->getIcon())
+                            ->formatStateUsing(fn(string $state): string => FinePaymentMethod::from($state)->getLabel())
                             ->badge()
                             ->sortable(),
                     ])
@@ -177,64 +168,20 @@ class FineResource extends Resource
                             ->label(__('Type'))
                             ->sortable()
                             ->badge()
-                            ->icon(fn(string $state): string => match ($state) {
-                                'camera' => 'iconpark-surveillancecamerastwo',
-                                'officer' => 'maki-police',
-                                'traffic_stop' => 'mdi-car-emergency',
-                                'automated' => 'gmdi-timer-s',
-                                'traffic_control' => 'mdi-map-marker-radius',
-                                'border_control' => 'fas-road-barrier',
-                                default => '',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'camera' => __('Camera'),
-                                'officer' => __('Officer'),
-                                'traffic_stop' => __('Traffic stop'),
-                                'automated' => __('Automated'),
-                                'traffic_control' => __('Traffic control'),
-                                'border_control' => __('Border control'),
-                            }),
+                            ->icon(fn(string $state): string => FineType::from($state)->getIcon())
+                            ->formatStateUsing(fn(string $state) => FineType::from($state)->getLabel()),
                         TextColumn::make('provider')
                             ->label(__('Provider'))
                             ->sortable()
                             ->badge()
-                            ->icon(fn(string $state): string => match ($state) {
-                                'police' => 'maki-police',
-                                'local_police' => 'gmdi-local-police',
-                                'road_operator' => 'mdi-highway',
-                                'rdw' => 'gmdi-emoji-transportation-r',
-                                'other_government' => 'gmdi-account-balance-r',
-                                default => '',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'police' => __('Police'),
-                                'local_police' => __('Local police'),
-                                'road_operator' => __('Road operator'),
-                                'rdw' => __('National Road Transport Department'),
-                                'other_government' => __('Other government agency'),
-                                'other' => __('Other'),
-                            }),
+                            ->icon(fn(string $state): string => FineProvider::from($state)->getIcon())
+                            ->formatStateUsing(fn(string $state) => FineProvider::from($state)->getLabel()),
                         TextColumn::make('sanctions')
                             ->label(__('Sanctions'))
                             ->sortable()
                             ->badge()
-                            ->icon(fn(string $state): string => match ($state) {
-                                'wok_status' => 'mdi-shield-alert',
-                                'vehicle_seized' => 'mdi-car-door-lock',
-                                'driving_ban' => 'mdi-car-clock',
-                                'emg_course' => 'gmdi-school-r',
-                                'drivers_license_confiscated' => 'mdi-credit-card-lock',
-                                'arrested' => 'mdi-handcuffs',
-                                default => '',
-                            })
-                            ->formatStateUsing(fn(string $state) => match ($state) {
-                                'wok_status' => __('WOK status'),
-                                'vehicle_seized' => __('Vehicle seized'),
-                                'driving_ban' => __('Driving ban'),
-                                'emg_course' => __('EMG course'),
-                                'drivers_license_confiscated' => __('Drivers license confiscated'),
-                                'arrested' => __('Arrested'),
-                            }),
+                            ->icon(fn(string $state): string => FineSanction::from($state)->getIcon())
+                            ->formatStateUsing(fn(string $state) => FineSanction::from($state)->getLabel()),
                     ])
                         ->space(),
                 ])
@@ -322,22 +269,7 @@ class FineResource extends Resource
                             ->label(__('Type'))
                             ->inline()
                             ->required()
-                            ->options([
-                                'camera' => __('Camera'),
-                                'officer' => __('Officer'),
-                                'traffic_stop' => __('Traffic stop'),
-                                'automated' => __('Automated'),
-                                'traffic_control' => __('Traffic control'),
-                                'border_control' => __('Border control'),
-                            ])
-                            ->icons([
-                                'camera' => 'iconpark-surveillancecamerastwo',
-                                'officer' => 'maki-police',
-                                'traffic_stop' => 'mdi-car-emergency',
-                                'automated' => 'gmdi-timer-s',
-                                'traffic_control' => 'mdi-map-marker-radius',
-                                'border_control' => 'fas-road-barrier',
-                            ]),
+                            ->options(FineType::class),
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()
@@ -348,21 +280,7 @@ class FineResource extends Resource
                             ->label(__('Provider'))
                             ->inline()
                             ->required()
-                            ->options([
-                                'police' => __('Police'),
-                                'local_police' => __('Local police'),
-                                'road_operator' => __('Road operator'),
-                                'rdw' => __('National Road Transport Department'),
-                                'other_government' => __('Other government agency'),
-                                'other' => __('Other'),
-                            ])
-                            ->icons([
-                                'police' => 'maki-police',
-                                'local_police' => 'gmdi-local-police',
-                                'road_operator' => 'mdi-highway',
-                                'rdw' => 'gmdi-emoji-transportation-r',
-                                'other_government' => 'gmdi-account-balance-r',
-                            ]),
+                            ->options(FineProvider::class),
                     ]),
                 Fieldset::make('Fact')
                     ->label(__('Fact'))
@@ -390,35 +308,21 @@ class FineResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
+                            ->required(fn(callable $get) => $get('road') ?? false)
                             ->options((new self())->getCountryOptions()),
                         TextInput::make('location')
                             ->label(__('Location'))
                             ->maxLength(100),
                         TextInput::make('road')
                             ->label(__('Road'))
-                            ->maxLength(100),
+                            ->maxLength(100)
+                            ->reactive()
+                            ->afterStateUpdated(fn(callable $set, $state) => $set('road', $state)),
                         ToggleButtons::make('road_type')
                             ->label(__('Road type'))
                             ->inline()
-                            ->options([
-                                'highway' => __('Highway'),
-                                'secondary' => __('Secondary'),
-                                'ring' => __('Ring'),
-                                'provincial' => __('Provincial'),
-                                'other' => __('Other'),
-                            ])
-                            ->icons([
-                                'highway' => 'mdi-highway',
-                                'secondary' => 'mdi-tunnel',
-                                'ring' => 'mdi-reload',
-                                'provincial' => 'fas-road',
-                            ])
-                            ->colors([
-                                'highway' => 'danger',
-                                'secondary' => 'info',
-                                'ring' => 'success',
-                                'provincial' => 'warning',
-                            ]),
+                            ->options(RoadType::class)
+                            ->required(fn(callable $get) => $get('road') ?? false),
                         TextInput::make('road_distance_marker')
                             ->label(__('Road distance marker'))
                             ->numeric()
@@ -447,20 +351,7 @@ class FineResource extends Resource
                         ToggleButtons::make('payment_method')
                             ->label(__('Payment method'))
                             ->inline()
-                            ->options([
-                                'cash' => __('Cash'),
-                                'bank_card' => __('Bank card'),
-                                'online' => __('Online'),
-                                'direct_debit' => __('Direct debit'),
-                                'bank_transfer' => __('Bank transfer'),
-                            ])
-                            ->icons([
-                                'cash' => 'mdi-hand-coin-outline',
-                                'bank_card' => 'gmdi-credit-card',
-                                'online' => 'gmdi-qr-code',
-                                'direct_debit' => 'fas-file-invoice-dollar',
-                                'bank_transfer' => 'mdi-bank-transfer',
-                            ]),
+                            ->options(FinePaymentMethod::class),
                     ]),
                 Fieldset::make('Sanctions')
                     ->label(__('Sanctions'))
@@ -469,22 +360,7 @@ class FineResource extends Resource
                             ->label(__('Sanctions'))
                             ->inline()
                             ->multiple()
-                            ->options([
-                                'wok_status' => __('WOK status'),
-                                'vehicle_seized' => __('Vehicle seized'),
-                                'driving_ban' => __('Driving ban'),
-                                'emg_course' => __('EMG course'),
-                                'drivers_license_confiscated' => __('Drivers license confiscated'),
-                                'arrested' => __('Arrested'),
-                            ])
-                            ->icons([
-                                'wok_status' => 'mdi-shield-alert',
-                                'vehicle_seized' => 'mdi-car-door-lock',
-                                'driving_ban' => 'mdi-car-clock',
-                                'emg_course' => 'gmdi-school-r',
-                                'drivers_license_confiscated' => 'mdi-credit-card-lock',
-                                'arrested' => 'mdi-handcuffs',
-                            ]),
+                            ->options(FineSanction::class),
                     ]),
             ]);
     }

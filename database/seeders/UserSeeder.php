@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Vehicle;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -21,7 +20,16 @@ class UserSeeder extends Seeder
             ->has(
                 Vehicle::factory()
                     ->count(2)
-                    ->withRefuelings(5)
+                    ->withRefuelings(10)
+                    ->withMaintenances(2)
+                    ->withInsurances(1)
+                    ->withReconditionings(2)
+                    ->withTaxes(1)
+                    ->withParkings(5)
+                    ->withTolls(5)
+                    ->withFines(2)
+                    ->withVignettes(2)
+                    ->withEnvironmentalStickers(2)
             , 'vehicles')
             ->create();
     }

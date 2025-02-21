@@ -4,35 +4,35 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
+use Filament\Support\Contracts\HasIcon;
 
-enum RefuelingPaymentMethod: string implements HasLabel, HasIcon
+enum TollPaymentMethod: string implements HasLabel, HasIcon
 {
     case Cash = 'cash';
     case BankCard = 'bank_card';
-    case LoyalityProgram = 'loyality_program';
-    case FuelCard = 'fuel_card';
+    case Online = 'online';
+    case TollBadge = 'toll_badge';
     case App = 'app';
 
-    public function getLabel(): string
+    public function getLabel(): ?string
     {
         return match ($this) {
             self::Cash => __('Cash'),
             self::BankCard => __('Bank card'),
-            self::LoyalityProgram => __('Loyality program'),
-            self::FuelCard => __('Fuel card'),
+            self::Online => __('Online'),
+            self::TollBadge => __('Toll badge'),
             self::App => __('App'),
         };
     }
 
-    public function getIcon(): string
+    public function getIcon(): ?string
     {
         return match ($this) {
             self::Cash => 'mdi-hand-coin-outline',
             self::BankCard => 'gmdi-credit-card',
-            self::LoyalityProgram => 'mdi-gift',
-            self::FuelCard => 'gmdi-local-gas-station-r',
+            self::Online => 'gmdi-qr-code',
+            self::TollBadge => 'mdi-car-connected',
             self::App => 'mdi-cellphone-wireless',
         };
     }

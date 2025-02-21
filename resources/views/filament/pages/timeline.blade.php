@@ -335,19 +335,16 @@
                     @endif
                 </div>
                 <div class="flex gap-2 flex-col">
-                    @foreach($item->type as $key => $type)
-                    <x-filament::badge :icon="$item->typeIcon[$key]" color="gray">
-                        {{ $item->type[$key] }}
+                    <x-filament::badge color="primary">
+                        {{ $item->type }}
                     </x-filament::badge>
-                    @endforeach
                 </div>
                 <div class="flex gap-2 flex-col">
-                    <x-filament::badge color="gray">
+                    <x-filament::badge color="primary">
                         {{ $item->executor }}
                     </x-filament::badge>
                 </div>
-                <x-filament::link href="/account/parkings/{{ $item->id }}/edit" color="white"
-                                  icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                <x-filament::link href="/account/parkings/{{ $item->id }}/edit" color="white" icon="gmdi-edit-r" class="last-of-type:ml-auto">
                     {{ __('Edit') }}
                 </x-filament::link>
             </div>

@@ -11,6 +11,8 @@ class DashboardStatusOverview extends BaseWidget
 {
     use InteractsWithPageFilters;
 
+    protected static ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         return [

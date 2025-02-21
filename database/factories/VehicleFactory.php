@@ -4,10 +4,21 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\TollType;
 use App\Enums\VehicleStatus;
+use App\Models\EnvironmentalSticker;
+use App\Models\Fine;
+use App\Models\Insurance;
+use App\Models\Maintenance;
+use App\Models\Parking;
+use App\Models\Reconditioning;
 use App\Models\Refueling;
+use App\Models\Tax;
+use App\Models\Toll;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\Vignette;
+use Filament\Pages\Page;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -98,6 +109,69 @@ class VehicleFactory extends Factory
     {
         return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
             Refueling::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withMaintenances(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Maintenance::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withInsurances(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Insurance::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withReconditionings(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Reconditioning::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withTaxes(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Tax::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withParkings(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Parking::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withTolls(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Toll::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withFines(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Fine::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withVignettes(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Vignette::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withEnvironmentalStickers(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            EnvironmentalSticker::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
         });
     }
 }

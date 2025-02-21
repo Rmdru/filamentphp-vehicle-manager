@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\ParkingPaymentMethod;
+use App\Enums\ParkingType;
 use App\Filament\Resources\ParkingResource\Pages;
 use App\Models\Parking;
 use App\Models\Vehicle;
@@ -89,33 +91,15 @@ class ParkingResource extends Resource
                         ->badge()
                         ->sortable()
                         ->color('gray')
-                        ->icon(fn(string $state): string => match ($state) {
-                            'street' => 'maki-parking-paid',
-                            'garage' => 'maki-parking-garage',
-                            default => '',
-                        })
-                        ->formatStateUsing(fn(string $state) => match ($state) {
-                            'street' => __('Street'),
-                            'garage' => __('Parking garage'),
-                        }),
+                        ->icon(fn(string $state): string => ParkingType::from($state)->getIcon())
+                        ->formatStateUsing(fn(string $state) => ParkingType::from($state)->getLabel()),
                     TextColumn::make('payment_method')
                         ->label(__('Payment method'))
                         ->badge()
                         ->sortable()
                         ->color('gray')
-                        ->icon(fn(string $state): string => match ($state) {
-                            'cash' => 'mdi-hand-coin-outline',
-                            'bank_card' => 'gmdi-credit-card',
-                            'app' => 'mdi-cellphone-wireless',
-                            'online' => 'gmdi-qr-code',
-                            default => '',
-                        })
-                        ->formatStateUsing(fn(string $state) => match ($state) {
-                            'cash' => __('Cash'),
-                            'bank_card' => __('Bank card'),
-                            'app' => __('App'),
-                            'online' => __('Online'),
-                        }),
+                        ->icon(fn(string $state): string => ParkingPaymentMethod::from($state)->getIcon())
+                        ->formatStateUsing(fn(string $state) => ParkingPaymentMethod::from($state)->getLabel()),
                 ])
             ])
             ->filters([
@@ -199,14 +183,7 @@ class ParkingResource extends Resource
                         ToggleButtons::make('type')
                             ->label(__('Type'))
                             ->inline()
-                            ->options([
-                                'street' => __('Street'),
-                                'garage' => __('Parking garage'),
-                            ])
-                            ->icons([
-                                'street' => 'maki-parking-paid',
-                                'garage' => 'maki-parking-garage',
-                            ]),
+                            ->options(ParkingType::class),
                         TextInput::make('location')
                             ->label(__('Location'))
                             ->required()
@@ -242,18 +219,7 @@ class ParkingResource extends Resource
                         ToggleButtons::make('payment_method')
                             ->label(__('Payment method'))
                             ->inline()
-                            ->options([
-                                'cash' => __('Cash'),
-                                'bank_card' => __('Bank card'),
-                                'app' => __('App'),
-                                'online' => __('Online'),
-                            ])
-                            ->icons([
-                                'cash' => 'mdi-hand-coin-outline',
-                                'bank_card' => 'gmdi-credit-card',
-                                'app' => 'mdi-cellphone-wireless',
-                                'online' => 'gmdi-qr-code',
-                            ]),
+                            ->options(ParkingPaymentMethod::class),
                     ]),
             ]);
     }

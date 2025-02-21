@@ -253,7 +253,7 @@ class VehicleResource extends Resource
                             ->sortable()
                             ->searchable()
                             ->label(__('Vehicle'))
-                            ->icon(fn(Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace(' ', '')->lower())
+                            ->icon(fn(Vehicle $vehicle) => 'si-' . str($brands[$vehicle->brand])->replace([' ', '-'], '')->lower()->ascii())
                             ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->full_name),
                         TextColumn::make('mileage_start')
                             ->sortable()
@@ -290,8 +290,8 @@ class VehicleResource extends Resource
                             ->color(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
                             ->label(__('Status')),
                         TextColumn::make('status')
-                            ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon())
-                            ->formatStateUsing(fn(string $state) => VehicleStatus::from($state)->getLabel())
+                            ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon() ?? null)
+                            ->formatStateUsing(fn(string $state) => VehicleStatus::from($state)->getLabel() ?? '')
                             ->badge()
                             ->default('drivable')
                             ->color('gray')

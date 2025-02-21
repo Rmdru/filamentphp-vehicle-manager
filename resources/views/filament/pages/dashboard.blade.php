@@ -1,7 +1,7 @@
 <x-filament::page>
     <div class="w-fit flex gap-4 items-center">
         <div class="flex gap-2 items-center">
-            @svg('si-' . $vehicle->brand, ['class' => 'w-8 h-8'])
+            @svg('si-' . str($vehicle->brand)->replace([' ', '-'], '')->lower()->ascii(), ['class' => 'w-8 h-8'])
             {{ $vehicle->brand . ' ' . $vehicle->model }}
         </div>
         <livewire:license-plate :vehicleId="$vehicle->id" />
@@ -46,7 +46,7 @@
         @livewire(\App\Filament\Widgets\DashboardStatsOverview::class)
     </x-filament::section>
     <x-filament::section
-        icon="mdi-hand-coin-outline"
+        icon="gmdi-bar-chart-r"
         collapsible
         persist-collapsed
         id="montly-costs"
@@ -57,5 +57,18 @@
             </span>
         </x-slot>
         @livewire(\App\Filament\Widgets\DashboardCostsChart::class)
+    </x-filament::section>
+    <x-filament::section
+        icon="mdi-hand-coin-outline"
+        collapsible
+        persist-collapsed
+        id="most-recent-costs"
+    >
+        <x-slot name="heading">
+            <span class="flex gap-2">
+                {{ __('Most recent costs') }}
+            </span>
+        </x-slot>
+        @livewire(\App\Filament\Widgets\DashboardLatestCosts::class)
     </x-filament::section>
 </x-filament::page>

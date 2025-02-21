@@ -17,6 +17,8 @@ class DashboardStatsOverview extends BaseWidget
 {
     use InteractsWithPageFilters;
 
+    protected static ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         $vehicle = Vehicle::selected()->first();

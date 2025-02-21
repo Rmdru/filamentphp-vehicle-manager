@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\InsuranceResource\Pages;
 use App\Models\Insurance;
 use App\Models\Vehicle;
+use App\Traits\InsuranceTypeOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -23,6 +24,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InsuranceResource extends Resource
 {
+    use InsuranceTypeOptions;
+
     protected static ?string $model = Insurance::class;
 
     protected static ?string $navigationIcon = 'mdi-shield-car';
@@ -182,7 +185,7 @@ class InsuranceResource extends Resource
                             ->required()
                             ->searchable()
                             ->native(false)
-                            ->options(array_column(config('insurances.types'), 'name')),
+                            ->options((new self())->getInsuranceTypeOptions()),
                     ]),
                 Fieldset::make('Payment')
                     ->label(__('Payment'))

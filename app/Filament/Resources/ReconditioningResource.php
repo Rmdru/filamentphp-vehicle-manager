@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\ReconditioningExecutor;
+use App\Enums\ReconditioningType;
 use App\Filament\Resources\ReconditioningResource\Pages;
 use App\Models\Reconditioning;
 use App\Models\Vehicle;
@@ -62,32 +64,12 @@ class ReconditioningResource extends Resource
                         ->label(__('Date')),
                     TextColumn::make('type')
                         ->label(__('Type'))
-                        ->icon(fn(string $state): string => match ($state) {
-                            'carwash' => 'mdi-car-wash',
-                            'interior_cleaning' => 'mdi-vacuum',
-                            'exterior_cleaning' => 'gmdi-cleaning-services-r',
-                            'engine_bay_cleaning' => 'mdi-engine',
-                            'damage_repair' => 'mdi-spray',
-                            default => '',
-                        })
-                        ->formatStateUsing(fn(string $state): string => match ($state) {
-                            'carwash' => __('Carwash'),
-                            'exterior_cleaning' => __('Exterior cleaning'),
-                            'interior_cleaning' => __('Interior cleaning'),
-                            'engine_bay_cleaning' => __('Engine bay cleaning'),
-                            'damage_repair' => __('Damage repair'),
-                            default => '',
-                        })
+                        ->formatStateUsing(fn(string $state): string => ReconditioningType::from($state)->getLabel() ?? '')
                         ->badge()
                         ->sortable(),
                     TextColumn::make('executor')
                         ->label(__('Executor'))
-                        ->formatStateUsing(fn(string $state): string => match ($state) {
-                            'myself' => __('Myself'),
-                            'someone' => __('Someone else'),
-                            'company' => __('Company'),
-                            default => '',
-                        })
+                        ->formatStateUsing(fn(string $state): string => ReconditioningExecutor::from($state)->getLabel() ?? '')
                         ->badge()
                         ->sortable(),
                     TextColumn::make('price')
@@ -196,30 +178,12 @@ class ReconditioningResource extends Resource
                     ->label(__('Type'))
                     ->inline()
                     ->required()
-                    ->multiple()
-                    ->options([
-                        'carwash' => __('Carwash'),
-                        'exterior_cleaning' => __('Exterior cleaning'),
-                        'interior_cleaning' => __('Interior cleaning'),
-                        'engine_bay_cleaning' => __('Engine bay cleaning'),
-                        'damage_repair' => __('Damage repair'),
-                    ])
-                    ->icons([
-                        'carwash' => 'mdi-car-wash',
-                        'interior_cleaning' => 'mdi-vacuum',
-                        'exterior_cleaning' => 'gmdi-cleaning-services-r',
-                        'engine_bay_cleaning' => 'mdi-engine',
-                        'damage_repair' => 'mdi-spray',
-                    ]),
+                    ->options(ReconditioningType::class),
                 ToggleButtons::make('executor')
                     ->label(__('Executor'))
                     ->inline()
                     ->required()
-                    ->options([
-                        'myself' => __('Myself'),
-                        'someone' => __('Someone else'),
-                        'company' => __('Company'),
-                    ]),
+                    ->options(ReconditioningExecutor::class),
                 TextInput::make('price')
                     ->label(__('Price'))
                     ->numeric()

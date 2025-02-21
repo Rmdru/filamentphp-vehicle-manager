@@ -61,7 +61,7 @@ class RoadBadge extends Component
         if (is_string($this->road)) {
             $roadComponents = $this->getRoadComponents($this->road);
 
-            $this->road = $roadTypeConfig['prefix'] . $roadComponents['road'];
+            $this->road = ($roadTypeConfig['prefix'] ?? '') . $roadComponents['road'];
 
             return [
                 [
