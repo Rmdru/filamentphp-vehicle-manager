@@ -28,8 +28,7 @@ class ViewRefueling extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make()
-                ->icon('gmdi-edit'),
+            EditAction::make(),
         ];
     }
 

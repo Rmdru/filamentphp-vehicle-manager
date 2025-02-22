@@ -5,6 +5,7 @@ namespace App\Filament\Resources\MaintenanceResource\Pages;
 use App\Enums\MaintenancePaymentMethod;
 use App\Filament\Resources\MaintenanceResource;
 use App\Models\Maintenance;
+use Filament\Actions\EditAction;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\IconEntry\IconEntrySize;
@@ -16,6 +17,13 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewMaintenance extends ViewRecord
 {
     protected static string $resource = MaintenanceResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+        ];
+    }
 
     public function infolist(Infolist $infolist): Infolist
     {

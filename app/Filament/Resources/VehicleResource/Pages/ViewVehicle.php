@@ -5,6 +5,7 @@ namespace App\Filament\Resources\VehicleResource\Pages;
 use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource;
 use App\Models\Vehicle;
+use Filament\Actions\EditAction;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\IconEntry\IconEntrySize;
@@ -18,6 +19,13 @@ use Livewire\Livewire;
 class ViewVehicle extends ViewRecord
 {
     protected static string $resource = VehicleResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+        ];
+    }
 
     public function infolist(Infolist $infolist): Infolist
     {

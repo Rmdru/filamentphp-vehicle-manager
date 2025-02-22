@@ -51,10 +51,12 @@
                 {{ __('Maintenance') }}
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
-                <div
-                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
-                    @svg($item->icon)
-                </div>
+                @if (! empty($item->icon))
+                    <div
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        @svg($item->icon)
+                    </div>
+                @endif
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
@@ -175,10 +177,12 @@
                 {{ __('Road tax') }}
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
-                <div
-                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
-                    @svg($item->icon)
-                </div>
+                @if (! empty($item->icon))
+                    <div
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        @svg($item->icon)
+                    </div>
+                @endif
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
@@ -201,10 +205,12 @@
                 {{ __('Parking') }}
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
-                <div
-                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
-                    @svg($item->icon)
-                </div>
+                @if (! empty($item->icon))
+                    <div
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        @svg($item->icon)
+                    </div>
+                @endif
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
@@ -233,8 +239,12 @@
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
                 <div class="flex gap-2 flex-col">
-                    <livewire:country-flag :country="$item->country" />
-                    <livewire:road-badge :roadType="$item->road_type" :road="$item->road" :country="$item->country" />
+                    @if (! empty($item->country))
+                        <livewire:country-flag :country="$item->country" />
+                    @endif
+                    @if (! empty($item->road))
+                        <livewire:road-badge :roadType="$item->road_type" :road="$item->road" :country="$item->country" />
+                    @endif
                 </div>
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
@@ -269,10 +279,12 @@
                 {{ __('Fine') }}
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
-                <div
-                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
-                    @svg($item->icon)
-                </div>
+                @if (! empty($item->icon))
+                    <div
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        @svg($item->icon)
+                    </div>
+                @endif
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-gavel-r class="w-6 text-gray-400 dark:text-gray-500" />
@@ -288,8 +300,12 @@
                     </div>
                 </div>
                 <div class="flex gap-2 flex-col">
-                    <livewire:country-flag :country="$item->country" />
-                    <livewire:road-badge :roadType="$item->road_type" :road="$item->road" :country="$item->country" />
+                    @if (! empty($item->country))
+                        <livewire:country-flag :country="$item->country" />
+                    @endif
+                    @if (! empty($item->road))
+                        <livewire:road-badge :roadType="$item->road_type" :road="$item->road" :country="$item->country" />
+                    @endif
                 </div>
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
@@ -314,10 +330,12 @@
                 {{ __('Reconditioning') }}
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
-                <div
-                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
-                    @svg($item->icon)
-                </div>
+                @if (! empty($item->icon))
+                    <div
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        @svg($item->icon)
+                    </div>
+                @endif
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
@@ -355,9 +373,11 @@
                 {{ __('Vignette') }}
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
-                <div class="flex gap-2 flex-col">
-                    <livewire:country-flag :country="$item->country" :showName="true" />
-                </div>
+                @if (! empty($item->country))
+                    <div class="flex gap-2 flex-col">
+                        <livewire:country-flag :country="$item->country" :showName="true" />
+                    </div>
+                @endif
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
@@ -380,9 +400,11 @@
                 {{ __('Environmental sticker') }}
             </x-slot>
             <div class="flex gap-8 items-center">
-                <div class="flex flex-wrap gap-2 flex-col">
-                    <livewire:country-flag :country="$item->country" :showName="true" />
-                </div>
+                @if (! empty($item->country))
+                    <div class="flex flex-wrap gap-2 flex-col">
+                        <livewire:country-flag :country="$item->country" :showName="true" />
+                    </div>
+                @endif
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />

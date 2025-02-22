@@ -67,8 +67,8 @@ class MaintenanceResource extends Resource
                         Select::make('type_maintenance')
                             ->label(__('Type'))
                             ->options([
-                                'tire_pressure' => __('Tire pressure checked'),
-                                'liquids_checked' => __('Liquids checked'),
+                                MaintenanceTypeMaintenance::TirePressureChecked->getLabel(),
+                                MaintenanceTypeMaintenance::LiquidsChecked->getLabel(),
                             ])
                             ->required(),
                         DatePicker::make('date')
@@ -81,7 +81,7 @@ class MaintenanceResource extends Resource
                             'vehicle_id' => Session::get('vehicle_id'),
                             'type_maintenance' => $data['type_maintenance'],
                             'date' => $data['date'] ?? Carbon::today()->format('Y-m-d'),
-                            'mileage' => Vehicle::selected()->first()->mileage_latest,
+                            'mileage' => Vehicle::selected()->first()->mileage_latest ?? Vehicle::selected()->first()->mileage_start,
                         ]);
                     }),
             ])
@@ -97,7 +97,8 @@ class MaintenanceResource extends Resource
                         ->label(__('Garage'))
                         ->icon('mdi-garage')
                         ->default(__('Unknown'))
-                        ->searchable(),
+                        ->searchable()
+                        ->hidden(fn (Maintenance $maintenance) => in_array($maintenance->type_maintenance, [MaintenanceTypeMaintenance::TirePressureChecked->value, MaintenanceTypeMaintenance::LiquidsChecked->value])),
                     TextColumn::make('type_maintenance')
                         ->sortable()
                         ->label(__('Type maintenance'))
@@ -111,7 +112,8 @@ class MaintenanceResource extends Resource
                         ->badge()
                         ->color('gray')
                         ->formatStateUsing(fn(Maintenance $maintenance) => $maintenance->apk ? __('MOT') : __('No MOT'))
-                        ->label(__('MOT')),
+                        ->label(__('MOT'))
+                        ->hidden(fn (Maintenance $maintenance) => in_array($maintenance->type_maintenance, [MaintenanceTypeMaintenance::TirePressureChecked->value, MaintenanceTypeMaintenance::LiquidsChecked->value])),
                     TextColumn::make('mileage')
                         ->sortable()
                         ->label(__('Mileage'))
@@ -126,7 +128,8 @@ class MaintenanceResource extends Resource
                         ->summarize([
                             Average::make()->label(__('Total price average')),
                             Range::make()->label(__('Total price range')),
-                        ]),
+                        ])
+                        ->hidden(fn (Maintenance $maintenance) => in_array($maintenance->type_maintenance, [MaintenanceTypeMaintenance::TirePressureChecked->value, MaintenanceTypeMaintenance::LiquidsChecked->value])),
                 ])
                     ->from('xl'),
             ])
@@ -230,7 +233,11 @@ class MaintenanceResource extends Resource
                         ToggleButtons::make('type_maintenance')
                             ->label(__('Type maintenance'))
                             ->inline()
-                            ->options(MaintenanceTypeMaintenance::class),
+                            ->options([
+                                MaintenanceTypeMaintenance::Maintenance->getLabel(),
+                                MaintenanceTypeMaintenance::SmallMaintenance->getLabel(),
+                                MaintenanceTypeMaintenance::BigMaintenance->getLabel(),
+                            ]),
                         Toggle::make('apk')
                             ->label(__('MOT')),
                         DatePicker::make('apk_date')
