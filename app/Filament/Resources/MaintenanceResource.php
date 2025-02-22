@@ -7,6 +7,7 @@ use App\Enums\MaintenanceTypeMaintenance;
 use App\Filament\Resources\MaintenanceResource\Pages;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
+use App\Traits\MaintenanceTypeOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -33,6 +34,8 @@ use Illuminate\Support\Facades\Session;
 
 class MaintenanceResource extends Resource
 {
+    use MaintenanceTypeOptions;
+
     protected static ?string $model = Maintenance::class;
 
     protected static ?string $navigationIcon = 'mdi-car-wrench';
@@ -66,10 +69,10 @@ class MaintenanceResource extends Resource
                     ->form([
                         Select::make('type_maintenance')
                             ->label(__('Type'))
-                            ->options([
-                                MaintenanceTypeMaintenance::TirePressureChecked->getLabel(),
-                                MaintenanceTypeMaintenance::LiquidsChecked->getLabel(),
-                            ])
+                            ->options((new self)->getMaintenanceTypeOptions([
+                                MaintenanceTypeMaintenance::TirePressureChecked,
+                                MaintenanceTypeMaintenance::LiquidsChecked,
+                            ]))
                             ->required(),
                         DatePicker::make('date')
                             ->default(now())
@@ -107,7 +110,6 @@ class MaintenanceResource extends Resource
                         ->formatStateUsing(fn(string $state) => MaintenanceTypeMaintenance::from($state)->getLabel() ?? '')
                         ->color('gray'),
                     TextColumn::make('apk')
-                        ->icon(fn(Maintenance $maintenance) => $maintenance->apk ? 'gmdi-security' : 'gmdi-close-r')
                         ->sortable()
                         ->badge()
                         ->color('gray')
@@ -233,11 +235,11 @@ class MaintenanceResource extends Resource
                         ToggleButtons::make('type_maintenance')
                             ->label(__('Type maintenance'))
                             ->inline()
-                            ->options([
-                                MaintenanceTypeMaintenance::Maintenance->getLabel(),
-                                MaintenanceTypeMaintenance::SmallMaintenance->getLabel(),
-                                MaintenanceTypeMaintenance::BigMaintenance->getLabel(),
-                            ]),
+                            ->options((new self)->getMaintenanceTypeOptions([
+                                MaintenanceTypeMaintenance::Maintenance,
+                                MaintenanceTypeMaintenance::SmallMaintenance,
+                                MaintenanceTypeMaintenance::BigMaintenance,
+                            ])),
                         Toggle::make('apk')
                             ->label(__('MOT')),
                         DatePicker::make('apk_date')

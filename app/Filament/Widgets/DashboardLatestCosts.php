@@ -75,6 +75,7 @@ class DashboardLatestCosts extends BaseWidget
 
         $maintenancesThisMonth = Maintenance::select(['id', 'description as item', 'total_price as price', 'date'])
             ->where('vehicle_id', $vehicle->id)
+            ->whereNotNull('total_price')
             ->whereMonth('date', Carbon::now()->month)
             ->whereYear('date', Carbon::now()->year)
             ->latest('date')

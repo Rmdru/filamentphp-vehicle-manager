@@ -393,6 +393,7 @@ class Vehicle extends Model
 
         $startDate = Carbon::parse($startDate);
         $endDate = Carbon::parse($endDate);
+        $vehicleId = Vehicle::selected()->first()->id;
 
         $costTypes = [
             'Fuel' => [
@@ -445,6 +446,9 @@ class Vehicle extends Model
 
             if (empty($monthly)) {
                 $data = Trend::model($model)
+                    ->query(
+                        $model::where('vehicle_id', $vehicleId)
+                    )
                     ->between(
                         start: $startDate,
                         end: $endDate,
@@ -469,8 +473,11 @@ class Vehicle extends Model
             }
 
             if (! empty($monthly)) {
-                $records = $model::whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
+                $records = $model::where('vehicle_id', $vehicleId)
+                    ->where(function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('start_date', [$startDate, $endDate])
+                              ->orWhereBetween('end_date', [$startDate, $endDate]);
+                    })
                     ->get();
 
                 foreach ($records as $record) {

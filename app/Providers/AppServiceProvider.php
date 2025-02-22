@@ -36,7 +36,8 @@ class AppServiceProvider extends ServiceProvider
                     'fr' => url('https://flagsapi.com/FR/flat/64.png'),
                     'it' => url('https://flagsapi.com/IT/flat/64.png'),
                     'es' => url('https://flagsapi.com/ES/flat/64.png'),
-                ]);
+                ])
+                ->visible(outsidePanels: true);
         });
 
         DB::prohibitDestructiveCommands(app()->isProduction());
