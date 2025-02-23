@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\VehicleStatus;
 use Carbon\Carbon;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
@@ -344,6 +345,10 @@ class Vehicle extends Model
             ],
         ];
 
+        if (in_array($selectedVehicle->status, [VehicleStatus::Suspended->value, VehicleStatus::Sold->value, VehicleStatus::Destroyed->value])) {
+            return ! empty($item) ? $priorities['success'][$item] : $priorities['success'];
+        }
+
         if (
             (! $timeTillRefueling && $timeTillRefueling < 10)
             || (! $maintenanceStatus['time'] && $maintenanceStatus['time'] < 31)
@@ -398,41 +403,50 @@ class Vehicle extends Model
         $costTypes = [
             'Fuel' => [
                 'model' => Refueling::class,
-                'field' => 'total_price'
+                'field' => 'total_price',
+                'dateColumn' => 'date',
             ],
             'Maintenance' => [
                 'model' => Maintenance::class,
-                'field' => 'total_price'
+                'field' => 'total_price',
+                'dateColumn' => 'date',
             ],
             'Insurance' => [
                 'model' => Insurance::class,
                 'field' => 'price',
-                'monthly' => true
+                'monthly' => true,
+                'dateColumn' => 'start_date',
             ],
             'Tax' => [
                 'model' => Tax::class,
                 'field' => 'price',
-                'monthly' => true
+                'monthly' => true,
+                'dateColumn' => 'start_date',
             ],
             'Parking' => [
                 'model' => Parking::class,
-                'field' => 'price'
+                'field' => 'price',
+                'dateColumn' => 'start_time',
             ],
             'Toll' => [
                 'model' => Toll::class,
-                'field' => 'price'
+                'field' => 'price',
+                'dateColumn' => 'date',
             ],
             'Fine' => [
                 'model' => Fine::class,
-                'field' => 'price'
+                'field' => 'price',
+                'dateColumn' => 'date',
             ],
             'Vignette' => [
                 'model' => Vignette::class,
-                'field' => 'price'
+                'field' => 'price',
+                'dateColumn' => 'start_date',
             ],
             'Environmental sticker' => [
                 'model' => EnvironmentalSticker::class,
-                'field' => 'price'
+                'field' => 'price',
+                'dateColumn' => 'start_date',
             ],
         ];
 
@@ -443,27 +457,31 @@ class Vehicle extends Model
             $model = $config['model'];
             $field = $config['field'];
             $monthly = $config['monthly'] ?? false;
+            $dateColumn = $config['dateColumn'] ?? 'date';
 
             if (empty($monthly)) {
                 $data = Trend::model($model)
                     ->query(
                         $model::where('vehicle_id', $vehicleId)
+                            ->whereBetween($dateColumn, [$startDate, $endDate])
                     )
                     ->between(
                         start: $startDate,
-                        end: $endDate,
+                        end: $endDate
                     )
                     ->perMonth()
-                    ->average($field);
+                    ->sum($field);
 
                 foreach ($data as $value) {
-                    $month = Carbon::parse($value->date)->isoFormat('Y-MM');
+                    $month = Carbon::parse($value->date ?? $value->start_date ?? $value->start_time)->isoFormat('Y-MM');
                     if (! isset($monthlyCosts[$month])) {
                         $monthlyCosts[$month] = [];
                     }
+
                     if (! isset($monthlyCosts[$month][$label])) {
                         $monthlyCosts[$month][$label] = 0;
                     }
+
                     $monthlyCosts[$month][$label] += $value->aggregate;
                 }
 
@@ -486,12 +504,15 @@ class Vehicle extends Model
 
                     while ($start <= $end) {
                         $month = $start->isoFormat('Y-MM');
+
                         if (! isset($monthlyCosts[$month])) {
                             $monthlyCosts[$month] = [];
                         }
+
                         if (! isset($monthlyCosts[$month][$label])) {
                             $monthlyCosts[$month][$label] = 0;
                         }
+
                         $monthlyCosts[$month][$label] += $record->$field;
                         $start->addMonth();
                     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Enums\VehicleStatus;
 use App\Models\Vehicle;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -15,6 +16,11 @@ class StatusNotification extends Component
     public function mount(): void
     {
         $vehicle = Vehicle::selected()->first();
+
+        if (in_array($vehicle->status, [VehicleStatus::Suspended->value, VehicleStatus::Sold->value, VehicleStatus::Destroyed->value])) {
+            $this->getNoInformationAvailable();
+            return;
+        }
 
         if (! empty($vehicle->notifications['insurance']['status'])) {
             $this->getInsuranceNotification($vehicle);
@@ -242,6 +248,13 @@ class StatusNotification extends Component
 
         if ($timeTill < 10) {
             $this->createNotification('info', __('Check liquids soon!'), 'mdi-oil');
+        }
+    }
+
+    private function getNoInformationAvailable(): void
+    {
+        if (empty($this->notifications)) {
+            $this->createNotification('success', __('No information available'));
         }
     }
 
