@@ -261,12 +261,14 @@ class VehicleResource extends Resource
                             ->icon('gmdi-route')
                             ->suffix(' km')
                             ->label(__('Mileage'))
+                            ->tooltip(fn(Vehicle $vehicle) => __('Purchased with:') . ' ' . $vehicle->mileage_start . 'km')
                             ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->mileage_latest ?? $vehicle->mileage_start),
                         TextColumn::make('construction_date')
                             ->sortable()
                             ->searchable()
                             ->icon('fas-birthday-cake')
                             ->date()
+                            ->tooltip(fn(Vehicle $vehicle) => __('Constructed on:') . ' ' . $vehicle->construction_date->format('d-m-Y'))
                             ->label(__('Construction date'))
                             ->suffix(' ' . __('years old'))
                             ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->construction_date->age),

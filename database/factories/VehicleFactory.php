@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Enums\TollType;
 use App\Enums\VehicleStatus;
 use App\Models\EnvironmentalSticker;
+use App\Models\Ferry;
 use App\Models\Fine;
 use App\Models\Insurance;
 use App\Models\Maintenance;
@@ -172,6 +173,13 @@ class VehicleFactory extends Factory
     {
         return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
             EnvironmentalSticker::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withFerries(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Ferry::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
         });
     }
 }

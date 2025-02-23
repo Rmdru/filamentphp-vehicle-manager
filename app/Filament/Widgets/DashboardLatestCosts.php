@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\EnvironmentalSticker;
+use App\Models\Ferry;
 use App\Models\Fine;
 use App\Models\Insurance;
 use App\Models\Maintenance;
@@ -160,6 +161,14 @@ class DashboardLatestCosts extends BaseWidget
             ->addSelect(DB::raw('"Environmental sticker" as type'))
             ->addSelect(DB::raw('"environmental-stickers" as resource_name_plural'));
 
+        $ferriesThisMonth = Ferry::selectRaw('id, CONCAT(start_location, " - ", end_location) as item, price, start_date as date')
+            ->where('vehicle_id', $vehicle->id)
+            ->whereMonth('start_date', Carbon::now()->month)
+            ->whereYear('start_date', Carbon::now()->year)
+            ->latest('start_date')
+            ->addSelect(DB::raw('"Ferry" as type'))
+            ->addSelect(DB::raw('"ferries" as resource_name_plural'));
+
         return $maintenancesThisMonth
             ->union($refuelingsThisMonth)
             ->union($insurancesThisMonth)
@@ -170,6 +179,7 @@ class DashboardLatestCosts extends BaseWidget
             ->union($finesThisMonth)
             ->union($vignettesThisMonth)
             ->union($environmentalStickersThisMonth)
+            ->union($ferriesThisMonth)
             ->orderBy('date', 'desc');
     }
 }

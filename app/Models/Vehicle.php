@@ -448,6 +448,11 @@ class Vehicle extends Model
                 'field' => 'price',
                 'dateColumn' => 'start_date',
             ],
+            'Ferry' => [
+                'model' => Ferry::class,
+                'field' => 'price',
+                'dateColumn' => 'start_date',
+            ],
         ];
 
         $monthlyCosts = [];
