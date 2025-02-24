@@ -25,7 +25,7 @@ return [
         'exxonmobil' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Exxon_Mobil_Logo.svg/2560px-Exxon_Mobil_Logo.svg.png',
         'tango' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzey7KWG2WzAAssBLGmJRwWTekYBZQq72KkA&s',
         'q8' => 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Q8_logo.png',
-        'eni' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Logo_ENI.svg/490px-Logo_ENI.svg.png',
+        'eni' => 'https://seeklogo.com/images/E/eni-logo-9D13BD5E20-seeklogo.com.png',
         'agip' => 'https://i0.wp.com/moovingmedia.com/wp-content/uploads/2023/07/agip_2.png?fit=1040%2C1040&ssl=1',
         'kuster' => 'https://intermontage.nl/wp-content/uploads/Kuster_logo.png',
         'jet' => 'https://1000logos.net/wp-content/uploads/2022/07/Jet-Logo-2003.png',

@@ -12,6 +12,7 @@ use App\Models\Refueling;
 use App\Models\Vehicle;
 use App\Traits\CountryOptions;
 use App\Traits\FuelTypeOptions;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -42,6 +43,7 @@ class RefuelingResource extends Resource
 {
     use FuelTypeOptions;
     use CountryOptions;
+    use IsMobile;
 
     protected static ?string $model = Refueling::class;
 
@@ -102,6 +104,7 @@ class RefuelingResource extends Resource
                     ->searchable()
                     ->summarize(
                         Summarizer::make()
+                            ->hidden((new self)->isMobile())
                             ->label(__('Most visited gas station'))
                             ->using(function (BuilderQuery $query): string {
                                 return $query->select('gas_station')
@@ -138,22 +141,22 @@ class RefuelingResource extends Resource
                         }
                     })
                     ->badge()
-                        ->color(function (Refueling $refueling) {
-                            $fuelConsumption = $refueling->fuel_consumption;
-                            $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
+                    ->color(function (Refueling $refueling) {
+                        $fuelConsumption = $refueling->fuel_consumption;
+                        $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
 
-                            if ($fuelConsumption > $avgFuelConsumption) {
-                                return 'danger';
-                            } else if ($fuelConsumption < $avgFuelConsumption) {
-                                return 'success';
-                            } else {
-                                return 'warning';
-                            }
-                        })
-                        ->suffix($powertrain['consumption_unit'])
-                        ->summarize([
-                            Average::make()->label(__('Fuel consumption average')),
-                            Range::make()->label(__('Fuel consumption range')),
+                        if ($fuelConsumption > $avgFuelConsumption) {
+                            return 'danger';
+                        } else if ($fuelConsumption < $avgFuelConsumption) {
+                            return 'success';
+                        } else {
+                            return 'warning';
+                        }
+                    })
+                    ->suffix($powertrain['consumption_unit'])
+                    ->summarize([
+                        Average::make()->label(__('Fuel consumption average'))->hidden((new self)->isMobile()),
+                        Range::make()->label(__('Fuel consumption range'))->hidden((new self)->isMobile()),
                     ])
                 ])
                     ->from('xl'),
@@ -258,7 +261,7 @@ class RefuelingResource extends Resource
                             ->label(__('Gas station'))
                             ->required()
                             ->maxLength(100)
-                            ->helperText(__('The first word is used for the brand logo')),
+                            ->helperText(__('The first word is used for the brand logo (if available)')),
                     ]),
                 Fieldset::make('fuel')
                     ->label(__('Fuel'))
