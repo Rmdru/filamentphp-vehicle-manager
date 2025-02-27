@@ -13,7 +13,7 @@ return new class extends Migration
         Schema::table('refuelings', function (Blueprint $table) {
             $table->boolean('service_by_attendant')->after('payment_method')->nullable();
             $table->integer('charge_time')->after('payment_method')->nullable();
-            $table->string('country', 50)->after('date');
+            $table->string('country', 50)->after('date')->nullable();
         });
     }
 

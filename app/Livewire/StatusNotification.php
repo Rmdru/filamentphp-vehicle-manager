@@ -80,7 +80,13 @@ class StatusNotification extends Component
         }
     }
 
-    private function createNotification(string $type = '', string $text = '', string $categoryIcon = ''): void
+    private function createNotification(
+        string $type = '',
+        string $text = '',
+        string $categoryIcon = '',
+        string $linkText = '',
+        string $linkUrl = '',
+    ): void
     {
         $types = [
             'critical' => [
@@ -108,6 +114,8 @@ class StatusNotification extends Component
         $this->notifications[] = array_merge($types[$type], [
             'categoryIcon' => $categoryIcon,
             'text' => $text,
+            'linkText' => $linkText,
+            'linkUrl' => $linkUrl,
         ]);
     }
 
@@ -224,12 +232,32 @@ class StatusNotification extends Component
         }
 
         if ($timeTill < 10) {
-            $this->createNotification('warning', __('Check tire pressure!'), 'mdi-car-tire-alert');
+            $this->createNotification(
+                type: 'warning',
+                text: __('Check tire pressure!'),
+                categoryIcon: 'mdi-car-tire-alert',
+                linkText: __('Checked'),
+                linkUrl: route('check-small-check', [
+                    $vehicle->id,
+                    'tire_pressure_checked',
+                    today()->format('Y-m-d'),
+                ]),
+            );
             return;
         }
 
         if ($timeTill < 20) {
-            $this->createNotification('info', __('Check tire pressure soon!'), 'mdi-car-tire-alert');
+            $this->createNotification(
+                type: 'warning',
+                text: __('Check tire pressure soon!'),
+                categoryIcon: 'mdi-car-tire-alert',
+                linkText: __('Checked'),
+                linkUrl: route('check-small-check', [
+                    $vehicle->id,
+                    'tire_pressure_checked',
+                    today()->format('Y-m-d'),
+                ]),
+            );
         }
     }
 
@@ -242,12 +270,32 @@ class StatusNotification extends Component
         }
 
         if ($timeTill < 5) {
-            $this->createNotification('warning', __('Check liquids!'), 'mdi-oil');
+            $this->createNotification(
+                type: 'warning',
+                text: __('Check liquids!'),
+                categoryIcon: 'mdi-oil',
+                linkText: __('Checked'),
+                linkUrl: route('check-small-check', [
+                    $vehicle->id,
+                    'tire_pressure_checked',
+                    today()->format('Y-m-d'),
+                ]),
+            );
             return;
         }
 
         if ($timeTill < 10) {
-            $this->createNotification('info', __('Check liquids soon!'), 'mdi-oil');
+            $this->createNotification(
+                type: 'warning',
+                text: __('Check liquids soon!'),
+                categoryIcon: 'mdi-oil',
+                linkText: __('Checked'),
+                linkUrl: route('check-small-check', [
+                    $vehicle->id,
+                    'tire_pressure_checked',
+                    today()->format('Y-m-d'),
+                ]),
+            );
         }
     }
 

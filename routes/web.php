@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\MaintenanceController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Passwords\Confirm;
 use App\Livewire\Auth\Passwords\Email;
@@ -10,6 +11,7 @@ use App\Livewire\Auth\Register;
 use App\Livewire\Auth\Verify;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VehicleController;
+use App\Models\Maintenance;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,4 +59,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/account/switch-vehicle/{vehicleId}', VehicleController::class)
         ->name('switch-vehicle');
+
+    Route::get('/account/check-small-check/{vehicle}/{typeMaintenance}/{date}', MaintenanceController::class)
+        ->name('check-small-check');
 });

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\MaintenanceTypeMaintenance;
 use App\Enums\VehicleStatus;
 use Carbon\Carbon;
 use Flowframe\Trend\Trend;
@@ -201,8 +202,8 @@ class Vehicle extends Model
 
     public function getTirePressureCheckStatusAttribute(): array
     {
-        if ($this->maintenances->where('type_maintenance', 'tire_pressure')->isNotEmpty()) {
-            $latest = $this->maintenances->where('type_maintenance', 'tire_pressure')->sortByDesc('date')->first();
+        if ($this->maintenances->where('type_maintenance', MaintenanceTypeMaintenance::TirePressureChecked->value)->isNotEmpty()) {
+            $latest = $this->maintenances->where('type_maintenance', MaintenanceTypeMaintenance::TirePressureChecked->value)->sortByDesc('date')->first();
 
             $date = Carbon::parse($latest->date)->addMonths(2);
             $timeTillDiff = $date->diffInDays(now());
