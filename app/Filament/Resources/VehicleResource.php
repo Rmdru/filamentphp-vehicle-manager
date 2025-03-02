@@ -10,6 +10,7 @@ use App\Traits\PowerTrainOptions;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -21,10 +22,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Guava\FilamentIconPicker\Forms\IconPicker;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Livewire;
 
 class VehicleResource extends Resource
@@ -102,6 +107,16 @@ class VehicleResource extends Resource
                                             ->required()
                                             ->label(__('Tank capacity'))
                                             ->suffix(fn ($get) => trans('powertrains')[$get('powertrain')]['unit_short'] ?? 'l'),
+                                        FileUpload::make('image')
+                                            ->disk('private')
+                                            ->directory('vehicles')
+                                            ->visibility('private')
+                                            ->label(__('Image'))
+                                            ->image()
+                                            ->getUploadedFileNameForStorageUsing(
+                                                fn (TemporaryUploadedFile $file, Vehicle $vehicle): string => (string) str($file->getClientOriginalExtension())
+                                                    ->prepend($vehicle->id . '.'),
+                                            ),
                                     ]),
                                 Fieldset::make('ownership')
                                     ->label(__('Ownership'))
@@ -252,6 +267,11 @@ class VehicleResource extends Resource
 
         return $table
             ->columns([
+                ImageColumn::make('image_url')
+                    ->extraAttributes(['class' => 'mb-5'])
+                    ->width('100%')
+                    ->height('100%')
+                    ->hidden(fn (Vehicle $vehicle) => ! Storage::disk('private')->exists('vehicles/' . $vehicle->id . '.jpg')),
                 Tables\Columns\Layout\Split::make([
                     Stack::make([
                         TextColumn::make('brand')

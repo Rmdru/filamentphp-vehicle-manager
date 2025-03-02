@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class Vehicle extends Model
 {
@@ -97,6 +98,13 @@ class Vehicle extends Model
         $query->where([
             'status' => 'drivable',
         ]);
+    }
+
+    public function getImageUrlAttribute()
+    {
+        return url(route('vehicle.image', [
+            'vehicle' => $this->id,
+        ]));
     }
 
     public function getFullNameAttribute(): string

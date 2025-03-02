@@ -122,7 +122,7 @@ class FineResource extends Resource
                                 ]);
                             })
                             ->html()
-                            ->description(fn(Fine $fine) => '@ ' . $fine->road_distance_marker . ' km')
+                            ->description(fn(Fine $fine) => ! empty($fine->road_distance_marker) ? '@ ' . $fine->road_distance_marker . ' km' : '')
                             ->label(__('Road')),
                     ])
                         ->space(),
