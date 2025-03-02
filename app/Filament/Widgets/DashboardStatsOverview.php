@@ -2,16 +2,12 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Insurance;
 use App\Models\Refueling;
-use App\Models\Tax;
 use App\Models\Vehicle;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Flowframe\Trend\Trend;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 
 class DashboardStatsOverview extends BaseWidget
 {
@@ -279,7 +275,7 @@ class DashboardStatsOverview extends BaseWidget
             $fuelConsumption = $this->calculateAverageFuelConsumption(true);
         }
 
-        $tankCapacity = 35;
+        $tankCapacity = Vehicle::selected()->first()->tank_capacity;
         $avgRange = $tankCapacity / $fuelConsumption * 100;
 
         return round($avgRange);

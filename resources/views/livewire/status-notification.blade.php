@@ -16,7 +16,10 @@
                     @endif
                 </div>
                 @if (! empty($notification['linkText']) && ! empty($notification['linkUrl']))
-                    <a class="align-end" href="{{ $notification['linkUrl'] }}">{{ $notification['linkText'] }}</a>
+                    <a class="align-end flex gap-1 underline" href="{{ $notification['linkUrl'] }}">
+                        {{ $notification['linkText'] }}
+                        @svg('gmdi-check-r', ['class' => 'w-6 h-6'])
+                    </a>
                 @endif
             </div>
         </div>

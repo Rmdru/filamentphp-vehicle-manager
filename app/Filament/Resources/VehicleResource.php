@@ -97,6 +97,11 @@ class VehicleResource extends Resource
                                             ->label(__('Compatible fuel types'))
                                             ->multiple()
                                             ->options($fuelTypes),
+                                        TextInput::make('tank_capacity')
+                                            ->numeric()
+                                            ->required()
+                                            ->label(__('Tank capacity'))
+                                            ->suffix(fn ($get) => trans('powertrains')[$get('powertrain')]['unit_short'] ?? 'l'),
                                     ]),
                                 Fieldset::make('ownership')
                                     ->label(__('Ownership'))

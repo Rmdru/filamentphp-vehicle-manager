@@ -47,6 +47,7 @@ class Vehicle extends Model
         'is_private',
         'status',
         'fuel_types',
+        'tank_capacity',
         'specifications',
         'notifications',
     ];

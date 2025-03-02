@@ -82,6 +82,7 @@ class VehicleFactory extends Factory
                 count: $this->faker->numberBetween(1, 3),
                 allowDuplicates: false,
             ),
+            'tank_capacity' => $this->faker->numberBetween(0, 1000),
             'specifications' => collect(range(1, 5))->map(function () {
                 return [
                     'name' => $this->faker->word(),
