@@ -1,5 +1,7 @@
 <x-filament::page>
-    <img src="{{ $vehicle->image_url }}" class="w-96" />
+    @if (! empty($vehicle->image_url))
+        <img src="{{ $vehicle->image_url }}" class="w-96" />
+    @endif
     <div class="w-fit flex gap-4 items-center">
         <div class="flex gap-2 items-center">
             @svg('si-' . str($vehicle->brand)->replace([' ', '-'], '')->lower()->ascii(), ['class' => 'w-8 h-8'])

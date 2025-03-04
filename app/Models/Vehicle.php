@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
@@ -102,9 +103,9 @@ class Vehicle extends Model
 
     public function getImageUrlAttribute()
     {
-        return url(route('vehicle.image', [
-            'vehicle' => $this->id,
-        ]));
+        $url = url(route('vehicle.image', ['vehicle' => $this->id]));
+
+        return Http::head($url)->successful() ? $url : null;
     }
 
     public function getFullNameAttribute(): string

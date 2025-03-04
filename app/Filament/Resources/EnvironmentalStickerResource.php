@@ -16,6 +16,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Summarizers\Average;
@@ -114,7 +116,11 @@ class EnvironmentalStickerResource extends Resource
                         return $indicators;
                     }),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
+            ->actions([
+                ActionGroup::make([
+                    EditAction::make(),
+                ]),
+            ])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
     }
 

@@ -18,7 +18,7 @@
         <div class="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
             <form wire:submit.prevent="register">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 leading-5">
+                    <label for="name" class="block text-sm font -medium text-gray-700 leading-5">
                         Name
                     </label>
 

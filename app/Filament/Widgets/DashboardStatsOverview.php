@@ -57,6 +57,7 @@ class DashboardStatsOverview extends BaseWidget
                 icon: 'mdi-map-marker-distance',
                 latestValue: $this->calculateAverageMonthlyDistance(true),
                 suffix: 'km',
+                operator: '>'
             ),
             $this->buildStat(
                 title: __('Average speed'),

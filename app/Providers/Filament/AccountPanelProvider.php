@@ -46,6 +46,8 @@ class AccountPanelProvider extends PanelProvider
             ->path('account')
             ->registration()
             ->login()
+            ->profile()
+            ->passwordReset()
             ->colors([
                 'primary' => Color::Blue,
             ])
@@ -69,6 +71,7 @@ class AccountPanelProvider extends PanelProvider
             ])
             ->spa()
             ->viteTheme('resources/css/filament/account/theme.css')
+            ->sidebarFullyCollapsibleOnDesktop()
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->groups([
                     NavigationGroup::make()
