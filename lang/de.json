@@ -117,6 +117,7 @@
     "Heater": "Heizung",
     "Highway": "Autobahn",
     "Icon": "Symbol",
+    "Image": "Bild",
     "Insurance": "Versicherung",
     "Insurance company": "Versicherungsgesellschaft",
     "Insurance expires within 1 month!": "Die Versicherung erlischt innerhalb von 1 Monat!",
@@ -202,6 +203,9 @@
     "Price range": "Preisklasse",
     "Privacy": "Datenschutz",
     "Private": "Privat",
+    "Product": "Produkt"
+    "Products": "Produkte",
+    "Products & accessory": "Produkte & Zubehör",
     "Provider": "Anbieter",
     "Provincial": "Provinzial",
     "Public": "Öffentlich",

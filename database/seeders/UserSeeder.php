@@ -31,6 +31,7 @@ class UserSeeder extends Seeder
                     ->withVignettes(2)
                     ->withEnvironmentalStickers(2)
                     ->withFerries(2)
+                    ->withProducts(5)
             , 'vehicles')
             ->create();
     }

@@ -12,6 +12,7 @@ use App\Models\Fine;
 use App\Models\Insurance;
 use App\Models\Maintenance;
 use App\Models\Parking;
+use App\Models\Product;
 use App\Models\Reconditioning;
 use App\Models\Refueling;
 use App\Models\Tax;
@@ -181,6 +182,13 @@ class VehicleFactory extends Factory
     {
         return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
             Ferry::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
+        });
+    }
+
+    public function withProducts(int $count = 5): self
+    {
+        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
+            Product::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
         });
     }
 }

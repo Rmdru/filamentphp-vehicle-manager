@@ -10,6 +10,7 @@ use App\Filament\Resources\FineResource;
 use App\Filament\Resources\InsuranceResource;
 use App\Filament\Resources\MaintenanceResource;
 use App\Filament\Resources\ParkingResource;
+use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ReconditioningResource;
 use App\Filament\Resources\RefuelingResource;
 use App\Filament\Resources\TaxResource;
@@ -85,6 +86,7 @@ class AccountPanelProvider extends PanelProvider
                         ->items([
                             ...MaintenanceResource::getNavigationItems(),
                             ...ReconditioningResource::getNavigationItems(),
+                            ...ProductResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('Fuel'))
