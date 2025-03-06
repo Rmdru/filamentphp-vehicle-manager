@@ -74,6 +74,7 @@ class TollResource extends Resource
                                 ]);
                             })
                             ->html()
+                            ->hidden(fn ($state) => empty($state))
                             ->label(__('Country')),
                         TextColumn::make('road')
                             ->sortable()
@@ -85,6 +86,7 @@ class TollResource extends Resource
                                     'country' => $record->country,
                                 ]);
                             })
+                            ->hidden(fn ($state) => empty($state))
                             ->html()
                             ->label(__('Road')),
                     ]),

@@ -8,16 +8,19 @@ return [
         'iso_code' => 'NL',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
                 'prefix' => 'A',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-black',
                 'background_color' => 'bg-yellow-500',
                 'prefix' => 'N',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-black',
                 'background_color' => 'bg-yellow-500',
                 'prefix' => 'N',
@@ -37,16 +40,19 @@ return [
         'iso_code' => 'BE',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-green-600',
                 'prefix' => 'E',
             ],
             'ring' => [
+                'border' => 'border-black',
                 'color' => 'text-black',
                 'background_color' => 'bg-white',
                 'prefix' => 'R',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'N',
@@ -66,18 +72,20 @@ return [
         'iso_code' => 'DE',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'A',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-black',
                 'background_color' => 'bg-yellow-500',
                 'prefix' => 'B',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -90,16 +98,19 @@ return [
         'iso_code' => 'LU',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'A',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'N',
             ],
             'provincial_road' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
             ],
@@ -118,23 +129,26 @@ return [
         'iso_code' => 'FR',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
                 'prefix' => 'A',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-black',
                 'background_color' => 'bg-red-500',
                 'prefix' => 'N',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-black',
                 'background_color' => 'bg-yellow-500',
                 'prefix' => 'D',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -147,23 +161,26 @@ return [
         'iso_code' => 'IT',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-green-600',
                 'prefix' => 'A',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'SS',
             ],
             'provincial' => [
+                'border' => 'border-black',
                 'color' => 'text-black',
                 'background_color' => 'bg-white',
                 'prefix' => 'SP',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -176,16 +193,19 @@ return [
         'iso_code' => 'ES',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'AP',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
                 'prefix' => 'N',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-black',
                 'background_color' => 'bg-orange-500',
                 'prefix' => 'C',
@@ -205,16 +225,19 @@ return [
         'iso_code' => 'GB',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'M',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-yellow-300',
                 'background_color' => 'bg-green-600',
                 'prefix' => 'A',
             ],
             'provincial' => [
+                'border' => 'border-black',
                 'color' => 'text-black',
                 'background_color' => 'bg-white',
                 'prefix' => 'B',
@@ -234,17 +257,19 @@ return [
         'iso_code' => 'SE',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-green-600',
                 'prefix' => 'E',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -257,21 +282,24 @@ return [
         'iso_code' => 'NO',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-green-600',
                 'prefix' => 'E',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-green-600',
             ],
             'provincial' => [
+                'border' => 'border-black',
                 'color' => 'text-black',
                 'background_color' => 'bg-white',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -284,17 +312,19 @@ return [
         'iso_code' => 'CH',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
                 'prefix' => 'A',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -307,11 +337,13 @@ return [
         'iso_code' => 'AT',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'A',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-yellow-500',
                 'prefix' => 'B',
@@ -331,22 +363,25 @@ return [
         'iso_code' => 'PL',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
                 'prefix' => 'A',
             ],
             'secondary' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
                 'prefix' => 'S',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-red-500',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -359,17 +394,19 @@ return [
         'iso_code' => 'CZ',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-green-600',
                 'prefix' => 'E',
             ],
             'provincial' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -382,18 +419,20 @@ return [
         'iso_code' => 'PT',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
                 'prefix' => 'A',
             ],
             'provincial' => [
+                'border' => 'border-black',
                 'color' => 'text-white',
                 'background_color' => 'bg-white',
                 'prefix' => 'N',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',
@@ -406,17 +445,19 @@ return [
         'iso_code' => 'GR',
         'road_types' => [
             'highway' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-green-600',
                 'prefix' => 'A',
             ],
             'provincial_road' => [
+                'border' => null,
                 'color' => 'text-white',
                 'background_color' => 'bg-blue-500',
             ],
         ],
         'license_plate' => [
-            'border' => null,
+            'border' => 'border-black',
             'color' => 'text-black',
             'filament_color' => 'gray',
             'background_color' => 'bg-white',

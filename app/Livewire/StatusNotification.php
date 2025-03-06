@@ -90,8 +90,8 @@ class StatusNotification extends Component
     {
         $types = [
             'critical' => [
-                'textColor' => 'text-red-500',
-                'borderColor' => 'border-red-800',
+                'textColor' => 'text-red-500 dark:text-red-500',
+                'borderColor' => 'border-red-500 dark:border-red-800',
                 'icon' => 'gmdi-warning-r',
             ],
             'warning' => [
@@ -100,13 +100,13 @@ class StatusNotification extends Component
                 'icon' => 'gmdi-warning-r',
             ],
             'info' => [
-                'textColor' => 'text-blue-400',
-                'borderColor' => 'border-blue-500',
+                'textColor' => 'text-blue-400 dark:text-blue-400',
+                'borderColor' => 'border-blue-400 dark:border-blue-500',
                 'icon' => 'gmdi-info-r',
             ],
             'success' => [
-                'textColor' => 'text-green-500',
-                'borderColor' => 'border-green-800',
+                'textColor' => 'text-green-500 dark:text-green-500',
+                'borderColor' => 'border-green-500 dark:border-green-800',
                 'icon' => 'gmdi-check-r',
             ],
         ];

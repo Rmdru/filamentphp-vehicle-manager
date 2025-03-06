@@ -92,7 +92,7 @@ class RefuelingResource extends Resource
 
                                 $logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
 
-                                return new HtmlString('<div class="w-5/12 min-h-16 max-h-40 flex items-center bg-white rounded p-2"><img class="max-h-40" src="' . $logo . '" /></div>');
+                                return new HtmlString('<div class="w-5/12 min-h-16 max-h-40 flex items-center bg-white border border-gray-200 rounded p-2"><img class="max-h-40" src="' . $logo . '" /></div>');
                             }
                     ),
                 TextColumn::make('date')

@@ -13,7 +13,7 @@
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
                 <div
-                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon ?? $item->categoryIcon)
                 </div>
                 <div class="flex gap-2 flex-col">
@@ -53,7 +53,7 @@
             <div class="flex flex-wrap gap-8 items-center">
                 @if (! empty($item->icon))
                     <div
-                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
                         @svg($item->icon)
                     </div>
                 @endif
@@ -101,7 +101,7 @@
                 {{ __('Refueling') }}
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
-                <div class="p-2 rounded-full bg-white w-5/12 max-w-12 h-12 flex items-center"><img
+                <div class="p-2 rounded-full bg-white w-5/12 max-w-12 h-12 flex items-center border border-gray-200"><img
                         src="{{ $item->icon }}" /></div>
                 <div class="flex gap-2 flex-col">
                     <div class="flex gap-2 items-center">
@@ -141,7 +141,7 @@
             </x-slot>
             <div class="flex flex-wrap gap-8 items-center">
                 <div
-                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                    class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
                     @svg($item->icon)
                 </div>
                 <div class="flex gap-2 flex-col">
@@ -179,7 +179,7 @@
             <div class="flex flex-wrap gap-8 items-center">
                 @if (! empty($item->icon))
                     <div
-                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
                         @svg($item->icon)
                     </div>
                 @endif
@@ -207,7 +207,7 @@
             <div class="flex flex-wrap gap-8 items-center">
                 @if (! empty($item->icon))
                     <div
-                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
                         @svg($item->icon)
                     </div>
                 @endif
@@ -281,7 +281,7 @@
             <div class="flex flex-wrap gap-8 items-center">
                 @if (! empty($item->icon))
                     <div
-                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
                         @svg($item->icon)
                     </div>
                 @endif
@@ -332,7 +332,7 @@
             <div class="flex flex-wrap gap-8 items-center">
                 @if (! empty($item->icon))
                     <div
-                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
                         @svg($item->icon)
                     </div>
                 @endif
