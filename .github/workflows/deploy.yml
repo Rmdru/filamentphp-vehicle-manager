@@ -22,7 +22,7 @@ jobs:
           script: |
             ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 
             cd ./public_html/vehicle-manager
-            git clone git@github.com:Rmdru/laravel-vehicle-manager.git .
+            git pull origin main
             composer install --no-dev --optimize-autoloader
             php artisan migrate
             php artisan opt:cl
