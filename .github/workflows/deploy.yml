@@ -20,7 +20,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            cd /public_html/rubenderuijter.nl/vehicle-manager
+            cd /public_html/vehicle-manager
             git pull origin main
             composer install --no-dev --optimize-autoloader
             php artisan migrate
