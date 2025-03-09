@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             ssh -o StrictHostKeyChecking=no -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 
-            cd /public_html/vehicle-manager
+            cd ./public_html/vehicle-manager
             git pull origin main
             composer install --no-dev --optimize-autoloader
             php artisan migrate
