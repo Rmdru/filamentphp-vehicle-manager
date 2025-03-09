@@ -23,7 +23,6 @@ jobs:
             mkdir -p ~/.ssh
             echo "${{ secrets.PUBLIC_KEY }}" > ~/.ssh/deploy_key
             chmod 600 ~/.ssh/deploy_key
-            ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
             scp -r -i ~/.ssh/deploy_key -P 7685 ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/public_html/vehicle-manager
             ssh -i ~/.ssh/deploy_key -p 7685 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 
             cd /public_html/vehicle-manager
