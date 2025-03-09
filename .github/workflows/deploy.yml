@@ -7,7 +7,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/shyim/lara-test:php8.1
+      image: php:8.1-cli
     steps:
       - name: Clone
         uses: actions/checkout@v3
