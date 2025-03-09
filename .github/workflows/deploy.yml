@@ -1,0 +1,27 @@
+name: Vehicle manager
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/shyim/lara-test:php8.1
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+
+      - name: Deployment
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd /public_html/rubenderuijter.nl/vehicle-manager
+            git pull origin main
+            composer install --no-dev --optimize-autoloader
+            php artisan migrate
+            php artisan opt:cl
+            npm install && npm run build
