@@ -50,6 +50,7 @@ class InsuranceResource extends Resource
         $insuranceTypes = config('insurances.types');
 
         return $table
+            ->description(__('Here you can your vehicles insurances to get insight of their costs.'))
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();

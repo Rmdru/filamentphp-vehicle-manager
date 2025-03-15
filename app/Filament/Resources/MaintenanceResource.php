@@ -61,6 +61,7 @@ class MaintenanceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->description(__('Here you can add the costs of maintenance, repairs and parts to get insight in their costs and get informed of important intervals.'))
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();

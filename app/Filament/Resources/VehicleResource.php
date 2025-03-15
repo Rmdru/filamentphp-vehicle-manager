@@ -269,6 +269,7 @@ class VehicleResource extends Resource
         }
 
         return $table
+            ->description(__('This is an overview of the vehicles that are in your garage.'))
             ->columns([
                 ImageColumn::make('image_url')
                     ->extraAttributes(['class' => 'mb-5'])

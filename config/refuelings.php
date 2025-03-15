@@ -28,6 +28,7 @@ return [
         'eni' => 'https://seeklogo.com/images/E/eni-logo-9D13BD5E20-seeklogo.com.png',
         'agip' => 'https://i0.wp.com/moovingmedia.com/wp-content/uploads/2023/07/agip_2.png?fit=1040%2C1040&ssl=1',
         'kuster' => 'https://intermontage.nl/wp-content/uploads/Kuster_logo.png',
+        'kusterenergy' => 'https://intermontage.nl/wp-content/uploads/Kuster_logo.png',
         'jet' => 'https://1000logos.net/wp-content/uploads/2022/07/Jet-Logo-2003.png',
         'makro' => 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Makro_Europe_logo.png',
         'tinq' => 'https://www.tinq.nl/sites/default/files/logo_0.png',
@@ -52,6 +53,7 @@ return [
         'vattenfall' => 'https://www.ipkw.nl/wp-content/uploads/2020/10/ipkw-bedrijven-vattenfall-logo.png',
         'engie' => 'https://assets.design.digital.engie.com/brand/logo-primary.jpg',
         'lastmilesolutions' => 'https://openchargealliance.org/wp-content/uploads/2023/12/LMS-Logo-Stacked-Black-Blue@3x.png',
+        'eneco' => 'https://upload.wikimedia.org/wikipedia/commons/b/b0/Eneco_logo.png',
         'default' => 'https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_local_gas_station_48px-512.png',
     ],
 ];

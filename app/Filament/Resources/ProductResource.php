@@ -85,6 +85,12 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->description(__('Here you can add the costs of products such as engine fluids, practical accessory, interior products, cleaning products and safety equipment to get insight in their costs.'))
+            ->modifyQueryUsing(function (Builder $query) {
+                return $query->whereHas('vehicle', function ($query) {
+                    $query->selected();
+                });
+            })
             ->columns([
                 TextColumn::make('name')
                     ->label(__('Name'))
@@ -161,13 +167,6 @@ class ProductResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

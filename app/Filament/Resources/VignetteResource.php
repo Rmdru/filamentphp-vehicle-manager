@@ -54,6 +54,7 @@ class VignetteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->description(__('Here you can add the costs of vignettes to get insight in their costs.'))
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();

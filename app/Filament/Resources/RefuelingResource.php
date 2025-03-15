@@ -75,6 +75,7 @@ class RefuelingResource extends Resource
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return $table
+            ->description(__('Here you can add your refuelings and charge sessions to keep track of the costs and fuel consumption.'))
             ->modifyQueryUsing(function (Builder $query) {
                 return $query
                     ->select('*', DB::raw('mileage_end - mileage_begin as distance'))

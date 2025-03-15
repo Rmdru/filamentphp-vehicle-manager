@@ -44,6 +44,7 @@ class TaxResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->description(__('Here you can your vehicles road taxes to get insight of their costs.'))
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
