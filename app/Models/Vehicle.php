@@ -400,11 +400,11 @@ class Vehicle extends Model
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
     {
         if (empty($startDate)) {
-            $startDate = now()->startOfYear();
+            $startDate = now()->startOfMonth();
         }
 
         if (empty($endDate)) {
-            $endDate = now()->endOfYear();
+            $endDate = now()->endOfMonth();
         }
 
         $startDate = Carbon::parse($startDate);
