@@ -400,11 +400,11 @@ class Vehicle extends Model
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
     {
         if (empty($startDate)) {
-            $startDate = now()->startOfMonth();
+            $startDate = now()->startOfYear();
         }
 
         if (empty($endDate)) {
-            $endDate = now()->endOfMonth();
+            $endDate = now()->endOfYear();
         }
 
         $startDate = Carbon::parse($startDate);
@@ -476,20 +476,17 @@ class Vehicle extends Model
             $dateColumn = $config['dateColumn'] ?? 'date';
 
             if (empty($monthly)) {
-                $data = Trend::model($model)
-                    ->query(
-                        $model::where('vehicle_id', $vehicleId)
-                            ->whereBetween($dateColumn, [$startDate, $endDate])
-                    )
-                    ->between(
-                        start: $startDate,
-                        end: $endDate
-                    )
-                    ->perMonth()
-                    ->sum($field);
+                $data = $model::where('vehicle_id', $vehicleId)
+                    ->whereBetween($dateColumn, [$startDate, $endDate])
+                    ->get()
+                    ->groupBy(function ($item) use ($dateColumn) {
+                        return Carbon::parse($item->$dateColumn)->format('Y-m');
+                    })
+                    ->map(function ($row) use ($field) {
+                        return $row->sum($field);
+                    });
 
-                foreach ($data as $value) {
-                    $month = Carbon::parse($value->date ?? $value->start_date ?? $value->start_time)->isoFormat('Y-MM');
+                foreach ($data as $month => $value) {
                     if (! isset($monthlyCosts[$month])) {
                         $monthlyCosts[$month] = [];
                     }
@@ -498,11 +495,16 @@ class Vehicle extends Model
                         $monthlyCosts[$month][$label] = 0;
                     }
 
-                    $monthlyCosts[$month][$label] += $value->aggregate;
+                    $monthlyCosts[$month][$label] += $value;
                 }
 
                 if (empty($labels)) {
-                    $labels = $data->map(fn (TrendValue $value) => str(Carbon::parse($value->date)->isoFormat('MMMM'))->ucfirst());
+                    $labels = collect();
+                    $currentMonth = $startDate->copy();
+                    while ($currentMonth <= $endDate) {
+                        $labels->push(str($currentMonth->isoFormat('MMMM'))->ucfirst());
+                        $currentMonth->addMonth();
+                    }
                 }
             }
 
@@ -510,7 +512,7 @@ class Vehicle extends Model
                 $records = $model::where('vehicle_id', $vehicleId)
                     ->where(function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('start_date', [$startDate, $endDate])
-                              ->orWhereBetween('end_date', [$startDate, $endDate]);
+                            ->orWhereBetween('end_date', [$startDate, $endDate]);
                     })
                     ->get();
 
@@ -533,10 +535,30 @@ class Vehicle extends Model
                         $start->addMonth();
                     }
                 }
-
             }
         }
 
+        $allMonths = collect();
+        $currentMonth = $startDate->copy();
+        while ($currentMonth <= $endDate) {
+            $allMonths->push($currentMonth->isoFormat('Y-MM'));
+            $currentMonth->addMonth();
+        }
+
+        foreach ($allMonths as $month) {
+            if (! isset($monthlyCosts[$month])) {
+                $monthlyCosts[$month] = [];
+            }
+
+            foreach ($costTypes as $label => $config) {
+                if (! isset($monthlyCosts[$month][$label])) {
+                    $monthlyCosts[$month][$label] = 0;
+                }
+            }
+        }
+
+        $monthlyCosts = collect($monthlyCosts)->sortKeys()->toArray();
+        
         return [
             'monthlyCosts' => $monthlyCosts,
             'labels' => $labels,
