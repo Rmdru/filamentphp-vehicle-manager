@@ -512,26 +512,38 @@ class Vehicle extends Model
                 $records = $model::where('vehicle_id', $vehicleId)
                     ->where(function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('start_date', [$startDate, $endDate])
-                            ->orWhereBetween('end_date', [$startDate, $endDate]);
+                            ->orWhereBetween('end_date', [$startDate, $endDate])
+                            ->orWhere(function ($subQuery) use ($startDate, $endDate) {
+                                $subQuery->where('start_date', '<=', $startDate)
+                                    ->where('end_date', '>=', $endDate);
+                            });
                     })
                     ->get();
 
                 foreach ($records as $record) {
                     $start = Carbon::parse($record->start_date)->startOfMonth();
                     $end = Carbon::parse($record->end_date)->endOfMonth();
+                    $paymentDay = $record->payment_day ?? 1;
+                    $monthlyAmount = $record->$field;
 
                     while ($start <= $end) {
                         $month = $start->isoFormat('Y-MM');
 
-                        if (! isset($monthlyCosts[$month])) {
-                            $monthlyCosts[$month] = [];
+                        if ($start->between($startDate, $endDate)) {
+                            if (!isset($monthlyCosts[$month])) {
+                                $monthlyCosts[$month] = [];
+                            }
+
+                            if (!isset($monthlyCosts[$month][$label])) {
+                                $monthlyCosts[$month][$label] = 0;
+                            }
+
+                            $paymentDate = Carbon::createFromFormat('Y-m-d', "{$start->year}-{$start->month}-{$paymentDay}");
+                            if ($paymentDate->between($startDate, $endDate)) {
+                                $monthlyCosts[$month][$label] += $monthlyAmount;
+                            }
                         }
 
-                        if (! isset($monthlyCosts[$month][$label])) {
-                            $monthlyCosts[$month][$label] = 0;
-                        }
-
-                        $monthlyCosts[$month][$label] += $record->$field;
                         $start->addMonth();
                     }
                 }
