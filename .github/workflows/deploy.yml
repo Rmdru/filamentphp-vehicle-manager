@@ -25,7 +25,7 @@ jobs:
             cd ./public_html/vehicle-manager
             git pull origin main
             composer install --no-dev --optimize-autoloader
-            php artisan migrate
+            php artisan migrate --force
             php artisan storage:link
             php artisan optimize
             npm install && npm run build
