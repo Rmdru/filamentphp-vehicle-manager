@@ -15,6 +15,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
@@ -23,6 +24,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class FerryResource extends Resource
 {
@@ -99,7 +101,14 @@ class FerryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->description(__('Here you can add the costs of addional transport methods such as ferries and transportation trains to get insight in their costs.'))
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Ferries'))
+                    ->modalContent(new HtmlString(__('Here you can add the costs of addional transport methods such as ferries and transportation trains to get insight in their costs.')))
+                    ->modalIcon('mdi-ferry')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();

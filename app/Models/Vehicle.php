@@ -84,7 +84,7 @@ class Vehicle extends Model
 
     public function scopeSelected(Builder $query): void
     {
-        $vehicleId = Session::get('Dashboard_filters', '')['vehicleId'] ?? Vehicle::latest()->first()->id;
+        $vehicleId = Session::get('vehicle_id') ?? Vehicle::latest()->first()->id;
 
         Session::put('vehicle_id', $vehicleId);
 
@@ -464,6 +464,11 @@ class Vehicle extends Model
                 'field' => 'price',
                 'dateColumn' => 'start_date',
             ],
+            'Product' => [
+                'model' => Product::class,
+                'field' => 'price',
+                'dateColumn' => 'date',
+            ],
         ];
 
         $monthlyCosts = [];
@@ -622,7 +627,7 @@ class Vehicle extends Model
         return $this->hasMany(Parking::class);
     }
 
-    public function tolls(): HasMany
+    public function toll(): HasMany
     {
         return $this->hasMany(Toll::class);
     }
@@ -645,5 +650,15 @@ class Vehicle extends Model
     public function environmentalStickers(): HasMany
     {
         return $this->hasMany(EnvironmentalSticker::class);
+    }
+
+    public function ferries(): HasMany
+    {
+        return $this->hasMany(Ferry::class);
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
     }
 }

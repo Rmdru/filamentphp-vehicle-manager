@@ -62,11 +62,13 @@ class Timeline extends Page
                 'insurances',
                 'taxes',
                 'parkings',
-                'tolls',
+                'toll',
                 'fines',
                 'reconditionings',
                 'vignettes',
                 'environmentalStickers',
+                'ferries',
+                'products',
             ])
             ->latest()
             ->first();
@@ -121,7 +123,7 @@ class Timeline extends Page
             $vehicle->maintenances->push($parking);
         }
 
-        foreach ($vehicle->tolls as $toll) {
+        foreach ($vehicle->toll as $toll) {
             $toll->typeIcon = match ($toll->type) {
                 'location' => 'gmdi-location-on-r',
                 'section' => 'gmdi-route-r',
@@ -174,6 +176,21 @@ class Timeline extends Page
             $environmentalSticker->date = $environmentalSticker->start_date;
 
             $vehicle->maintenances->push($environmentalSticker);
+        }
+
+        foreach ($vehicle->ferries as $ferry) {
+            $ferry->typeIcon = 'mdi-ferry';
+            $ferry->icon = 'mdi-ferry';
+            $ferry->date = $ferry->start_date;
+
+            $vehicle->maintenances->push($ferry);
+        }
+
+        foreach ($vehicle->products as $product) {
+            $product->typeIcon = 'mdi-oil';
+            $product->icon = 'mdi-oil';
+
+            $vehicle->maintenances->push($product);
         }
 
         $items = $vehicle->maintenances->merge($vehicle->refuelings)

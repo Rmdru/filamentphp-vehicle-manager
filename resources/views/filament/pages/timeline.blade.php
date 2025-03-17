@@ -388,8 +388,7 @@
                         € {{ $item->price }}
                     </div>
                 </div>
-                <x-filament::link href="/account/vignettes/{{ $item->id }}/edit" color="white"
-                                  icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                <x-filament::link href="/account/vignettes/{{ $item->id }}/edit" color="white" icon="gmdi-edit-r" class="last-of-type:ml-auto">
                     {{ __('Edit') }}
                 </x-filament::link>
             </div>
@@ -415,8 +414,65 @@
                         € {{ $item->price }}
                     </div>
                 </div>
-                <x-filament::link href="/account/environmental-stickers/{{ $item->id }}/edit" color="white"
-                                  icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                <x-filament::link href="/account/environmental-stickers/{{ $item->id }}/edit" color="white" icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                    {{ __('Edit') }}
+                </x-filament::link>
+            </div>
+        </x-filament::section>
+        @elseif($item instanceof App\Models\Ferry)
+        <x-filament::section icon="mdi-ferry" class="mt-6" collapsible>
+            <x-slot name="heading">
+                {{ __('Ferry') }}
+            </x-slot>
+            <div class="flex gap-8 items-center">
+                @if (! empty($item->icon))
+                    <div
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        @svg($item->icon)
+                    </div>
+                @endif
+                <div class="flex gap-2 flex-col">
+                    <div class="flex gap-2 items-center">
+                        <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
+                        {{ $item->start_date->isoFormat('MMM D, Y') . ' - ' . $item->end_date->isoFormat('MMM D, Y') }}
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
+                        € {{ $item->price }}
+                    </div>
+                </div>
+                <x-filament::link href="/account/environmental-stickers/{{ $item->id }}/edit" color="white" icon="gmdi-edit-r" class="last-of-type:ml-auto">
+                    {{ __('Edit') }}
+                </x-filament::link>
+            </div>
+        </x-filament::section>
+        @elseif($item instanceof App\Models\Product)
+        <x-filament::section icon="mdi-oil" class="mt-6" collapsible>
+            <x-slot name="heading">
+                {{ __('Product') }}
+            </x-slot>
+            <div class="flex gap-8 items-center">
+                @if (! empty($item->icon))
+                    <div
+                        class="p-2 rounded-full bg-white w-5/12 max-w-12 flex items-center text-black border border-gray-200 [&>svg]:max-h-8 [&>svg]:mx-auto">
+                        @svg($item->icon)
+                    </div>
+                @endif
+                <div class="flex gap-2 flex-col">
+                    <div class="flex gap-2 items-center">
+                        <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
+                        {{ $item->name }}
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
+                        {{ $item->date->isoFormat('MMM D, Y') }}
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <x-mdi-hand-coin-outline class="w-6 text-gray-400 dark:text-gray-500" />
+                        € {{ $item->price }}
+                    </div>
+                </div>
+                <x-filament::link href="/account/environmental-stickers/{{ $item->id }}/edit" color="white" icon="gmdi-edit-r" class="last-of-type:ml-auto">
                     {{ __('Edit') }}
                 </x-filament::link>
             </div>

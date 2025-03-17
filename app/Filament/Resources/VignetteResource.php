@@ -16,6 +16,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\Layout\Panel;
@@ -26,6 +27,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
 
 class VignetteResource extends Resource
@@ -54,7 +56,14 @@ class VignetteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->description(__('Here you can add the costs of vignettes to get insight in their costs.'))
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Vignette'))
+                    ->modalContent(new HtmlString(__('Here you can add the costs of vignettes to get insight in their costs. This category includes the one-off costs for a vignette that gives access to a specific area for a certain period.')))
+                    ->modalIcon('mdi-sticker-text')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();

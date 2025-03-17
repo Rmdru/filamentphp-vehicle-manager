@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
                     ->withReconditionings(2)
                     ->withTaxes(1)
                     ->withParkings(5)
-                    ->withTolls(5)
+                    ->withToll(5)
                     ->withFines(2)
                     ->withVignettes(2)
                     ->withEnvironmentalStickers(2)

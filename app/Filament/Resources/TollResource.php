@@ -21,6 +21,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -30,6 +31,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
 
 class TollResource extends Resource
@@ -55,10 +57,19 @@ class TollResource extends Resource
         return __('Toll');
     }
 
+    protected static ?string $slug = 'toll';
+
     public static function table(Table $table): Table
     {
         return $table
-        ->description(__('Here you can add the costs of toll sessions to get insight in their costs.'))
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Toll'))
+                    ->modalContent(new HtmlString(__('Here you can add the costs of toll sessions to get insight in their costs. This category includes all toll session fees. These fees are paid when the vehicle drives through a specific road section. These fees are paid to the road authority or toll company, usually a company or government agency.')))
+                    ->modalIcon('maki-toll')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
@@ -293,7 +304,7 @@ class TollResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTolls::route('/'),
+            'index' => Pages\ListToll::route('/'),
             'create' => Pages\CreateToll::route('/create'),
             'edit' => Pages\EditToll::route('/{record}/edit'),
         ];

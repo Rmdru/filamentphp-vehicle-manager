@@ -36,6 +36,8 @@ class Toll extends Model
         'road' => 'array',
     ];
 
+    protected $table = 'toll';
+
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class);

@@ -13,12 +13,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class TaxResource extends Resource
 {
@@ -44,7 +46,14 @@ class TaxResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->description(__('Here you can your vehicles road taxes to get insight of their costs.'))
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Road taxes'))
+                    ->modalContent(new HtmlString(__('Here you can your road taxes to get insight of their costs. This category includes only periodic costs paid to the government for providing access to the road network and associated facilities.')))
+                    ->modalIcon('mdi-highway')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();

@@ -6,7 +6,7 @@ use App\Filament\Resources\TollResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListTolls extends ListRecords
+class ListToll extends ListRecords
 {
     protected static string $resource = TollResource::class;
 

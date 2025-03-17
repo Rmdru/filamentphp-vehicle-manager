@@ -34,6 +34,8 @@ use Filament\Tables\Table;
 use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\HtmlString;
+use Symfony\Component\HtmlSanitizer\Visitor\Node\TextNode;
 
 class MaintenanceResource extends Resource
 {
@@ -61,7 +63,6 @@ class MaintenanceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->description(__('Here you can add the costs of maintenance, repairs and parts to get insight in their costs and get informed of important intervals.'))
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
@@ -91,6 +92,12 @@ class MaintenanceResource extends Resource
                             'mileage' => Vehicle::selected()->first()->mileage_latest ?? Vehicle::selected()->first()->mileage_start,
                         ]);
                     }),
+                Action::make('info')
+                    ->modalHeading(__('Maintenance & repairs'))
+                    ->modalContent(new HtmlString(__('Here you can add the costs of maintenance, repairs and parts to get insight in their costs and get informed of important intervals. It is also possible to add small checks to get notified about their intervals. This category includes all costs incurred for preventive and periodic maintenance and repairs, as well as the replacement of worn and outdated parts. This does not include costs arising from damage or accidents.')))
+                    ->modalIcon('mdi-car-wrench')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
             ])
             ->columns([
                 Split::make([

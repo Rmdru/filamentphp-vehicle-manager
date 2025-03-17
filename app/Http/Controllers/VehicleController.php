@@ -14,7 +14,7 @@ class VehicleController extends Controller
 {
     public function switchVehicle($vehicleId)
     {
-        Session::put('Dashboard_filters.vehicleId', $vehicleId);
+        Session::put('vehicle_id', $vehicleId);
 
         return back();
     }

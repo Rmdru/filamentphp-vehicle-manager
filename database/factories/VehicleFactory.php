@@ -150,7 +150,7 @@ class VehicleFactory extends Factory
         });
     }
 
-    public function withTolls(int $count = 5): self
+    public function withToll(int $count = 5): self
     {
         return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
             Toll::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);

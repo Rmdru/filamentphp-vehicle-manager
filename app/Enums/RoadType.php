@@ -6,8 +6,9 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 
-enum RoadType: string implements HasColor, HasIcon
+enum RoadType: string implements HasLabel, HasColor, HasIcon
 {
     case Highway = 'highway';
     case Secondary = 'secondary';

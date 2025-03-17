@@ -43,6 +43,7 @@ class AccountPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->favicon('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Ic_directions_car_48px.svg/1024px-Ic_directions_car_48px.svg.png')
             ->id('account')
             ->path('account')
             ->registration()

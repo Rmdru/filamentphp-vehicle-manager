@@ -17,6 +17,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\Layout\Panel;
@@ -27,6 +28,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class ReconditioningResource extends Resource
 {
@@ -52,12 +54,19 @@ class ReconditioningResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->description(__('Here you can add the costs of reconditioning and washing to get insight in their costs.'))
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
                 });
             })
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Reconditioning & washing'))
+                    ->modalContent(new HtmlString(__('Here you can add the costs of reconditioning and washing to get insight in thir costs. This category only includes costs incurred to clean, detail or restore the vehicle to its original optical condition.')))
+                    ->modalIcon('mdi-car-wash')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->columns([
                 Split::make([
                     TextColumn::make('date')

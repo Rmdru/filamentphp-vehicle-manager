@@ -24,6 +24,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\Summarizers\Average;
@@ -65,7 +66,14 @@ class FineResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->description(__('Here you can add the costs of fines to get insight in their costs.'))
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Fines'))
+                    ->modalContent(new HtmlString(__('Here you can add the costs of fines to get insight in their costs. This category only includes the costs resulting from violations committed. Other sanctions may also be recorded.')))
+                    ->modalIcon('maki-police')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();

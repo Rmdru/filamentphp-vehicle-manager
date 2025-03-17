@@ -25,6 +25,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
@@ -40,7 +41,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BuilderQuery;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
-use Livewire\Livewire;
 
 class RefuelingResource extends Resource
 {
@@ -51,6 +51,7 @@ class RefuelingResource extends Resource
     protected static ?string $model = Refueling::class;
 
     protected static ?string $navigationIcon = 'gmdi-local-gas-station';
+
 
     public static function getNavigationLabel(): string
     {
@@ -75,7 +76,14 @@ class RefuelingResource extends Resource
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return $table
-            ->description(__('Here you can add your refuelings and charge sessions to keep track of the costs and fuel consumption.'))
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Refuelings'))
+                    ->modalContent(new HtmlString(__('Here you can add your refuelings and charge sessions to keep track of the costs and fuel consumption. This category only includes costs of fuel and energy to move the vehicle.')))
+                    ->modalIcon('gmdi-local-gas-station')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query
                     ->select('*', DB::raw('mileage_end - mileage_begin as distance'))

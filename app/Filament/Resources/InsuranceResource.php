@@ -15,12 +15,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class InsuranceResource extends Resource
 {
@@ -50,7 +52,14 @@ class InsuranceResource extends Resource
         $insuranceTypes = config('insurances.types');
 
         return $table
-            ->description(__('Here you can your vehicles insurances to get insight of their costs.'))
+            ->headerActions([
+                Action::make('info')
+                    ->modalHeading(__('Insurances'))
+                    ->modalContent(new HtmlString(__('Here you can your insurances to get insight of their costs. This category only includes periodic premium costs to protect against unexpectedly high costs in the event of accidents and damage.')))
+                    ->modalIcon('mdi-shield-car')
+                    ->modalCancelActionLabel(__('Close'))
+                    ->modalSubmitAction(false),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('vehicle', function ($query) {
                     $query->selected();
