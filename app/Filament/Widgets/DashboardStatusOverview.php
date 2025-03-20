@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
 use App\Models\Vehicle;
@@ -13,53 +15,78 @@ class DashboardStatusOverview extends BaseWidget
 
     protected static ?string $pollingInterval = null;
 
-    protected function getStats(): array
+    private array $statuses = [];
+
+    public function mount(): void
     {
-        return [
-            $this->buildStat(
-                __('Maintenance'),
-                $this->getMaintenanceStatus(),
-                'mdi-car-wrench',
-            ),
-            $this->buildStat(
-                __('MOT'),
-                $this->getApkStatus(),
-                'gmdi-security',
-            ),
-        ];
+        $this->fillStatuses();
     }
 
-    private function buildStat(string $title, array $value, string $icon): Stat
+    protected function getStats(): array
     {
+        if (empty($this->statuses)) {
+            return [
+                __('No statuses available to show.'),
+            ];
+        }
+
+        return collect($this->statuses)
+            ->map(fn ($status) => $this->buildStat($status['title'], $status['value'], $status['icon']))
+            ->filter()
+            ->toArray();
+    }
+
+    private function fillStatuses(): void
+    {
+        $vehicle = Vehicle::selected()->first();
+
+        $this->getMaintenanceStatus($vehicle);
+        $this->getApkStatus($vehicle);
+    }
+
+    private function buildStat(string $title, array $value, string $icon): ?Stat
+    {
+        if (empty($title) || empty($value)) {
+            return null;
+        }
+
         return Stat::make($title, $value['primary'] ?? '')
             ->icon($icon)
             ->description($value['secondary'] ?? '');
     }
 
-    private function getMaintenanceStatus(): array
+    private function getMaintenanceStatus(Vehicle $vehicle): void
     {
-        $maintenanceStatus = Vehicle::selected()->first()->maintenance_status;
+        $maintenanceStatus = $vehicle->maintenance_status;
 
-        if (! $maintenanceStatus) {
-            return [];
+        if (empty($maintenanceStatus)) {
+            return;
         }
 
-        return [
-            'primary' => str($maintenanceStatus['timeDiffHumans'])->ucfirst(),
-            'secondary' => __('About :distance km', ['distance' => $maintenanceStatus['distance']]),
+        $this->statuses[] = [
+            'title' => __('Maintenance'),
+            'value' => [
+                'primary' => str($maintenanceStatus['timeDiffHumans'])->ucfirst(),
+                'secondary' => __('About :distance km', ['distance' => $maintenanceStatus['distance']]),
+            ],
+            'icon' => 'mdi-car-wrench',
         ];
     }
 
-    private function getApkStatus(): array
+    private function getApkStatus(Vehicle $vehicle): void
     {
-        $timeTillApk = Vehicle::selected()->first()->apk_status;
+        $apkStatus = $vehicle->apk_status;
 
-        if (! $timeTillApk) {
-            return [];
+        if (empty($apkStatus)) {
+            return;
         }
 
-        return [
-            'primary' => str($timeTillApk['timeDiffHumans'])->ucfirst(),
+        $this->statuses[] = [
+            'title' => __('MOT'),
+            'value' => [
+                'primary' => str($apkStatus['timeDiffHumans'])->ucfirst(),
+            ],
+            'icon' => 'gmdi-security',
         ];
     }
 }

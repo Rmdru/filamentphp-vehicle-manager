@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Enums\StatusNotificationOk;
 use App\Enums\VehicleStatus;
 use App\Models\Vehicle;
 use Illuminate\View\View;
@@ -61,33 +62,13 @@ class StatusNotification extends Component
         $this->getEverythingOkNotification();
     }
 
-    private function getInsuranceNotification(Vehicle $vehicle): void
-    {
-        $timeTillInsurance = $vehicle->insurance_status['time'] ?? null;
-
-        if (! $timeTillInsurance) {
-            $this->createNotification('critical', __('No active insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
-            return;
-        }
-
-        if ($timeTillInsurance < 31) {
-            $this->createNotification('warning', __('Insurance expires within 1 month!'), 'mdi-shield-car');
-            return;
-        }
-
-        if ($timeTillInsurance < 62) {
-            $this->createNotification('info', __('Insurance expires within 2 months!'), 'mdi-shield-car');
-        }
-    }
-
     private function createNotification(
         string $type = '',
         string $text = '',
         string $categoryIcon = '',
         string $linkText = '',
         string $linkUrl = '',
-    ): void
-    {
+    ): void {
         $types = [
             'critical' => [
                 'textColor' => 'text-red-500 dark:text-red-500',
@@ -119,6 +100,25 @@ class StatusNotification extends Component
         ]);
     }
 
+    private function getInsuranceNotification(Vehicle $vehicle): void
+    {
+        $timeTillInsurance = $vehicle->insurance_status['time'] ?? null;
+
+        if (! $timeTillInsurance) {
+            $this->createNotification('critical', __('No active insurance found! Your are currently not allowed to drive with the vehicle!'), 'mdi-shield-car');
+            return;
+        }
+
+        if ($timeTillInsurance < 31) {
+            $this->createNotification('warning', __('Insurance expires within 1 month!'), 'mdi-shield-car');
+            return;
+        }
+
+        if ($timeTillInsurance < 62) {
+            $this->createNotification('info', __('Insurance expires within 2 months!'), 'mdi-shield-car');
+        }
+    }
+
     private function getTaxNotification(Vehicle $vehicle): void
     {
         $timeTillTax = $vehicle->tax_status['time'] ?? null;
@@ -130,23 +130,23 @@ class StatusNotification extends Component
 
     private function getApkNotification(Vehicle $vehicle): void
     {
-        $timeTillApk = $vehicle->apk_status['time'] ?? null;
+        $apkStatus = $vehicle->apk_status;
 
-        if (! $timeTillApk) {
+        if (empty($apkStatus)) {
             return;
         }
 
-        if ($timeTillApk < 1) {
+        if ($apkStatus['time'] < 1) {
             $this->createNotification('critical', __('MOT expired! Your are currently not allowed to drive with the vehicle!'), 'gmdi-security');
             return;
         }
 
-        if ($timeTillApk < 31) {
+        if ($apkStatus['time'] < 31) {
             $this->createNotification('critical', __('MOT expires within 1 month!'), 'gmdi-security');
             return;
         }
 
-        if ($timeTillApk < 62) {
+        if ($apkStatus['time'] < 62) {
             $this->createNotification('warning', __('MOT expires within 2 months!'), 'gmdi-security');
         }
     }
@@ -155,7 +155,7 @@ class StatusNotification extends Component
     {
         $maintenanceStatus = $vehicle->maintenance_status;
 
-        if (! $maintenanceStatus) {
+        if (empty($maintenanceStatus)) {
             return;
         }
 
@@ -207,18 +207,18 @@ class StatusNotification extends Component
 
     private function getWashingNotification(Vehicle $vehicle): void
     {
-        $timeTillWash = $vehicle->washing_status['time'];
+        $washingStatus = $vehicle->washing_status;
 
-        if (! isset($timeTillWash)) {
+        if (empty($washingStatus)) {
             return;
         }
 
-        if ($timeTillWash < 5) {
+        if ($washingStatus['time'] < 5) {
             $this->createNotification('warning', __('Washing required!'), 'mdi-car-wash');
             return;
         }
 
-        if ($timeTillWash < 10) {
+        if ($washingStatus['time'] < 10) {
             $this->createNotification('info', __('Washing required soon!'), 'mdi-car-wash');
         }
     }
@@ -237,7 +237,7 @@ class StatusNotification extends Component
                 text: __('Check tire pressure!'),
                 categoryIcon: 'mdi-car-tire-alert',
                 linkText: __('Checked'),
-                linkUrl: route('check-small-check', [
+                linkUrl: route('complete-small-check', [
                     $vehicle->id,
                     'tire_pressure_checked',
                     today()->format('Y-m-d'),
@@ -252,7 +252,7 @@ class StatusNotification extends Component
                 text: __('Check tire pressure soon!'),
                 categoryIcon: 'mdi-car-tire-alert',
                 linkText: __('Checked'),
-                linkUrl: route('check-small-check', [
+                linkUrl: route('complete-small-check', [
                     $vehicle->id,
                     'tire_pressure_checked',
                     today()->format('Y-m-d'),
@@ -275,7 +275,7 @@ class StatusNotification extends Component
                 text: __('Check liquids!'),
                 categoryIcon: 'mdi-oil',
                 linkText: __('Checked'),
-                linkUrl: route('check-small-check', [
+                linkUrl: route('complete-small-check', [
                     $vehicle->id,
                     'tire_pressure_checked',
                     today()->format('Y-m-d'),
@@ -290,7 +290,7 @@ class StatusNotification extends Component
                 text: __('Check liquids soon!'),
                 categoryIcon: 'mdi-oil',
                 linkText: __('Checked'),
-                linkUrl: route('check-small-check', [
+                linkUrl: route('complete-small-check', [
                     $vehicle->id,
                     'tire_pressure_checked',
                     today()->format('Y-m-d'),
@@ -309,7 +309,11 @@ class StatusNotification extends Component
     private function getEverythingOkNotification(): void
     {
         if (empty($this->notifications)) {
-            $this->createNotification('success', __('Everything ok! Vrooooooom'));
+            $this->createNotification(
+                type: 'success',
+                text: collect(StatusNotificationOk::cases())->map(fn ($case) => $case->getLabel())->random(),
+                categoryIcon: 'fas-smile',
+            );
         }
     }
 

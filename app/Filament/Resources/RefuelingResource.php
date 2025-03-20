@@ -79,7 +79,7 @@ class RefuelingResource extends Resource
             ->headerActions([
                 Action::make('info')
                     ->modalHeading(__('Refuelings'))
-                    ->modalContent(new HtmlString(__('Here you can add your refuelings and charge sessions to keep track of the costs and fuel consumption. This category only includes costs of fuel and energy to move the vehicle.')))
+                    ->modalContent(new HtmlString(__('Here you can add your refuelings and charge sessions to keep track of the costs and fuel consumption. This category only includes costs of fuel and energy to move and use the vehicle. The prices and quantities entered are the value stated on the receipt or invoice.')))
                     ->modalIcon('gmdi-local-gas-station')
                     ->modalCancelActionLabel(__('Close'))
                     ->modalSubmitAction(false),

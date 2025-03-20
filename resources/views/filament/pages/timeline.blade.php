@@ -23,7 +23,7 @@
                     </div>
                     <div class="flex gap-2 items-center">
                         <x-gmdi-notifications-r class="w-6 text-gray-400 dark:text-gray-500" />
-                        {{ str($item->date->diffForHumans())->ucfirst() }}
+                        {{ $item->date->isFuture() ? str($item->date->diffForHumans())->ucfirst() : __('Now')}}
                     </div>
                 </div>
                 <div class="flex gap-2 flex-col">

@@ -25,8 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/switch-vehicle/{vehicleId}', [VehicleController::class, 'switchVehicle'])
         ->name('switch-vehicle');
 
-    Route::get('/account/check-small-check/{vehicle}/{typeMaintenance}/{date}', MaintenanceController::class)
-        ->name('check-small-check');
+    Route::get('/account/complete-small-check/{vehicle}/{typeMaintenance}/{date}', MaintenanceController::class)
+        ->name('complete-small-check');
 
     Route::get('/account/vehicles/{vehicle}/image', [VehicleController::class, 'image'])
         ->name('vehicle.image');
