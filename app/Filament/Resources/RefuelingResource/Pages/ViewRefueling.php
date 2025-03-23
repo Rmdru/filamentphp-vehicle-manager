@@ -229,6 +229,8 @@ class ViewRefueling extends ViewRecord
                             ->icon(fn(string $state): string => RefuelingDrivingStyle::from($state)->getIcon() ?? null)
                             ->formatStateUsing(fn(string $state) => RefuelingDrivingStyle::from($state)->getLabel() ?? '')
                             ->hidden(fn($state) => empty($state)),
+                        TextEntry::make('comments')
+                            ->icon('gmdi-text-fields-r'),
                     ]),
                 Section::make('payment')
                     ->columns()

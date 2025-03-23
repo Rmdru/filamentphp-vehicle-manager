@@ -116,7 +116,6 @@ class AccountPanelProvider extends PanelProvider
                         ]),
                     NavigationGroup::make()
                         ->label(__('My vehicles'))
-                        ->collapsed()
                         ->items([
                             ...VehicleResource::getNavigationItems(),
                             ...$this->getVehicleMenuItems(),

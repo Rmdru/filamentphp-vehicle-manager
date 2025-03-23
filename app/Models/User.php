@@ -64,4 +64,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Vehicle::class);
     }
+
+    public static function isOnboarded(): bool
+    {
+        return User::find(auth()->id())->vehicles()->exists();
+    }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Models\Vehicle;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,7 @@ class CreateFirstVehicle
     {
         if (
             auth()->user()
-            && ! Vehicle::count()
+            && ! User::isOnboarded()
             && ! $request->routeIs('filament.account.resources.vehicles.create')
         ) {
             return redirect()->route('filament.account.resources.vehicles.create');

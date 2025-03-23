@@ -96,7 +96,16 @@ class EnvironmentalStickerResource extends Resource
                         ->money('EUR')
                         ->summarize([Average::make()->label(__('Price average')), Range::make()->label(__('Price range'))]),
                 ])->from('lg'),
-                Panel::make([TextColumn::make('areas')->label(__('Areas'))->sortable()->icon('mdi-map-marker-radius'), TextColumn::make('comments')->icon('gmdi-text-fields-r')->label(__('Comments'))])->collapsible(),
+                Panel::make([
+                    TextColumn::make('areas')
+                        ->label(__('Areas'))
+                        ->sortable()
+                        ->icon('mdi-map-marker-radius'),
+                    TextColumn::make('comments')
+                        ->icon('gmdi-text-fields-r')
+                        ->label(__('Comments'))
+                ])
+                    ->collapsible(),
             ])
             ->filters([
                 Filter::make('date')
@@ -157,23 +166,42 @@ class EnvironmentalStickerResource extends Resource
 
                             return $vehicles->pluck('full_name_with_license_plate', 'id');
                         }),
-                    TextInput::make('price')->label(__('Price'))->numeric()->mask(RawJs::make('$money($input)'))->stripCharacters(',')->required()->prefix('€')->step(0.01),
+                    TextInput::make('price')
+                        ->label(__('Price'))
+                        ->numeric()
+                        ->mask(RawJs::make('$money($input)'))
+                        ->stripCharacters(',')
+                        ->required()
+                        ->prefix('€')
+                        ->step(0.01),
                 ]),
             Fieldset::make('validity')
                 ->label(__('Validity'))
                 ->schema([
-                    DatePicker::make('start_date')->label(__('Start date'))->required()->native(false)->displayFormat('d-m-Y'),
-                    DatePicker::make('end_date')->label(__('End date'))->native(false)->displayFormat('d-m-Y'),
+                    DatePicker::make('start_date')
+                        ->label(__('Start date'))
+                        ->required()
+                        ->native(false)
+                        ->displayFormat('d-m-Y'),
+                    DatePicker::make('end_date')
+                        ->label(__('End date'))
+                        ->native(false)
+                        ->displayFormat('d-m-Y'),
                     Select::make('country')
                         ->label(__('Country'))
                         ->searchable()
                         ->native(false)
-                        ->options((new self())->getCountryOptions()),
-                    Textarea::make('areas')->label(__('Areas')),
+                        ->options((new self())
+                        ->getCountryOptions()),
+                    Textarea::make('areas')
+                    ->label(__('Areas')),
                 ]),
             Fieldset::make('other')
                 ->label(__('Other'))
-                ->schema([Textarea::make('comments')->label(__('Comments'))]),
+                ->schema([
+                    Textarea::make('comments')
+                        ->label(__('Comments')),
+                ]),
         ]);
     }
 

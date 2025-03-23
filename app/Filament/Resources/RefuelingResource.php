@@ -355,6 +355,10 @@ class RefuelingResource extends Resource
                             ->label(__('Fuel consumption onboard computer'))
                             ->suffix($powertrain['consumption_unit'])
                             ->numeric(),
+                        TextInput::make('avg_speed')
+                            ->label(__('Average speed'))
+                            ->numeric()
+                            ->suffix('km/h'),
                     ]),
                 Fieldset::make('circumstances')
                     ->label(__('Circumstances'))
@@ -377,10 +381,6 @@ class RefuelingResource extends Resource
                             ->label(__('Driving style'))
                             ->inline()
                             ->options(RefuelingDrivingStyle::class),
-                        TextInput::make('avg_speed')
-                            ->label(__('Average speed'))
-                            ->numeric()
-                            ->suffix('km/h'),
                         Textarea::make('comments')
                             ->label(__('Comments')),
                     ]),

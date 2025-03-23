@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource\Pages;
+use App\Models\User;
 use App\Models\Vehicle;
 use App\Traits\CountryOptions;
 use App\Traits\PowerTrainOptions;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -22,9 +24,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -65,6 +64,10 @@ class VehicleResource extends Resource
 
         return $form
             ->schema([
+                Placeholder::make('onboarding')
+                    ->hiddenLabel()
+                    ->hidden(fn () => User::isOnboarded())
+                    ->content(__('To make use of the vehicle manager you need to create your first vehicle.')),
                 Tabs::make('vehicle_tabs')
                     ->columnSpan(2)
                     ->tabs([
