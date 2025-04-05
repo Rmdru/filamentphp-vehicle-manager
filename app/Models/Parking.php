@@ -32,6 +32,9 @@ class Parking extends Model
         'end_time' => 'date:Y-m-d H:i:s',
     ];
 
+    protected $table = 'parking';
+
+
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class);
