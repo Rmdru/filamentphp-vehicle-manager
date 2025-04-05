@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Support\Cost;
-use Carbon\CarbonImmutable
+use Carbon\Carbon;
 
 class VehicleCostsService
 {

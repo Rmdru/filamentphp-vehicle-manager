@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
-use Carbon\CarbonImmutable;
+use Carbon\Carbon;
+
+;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -41,7 +43,5 @@ class AppServiceProvider extends ServiceProvider
         });
 
         DB::prohibitDestructiveCommands(app()->isProduction());
-
-        Date::use(CarbonImmutable::class);
     }
 }
