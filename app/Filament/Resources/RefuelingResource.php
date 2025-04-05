@@ -148,9 +148,9 @@ class RefuelingResource extends Resource
                             return 'gmdi-trending-up-r';
                         } else if ($fuelConsumption < $avgFuelConsumption) {
                             return 'gmdi-trending-down-r';
-                        } else {
-                            return 'mdi-approximately-equal';
                         }
+                        
+                        return 'mdi-approximately-equal';
                     })
                     ->badge()
                     ->color(function (Refueling $refueling) {
@@ -161,9 +161,9 @@ class RefuelingResource extends Resource
                             return 'danger';
                         } else if ($fuelConsumption < $avgFuelConsumption) {
                             return 'success';
-                        } else {
-                            return 'warning';
                         }
+                        
+                        return 'warning';
                     })
                     ->suffix($powertrain['consumption_unit'])
                     ->summarize([

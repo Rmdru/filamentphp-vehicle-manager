@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\ParkingResource\Pages;
+namespace App\Filament\Resources\ServiceResource\Pages;
 
-use App\Filament\Resources\ParkingResource;
+use App\Filament\Resources\ServiceResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListParking extends ListRecords
+class ListServices extends ListRecords
 {
-    protected static string $resource = ParkingResource::class;
+    protected static string $resource = ServiceResource::class;
 
     protected function getHeaderActions(): array
     {

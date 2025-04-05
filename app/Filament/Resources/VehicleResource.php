@@ -6,6 +6,7 @@ use App\Enums\VehicleStatus;
 use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Services\VehicleStatusService;
 use App\Traits\CountryOptions;
 use App\Traits\PowerTrainOptions;
 use Filament\Forms\Components\Checkbox;
@@ -316,12 +317,23 @@ class VehicleResource extends Resource
                             ->html()
                             ->label(__('License plate')),
                         TextColumn::make('status_badge')
-                            ->icon(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'icon'))
-                            ->badge()
                             ->sortable()
-                            ->default('OK')
-                            ->formatStateUsing(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'text'))
-                            ->color(fn(Vehicle $record): string => $record->getStatusBadge($record->id, 'color'))
+                            ->icon(function (Vehicle $vehicle, VehicleStatusService $statusService) {
+                                $badge = $statusService->getBadge($vehicle);
+
+                                return $badge['icon'] ?? null;
+                            })
+                            ->getStateUsing(function (Vehicle $vehicle, VehicleStatusService $statusService) {
+                                $badge = $statusService->getBadge($vehicle);
+
+                                return $badge['badgeText'] ?? null;
+                            })
+                            ->color(function (Vehicle $vehicle, VehicleStatusService $statusService) {
+                                $badge = $statusService->getBadge($vehicle);
+
+                                return $badge['filamentColor'] ?? null;
+                            })
+                            ->badge()
                             ->label(__('Status')),
                         TextColumn::make('status')
                             ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon() ?? null)

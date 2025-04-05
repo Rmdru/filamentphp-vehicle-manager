@@ -41,10 +41,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         DB::prohibitDestructiveCommands(app()->isProduction());
-    }
 
-    private function configureDates(): void
-    {
         Date::use(CarbonImmutable::class);
     }
 }

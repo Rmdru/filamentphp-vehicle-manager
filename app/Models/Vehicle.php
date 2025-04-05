@@ -6,9 +6,9 @@ namespace App\Models;
 
 use App\Enums\MaintenanceTypeMaintenance;
 use App\Enums\VehicleStatus;
+use App\Services\VehicleCostsService;
+use App\Support\Cost;
 use Carbon\Carbon;
-use Flowframe\Trend\Trend;
-use Flowframe\Trend\TrendValue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 
 class Vehicle extends Model
 {
@@ -306,173 +305,20 @@ class Vehicle extends Model
         ];
     }
 
-    public function getStatusBadge(string $vehicleId = '', string $item = '')
-    {
-        $selectedVehicle = Vehicle::selected()->first();
-
-        if ($vehicleId) {
-            $selectedVehicle = Vehicle::where('id', $vehicleId)->latest()->first();
-        }
-
-        $timeTillRefueling = $selectedVehicle->fuel_status ?? null;
-        $maintenanceStatus = $selectedVehicle->maintenance_status ?? null;
-        $apkStatus = $selectedVehicle->apk_status ?? null;
-        $timeTillAircoCheck = $selectedVehicle->airco_check_status['time'] ?? null;
-        $timeTillInsuranceEndDate = $selectedVehicle->insurance_status['time'] ?? null;
-        $timeTillTaxEndDate = $selectedVehicle->tax_status['time'] ?? null;
-        $timeTillWashing = $selectedVehicle->washing_status['time'] ?? null;
-        $timeTillTirePressure = $selectedVehicle->tire_pressure_check_status['time'] ?? null;
-        $timeTillLiquidsCheck = $selectedVehicle->liquids_check_status['time'] ?? null;
-
-        $priorities = [
-            'success' => [
-                'color' => 'success',
-                'icon' => 'gmdi-check-r',
-                'text' => __('OK'),
-            ],
-            'info' => [
-                'color' => 'info',
-                'icon' => 'gmdi-info-r',
-                'text' => __('Notification'),
-            ],
-            'warning' => [
-                'color' => 'warning',
-                'icon' => 'gmdi-warning-r',
-                'text' => __('Attention recommended'),
-            ],
-            'critical' => [
-                'color' => 'danger',
-                'icon' => 'gmdi-warning-r',
-                'text' => __('Attention required'),
-            ],
-        ];
-
-        if (in_array($selectedVehicle->status, [VehicleStatus::Suspended->value, VehicleStatus::Sold->value, VehicleStatus::Destroyed->value])) {
-            return ! empty($item) ? $priorities['success'][$item] : $priorities['success'];
-        }
-
-        // dd([
-        //     'timeTillRefueling' => $timeTillRefueling,
-        //     'maintenanceStatus' => $maintenanceStatus,
-        //     'timeTillApk' => $apkStatus,
-        //     'timeTillAircoCheck' => $timeTillAircoCheck,
-        //     'timeTillInsuranceEndDate' => $timeTillInsuranceEndDate,
-        //     'timeTillTaxEndDate' => $timeTillTaxEndDate,
-        //     'timeTillWashing' => $timeTillWashing,
-        //     'timeTillTirePressure' => $timeTillTirePressure,
-        //     'timeTillLiquidsCheck' => $timeTillLiquidsCheck,
-        // ]);
-
-        if (
-            (! empty($maintenanceStatus) && is_int($maintenanceStatus['time']) && $maintenanceStatus['time'] < 31)
-            || (! empty($maintenanceStatus) && is_int($maintenanceStatus['distance']) && $maintenanceStatus['distance'] < 1500)
-            || (! empty($apkStatus) && is_int($apkStatus['time']) && $apkStatus['time'] < 62)
-            || (empty($timeTillAircoCheck) && is_int($timeTillAircoCheck) && $timeTillAircoCheck < 31)
-        ) {
-            return ! empty($item) ? $priorities['critical'][$item] : $priorities['critical'];
-        }
-    
-        if (
-            (! empty($maintenanceStatus) && is_int($maintenanceStatus['time']) && $maintenanceStatus['time'] < 62)
-            || (! empty($maintenanceStatus) && is_int($maintenanceStatus['distance']) && $maintenanceStatus['distance'] < 3000)
-            || (! empty($apkStatus) && is_int($apkStatus['time']) && $apkStatus['time'] < 62)
-            || (is_int($timeTillAircoCheck) && $timeTillAircoCheck < 62)
-            || (is_int($timeTillWashing) && $timeTillWashing < 5)
-            || (is_int($timeTillTirePressure) && $timeTillTirePressure < 10)
-            || (is_int($timeTillLiquidsCheck) && $timeTillLiquidsCheck < 5)
-            || (is_int($timeTillInsuranceEndDate) && $timeTillInsuranceEndDate < 31)
-            || (is_int($timeTillRefueling) && $timeTillRefueling < 10)
-        ) {
-            return ! empty($item) ? $priorities['warning'][$item] : $priorities['warning'];
-        }
-    
-        if (
-            (is_int($timeTillTaxEndDate) && $timeTillTaxEndDate < 31)
-            || (is_int($timeTillWashing) && $timeTillWashing < 10)
-            || (is_int($timeTillTirePressure) && $timeTillTirePressure < 20)
-            || (is_int($timeTillLiquidsCheck) && $timeTillLiquidsCheck < 10)
-            || (is_int($timeTillInsuranceEndDate) && $timeTillInsuranceEndDate < 62)
-            || (is_int($timeTillRefueling) && $timeTillRefueling < 30)
-        ) {
-            return ! empty($item) ? $priorities['info'][$item] : $priorities['info'];
-        }
-
-        return ! empty($item) ? $priorities['success'][$item] : $priorities['success'];
-    }
-
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
     {
-        if (empty($startDate)) {
-            $startDate = now()->startOfYear();
-        }
+        $vehicleId = Vehicle::selected()->first()->id;
+        $costTypes = Cost::types();
 
-        if (empty($endDate)) {
-            $endDate = now()->endOfYear();
+        if (empty($startDate) || empty($endDate)) {
+            $vehicleCostsService = new VehicleCostsService;
+            $dateRange = $vehicleCostsService->getMonths($vehicleId);
+            $startDate = $dateRange['startDate'];
+            $endDate = $dateRange['endDate'];
         }
 
         $startDate = Carbon::parse($startDate);
         $endDate = Carbon::parse($endDate);
-        $vehicleId = Vehicle::selected()->first()->id;
-
-        $costTypes = [
-            'Fuel' => [
-                'model' => Refueling::class,
-                'field' => 'total_price',
-                'dateColumn' => 'date',
-            ],
-            'Maintenance' => [
-                'model' => Maintenance::class,
-                'field' => 'total_price',
-                'dateColumn' => 'date',
-            ],
-            'Insurance' => [
-                'model' => Insurance::class,
-                'field' => 'price',
-                'monthly' => true,
-                'dateColumn' => 'start_date',
-            ],
-            'Tax' => [
-                'model' => Tax::class,
-                'field' => 'price',
-                'monthly' => true,
-                'dateColumn' => 'start_date',
-            ],
-            'Parking' => [
-                'model' => Parking::class,
-                'field' => 'price',
-                'dateColumn' => 'start_time',
-            ],
-            'Toll' => [
-                'model' => Toll::class,
-                'field' => 'price',
-                'dateColumn' => 'date',
-            ],
-            'Fine' => [
-                'model' => Fine::class,
-                'field' => 'price',
-                'dateColumn' => 'date',
-            ],
-            'Vignette' => [
-                'model' => Vignette::class,
-                'field' => 'price',
-                'dateColumn' => 'start_date',
-            ],
-            'Environmental sticker' => [
-                'model' => EnvironmentalSticker::class,
-                'field' => 'price',
-                'dateColumn' => 'start_date',
-            ],
-            'Ferry' => [
-                'model' => Ferry::class,
-                'field' => 'price',
-                'dateColumn' => 'start_date',
-            ],
-            'Product' => [
-                'model' => Product::class,
-                'field' => 'price',
-                'dateColumn' => 'date',
-            ],
-        ];
 
         $monthlyCosts = [];
         $labels = [];
@@ -510,7 +356,7 @@ class Vehicle extends Model
                     $labels = collect();
                     $currentMonth = $startDate->copy();
                     while ($currentMonth <= $endDate) {
-                        $labels->push(str($currentMonth->isoFormat('MMMM'))->ucfirst());
+                        $labels->push(str($currentMonth->isoFormat('MMM YY'))->ucfirst());
                         $currentMonth->addMonth();
                     }
                 }
@@ -578,54 +424,39 @@ class Vehicle extends Model
         }
 
         $monthlyCosts = collect($monthlyCosts)->sortKeys()->toArray();
-        
+
         return [
             'monthlyCosts' => $monthlyCosts,
             'labels' => $labels,
         ];
     }
 
-    /**
-     * Get the user that owns the vehicle.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the refuelings that the vehicle has
-     */
     public function refuelings(): HasMany
     {
         return $this->hasMany(Refueling::class);
     }
 
-    /**
-     * Get the maintenances that the vehicle has
-     */
     public function maintenances(): HasMany
     {
         return $this->hasMany(Maintenance::class);
     }
 
-    /**
-     * Get the insurances that the vehicle has
-     */
     public function insurances(): HasMany
     {
         return $this->hasMany(Insurance::class);
     }
 
-    /**
-     * Get the taxes that the vehicle has
-     */
     public function taxes(): HasMany
     {
         return $this->hasMany(Tax::class);
     }
 
-    public function parkings(): HasMany
+    public function parking(): HasMany
     {
         return $this->hasMany(Parking::class);
     }
@@ -658,6 +489,11 @@ class Vehicle extends Model
     public function ferries(): HasMany
     {
         return $this->hasMany(Ferry::class);
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
     }
 
     public function products(): HasMany

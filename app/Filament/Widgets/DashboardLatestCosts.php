@@ -1,20 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
-use App\Models\EnvironmentalSticker;
-use App\Models\Ferry;
-use App\Models\Fine;
-use App\Models\Insurance;
-use App\Models\Maintenance;
-use App\Models\Parking;
-use App\Models\Product;
-use App\Models\Reconditioning;
-use App\Models\Refueling;
-use App\Models\Tax;
-use App\Models\Toll;
 use App\Models\Vehicle;
-use App\Models\Vignette;
+use App\Support\Cost;
 use Carbon\Carbon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -22,6 +13,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 
 class DashboardLatestCosts extends BaseWidget
 {
@@ -36,6 +28,9 @@ class DashboardLatestCosts extends BaseWidget
             ->emptyStateHeading(__('No costs this month'))
             ->paginated(false)
             ->columns([
+                IconColumn::make('icon')
+                    ->label('')
+                    ->icon(fn ($state) => $state),
                 TextColumn::make('type')
                     ->label(__('Type'))
                     ->default(__('None'))
@@ -66,129 +61,56 @@ class DashboardLatestCosts extends BaseWidget
                 EditAction::make()
                     ->label(__('Show'))
                     ->icon('gmdi-remove-red-eye-r')
-                    ->url(fn ($record) => strtolower($record['resource_name_plural'] . '/' . $record['id'] . '/edit')),
+                    ->url(fn ($record) => strtolower($record['link'] . '/' . $record['id'] . '/edit')),
             ]);
     }
 
-    protected function getLatestCosts(): Builder
+    private function getLatestCosts(): Builder
     {
         $vehicle = Vehicle::selected()->first();
-        $powertrain = trans('powertrains')[$vehicle->powertrain];
+        $vehicleId = $vehicle->id;
 
-        $maintenancesThisMonth = Maintenance::select(['id', 'description as item', 'total_price as price', 'date'])
-            ->where('vehicle_id', $vehicle->id)
-            ->whereNotNull('total_price')
-            ->whereMonth('date', Carbon::now()->month)
-            ->whereYear('date', Carbon::now()->year)
-            ->latest('date')
-            ->addSelect(DB::raw('"Maintenance" as type'))
-            ->addSelect(DB::raw('"maintenances" as resource_name_plural'));
+        $queries = [];
+        foreach (Cost::types() as $type => $config) {
+            $queries[] = $this->getCostsForType($type, $config, $vehicleId);
+        }
 
-        $refuelingsThisMonth = Refueling::selectRaw('id, CONCAT(amount, " ' . $powertrain['unit_short'] . '") as item, total_price as price, date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('date', Carbon::now()->month)
-            ->whereYear('date', Carbon::now()->year)
-            ->latest('date')
-            ->addSelect(DB::raw('"Refueling" as type'))
-            ->addSelect(DB::raw('"refuelings" as resource_name_plural'));
+        $unionQuery = array_shift($queries);
+        foreach ($queries as $query) {
+            $unionQuery = $unionQuery->union($query);
+        }
 
-        $insurancesThisMonth = Insurance::selectRaw('id, type as item, price, DATE_FORMAT(CONCAT(YEAR(CURDATE()), "-", MONTH(CURDATE()), "-", invoice_day), "%Y-%m-%d") as date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereDate('start_date', '<', now())
-            ->whereDate('end_date', '>', now())
-            ->where('invoice_day', '<', Carbon::now()->dayOfMonth())
-            ->addSelect(DB::raw('"Insurance" as type'))
-            ->addSelect(DB::raw('"insurances" as resource_name_plural'))
-            ->latest('date');
+        return $unionQuery->orderBy('date', 'desc');
+    }
 
-        $reconditioningsThisMonth = Reconditioning::selectRaw('id, REPLACE(type, "_", " ") AS item, price, date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('date', Carbon::now()->month)
-            ->whereYear('date', Carbon::now()->year)
-            ->addSelect(DB::raw('"Reconditioning" as type'))
-            ->addSelect(DB::raw('"reconditionings" as resource_name_plural'))
-            ->latest('date');
+    private function getCostsForType(string $type, array $config, string $vehicleId): Builder
+    {
+        $model = $config['model'];
+        $dateColumn = $config['dateColumn'];
+        $field = $config['field'];
+        $itemField = $config['itemField'] ?? '""';
+        $link = $config['link'] ?? '';
+        $invoiceDates = $config['invoiceDates'] ?? '';
+        $monthly = $config['monthly'] ?? false;
+        $icon = $config['icon'] ?? false;
 
-        $taxesThisMonth = Tax::selectRaw('id, "" AS item, price, DATE_FORMAT(CONCAT(YEAR(CURDATE()), "-", MONTH(CURDATE()), "-", invoice_day), "%Y-%m-%d") as date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereDate('start_date', '<', now())
-            ->whereDate('end_date', '>', now())
-            ->where('invoice_day', '<', Carbon::now()->dayOfMonth())
-            ->addSelect(DB::raw('"Road tax" as type'))
-            ->addSelect(DB::raw('"taxes" as resource_name_plural'))
-            ->latest('date');
+        $dateSelect = ! empty($invoiceDates) ? $invoiceDates : $dateColumn;
 
-        $parkingsThisMonth = Parking::selectRaw('id, location AS item, price, end_time as date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('end_time', Carbon::now()->month)
-            ->whereYear('end_time', Carbon::now()->year)
-            ->addSelect(DB::raw('"Parking" as type'))
-            ->addSelect(DB::raw('"parkings" as resource_name_plural'))
-            ->latest('end_time');
-
-        $tollThisMonth = Toll::selectRaw('id, CASE 
-            WHEN end_location IS NOT NULL AND end_location != "" 
-            THEN CONCAT(start_location, " - ", end_location) 
-            ELSE start_location 
-        END AS item, price, date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('date', Carbon::now()->month)
-            ->whereYear('date', Carbon::now()->year)
-            ->addSelect(DB::raw('"Toll" as type'))
-            ->addSelect(DB::raw('"toll" as resource_name_plural'))
-            ->latest('date');
-
-        $finesThisMonth = Fine::select(['id', 'fact as item', 'price', 'date'])
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('date', Carbon::now()->month)
-            ->whereYear('date', Carbon::now()->year)
-            ->latest('date')
-            ->addSelect(DB::raw('"Fine" as type'))
-            ->addSelect(DB::raw('"fines" as resource_name_plural'));
-
-        $vignettesThisMonth = Vignette::select(['id', 'country as item', 'price', 'start_date as date'])
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('start_date', Carbon::now()->month)
-            ->whereYear('start_date', Carbon::now()->year)
-            ->latest('start_date')
-            ->addSelect(DB::raw('"Vignette" as type'))
-            ->addSelect(DB::raw('"vignettes" as resource_name_plural'));
-
-        $environmentalStickersThisMonth = EnvironmentalSticker::select(['id', 'country as item', 'price', 'start_date as date'])
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('start_date', Carbon::now()->month)
-            ->whereYear('start_date', Carbon::now()->year)
-            ->latest('start_date')
-            ->addSelect(DB::raw('"Environmental sticker" as type'))
-            ->addSelect(DB::raw('"environmental-stickers" as resource_name_plural'));
-
-        $ferriesThisMonth = Ferry::selectRaw('id, CONCAT(start_location, " - ", end_location) as item, price, start_date as date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('start_date', Carbon::now()->month)
-            ->whereYear('start_date', Carbon::now()->year)
-            ->latest('start_date')
-            ->addSelect(DB::raw('"Ferry" as type'))
-            ->addSelect(DB::raw('"ferries" as resource_name_plural'));
-
-        $productsThisMonth = Product::selectRaw('id, name, price, date')
-            ->where('vehicle_id', $vehicle->id)
-            ->whereMonth('date', Carbon::now()->month)
-            ->latest('date')
-            ->addSelect(DB::raw('"Product" as type'))
-            ->addSelect(DB::raw('"products" as resource_name_plural'));
-
-        return $maintenancesThisMonth
-            ->union($refuelingsThisMonth)
-            ->union($insurancesThisMonth)
-            ->union($reconditioningsThisMonth)
-            ->union($taxesThisMonth)
-            ->union($parkingsThisMonth)
-            ->union($tollThisMonth)
-            ->union($finesThisMonth)
-            ->union($vignettesThisMonth)
-            ->union($environmentalStickersThisMonth)
-            ->union($ferriesThisMonth)
-            ->union($productsThisMonth)
-            ->orderBy('date', 'desc');
+        return $model::selectRaw("id, $itemField as item, $field as price, $dateSelect as date")
+            ->where('vehicle_id', $vehicleId)
+            ->when($monthly, function ($query) {
+                return $query->whereDate('start_date', '<', now())
+                    ->whereDate('end_date', '>', now())
+                    ->where('invoice_day', '<', Carbon::now()->dayOfMonth())
+                    ->latest('date');
+            })
+            ->when(! $monthly, function ($query) use ($dateColumn) {
+                return $query->whereMonth($dateColumn, Carbon::now()->month)
+                    ->whereYear($dateColumn, Carbon::now()->year)
+                    ->latest($dateColumn);
+            })
+            ->addSelect(DB::raw('"' . $type . '" as type'))
+            ->addSelect(DB::raw('"' . $link . '" as link'))
+            ->addSelect(DB::raw('"' . $icon . '" as icon'));
     }
 }

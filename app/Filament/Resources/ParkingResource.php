@@ -33,6 +33,8 @@ class ParkingResource extends Resource
 
     protected static ?string $navigationIcon = 'fas-parking';
 
+    protected static ?string $slug = 'parking';
+
     public static function getNavigationLabel(): string
     {
         return __('Parking');
@@ -244,7 +246,7 @@ class ParkingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListParkings::route('/'),
+            'index' => Pages\ListParking::route('/'),
             'create' => Pages\CreateParking::route('/create'),
             'edit' => Pages\EditParking::route('/{record}/edit'),
         ];

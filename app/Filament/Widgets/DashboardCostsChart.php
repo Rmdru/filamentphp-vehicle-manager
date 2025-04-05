@@ -17,7 +17,7 @@ class DashboardCostsChart extends ChartWidget
     protected function getData(): array
     {
         $vehicle = Vehicle::selected()->first();
-        $costData = $vehicle->calculateMonthlyCosts();
+        $costData = $vehicle->calculateMonthlyCosts(now()->subYear(), now());
 
         $datasets = [];
 

@@ -15,7 +15,7 @@ class CreateRefueling extends CreateRecord
     {
         $distance = $data['mileage_end'] - $data['mileage_begin'];
         $data['fuel_consumption'] = round($data['amount'] / $distance * 100, 2);
-        $data['costs_per_kilometer'] = round($data['amount'] / $distance, 2);
+        $data['costs_per_kilometer'] = round($data['total_price'] / $distance, 2);
 
         $newLatestVehicleMileage = max(Vehicle::where('id', $data['vehicle_id'])->first()->mileage_latest, $data['mileage_end']);
 

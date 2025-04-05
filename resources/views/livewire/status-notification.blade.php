@@ -4,11 +4,11 @@
             <div class="flex items-center gap-1 justify-between">
                 <div class="flex gap-1">
                     <div class="flex gap-1">
+                        @if (! empty($notification['typeIcon']))
+                            @svg($notification['typeIcon'], ['class' => 'w-6 h-6'])
+                        @endif
                         @if (! empty($notification['icon']))
                             @svg($notification['icon'], ['class' => 'w-6 h-6'])
-                        @endif
-                        @if (! empty($notification['categoryIcon']))
-                            @svg($notification['categoryIcon'], ['class' => 'w-6 h-6'])
                         @endif
                     </div>
                     @if (! empty($notification['text']))

@@ -13,6 +13,7 @@ use App\Filament\Resources\ParkingResource;
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\ReconditioningResource;
 use App\Filament\Resources\RefuelingResource;
+use App\Filament\Resources\ServiceResource;
 use App\Filament\Resources\TaxResource;
 use App\Filament\Resources\TollResource;
 use App\Filament\Resources\VehicleResource;
@@ -108,6 +109,11 @@ class AccountPanelProvider extends PanelProvider
                             ...FineResource::getNavigationItems(),
                             ...VignetteResource::getNavigationItems(),
                             ...EnvironmentalStickerResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make()
+                        ->label(__('Services'))
+                        ->items([
+                            ...ServiceResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()
                         ->label(__('Additional transportation methods'))

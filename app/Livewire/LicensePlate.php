@@ -10,7 +10,7 @@ use Livewire\Component;
 
 class LicensePlate extends Component
 {
-    public $vehicleId;
+    public string $vehicleId;
 
     public function mount($vehicleId): void
     {

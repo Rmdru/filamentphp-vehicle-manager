@@ -1,16 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Pages;
 
+use App\Enums\MaintenanceTypeMaintenance;
+use App\Enums\ParkingType;
 use App\Enums\ReconditioningExecutor;
 use App\Enums\ReconditioningType;
+use App\Enums\ServiceType;
+use App\Enums\TollType;
+use App\Models\Vehicle;
 use App\Models\Maintenance;
 use App\Models\Reconditioning;
-use App\Models\Vehicle;
 use Carbon\Carbon;
 use Filament\Pages\Page;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class Timeline extends Page
 {
@@ -28,7 +33,7 @@ class Timeline extends Page
         return __('Timeline');
     }
 
-    public function getTitle(): string|Htmlable
+    public function getTitle(): string
     {
         return __('Timeline');
     }
@@ -46,6 +51,7 @@ class Timeline extends Page
 
     private function getHistoryItems(): Collection
     {
+        $insuranceType = config('insurances.types');
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
 
@@ -61,7 +67,7 @@ class Timeline extends Page
                 'refuelings',
                 'insurances',
                 'taxes',
-                'parkings',
+                'parking',
                 'toll',
                 'fines',
                 'reconditionings',
@@ -69,143 +75,195 @@ class Timeline extends Page
                 'environmentalStickers',
                 'ferries',
                 'products',
+                'services',
             ])
             ->latest()
             ->first();
 
+        $items = collect();
+
         foreach ($vehicle->maintenances as $maintenance) {
-            $maintenance->icon = ! $maintenance->type_maintenance && $maintenance->apk ? 'gmdi-security' : 'mdi-car-wrench';
+            $maintenance->icon = empty($maintenance->type_maintenance) && $maintenance->apk ? 'gmdi-security' : 'mdi-car-wrench';
+            $maintenance->link = 'maintenances';
+            $maintenance->heading = __('Maintenance');
+            $badges = [];
+
+            if (! empty($maintenance->type_maintenance)) {
+                $badges[] = [
+                    'title' => MaintenanceTypeMaintenance::from($maintenance->type_maintenance)->getLabel(),
+                    'color' => 'primary',
+                    'icon' => 'mdi-car-wrench',
+                ];
+            }
+
+            if ($maintenance->apk) {
+                $badges[] = [
+                    'title' => __('MOT'),
+                    'color' => 'primary',
+                    'icon' => 'gmdi-security',
+                ];
+            }
+
+            $maintenance->badges = $badges;
+
+
+            $items->push($maintenance);
         }
 
         foreach ($vehicle->refuelings as $refueling) {
+            $refueling->icon = 'gmdi-local-gas-station-r';
+            $refueling->link = 'refuelings';
             $gasStationBrand = str($refueling->gas_station)->lower()->explode(' ')[0];
-
-            $refueling->icon = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
-            $refueling->fuel_type = $fuelTypes[$refueling->fuel_type];
+            $refueling->logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
+            $refueling->heading = __('Refueling');
+            $refueling->price = $refueling->total_price;
+            $refueling->badges = [
+                [
+                    'title' => $fuelTypes[$refueling->fuel_type],
+                    'color' => 'primary',
+                    'icon' => '',
+                ],
+            ];
+            $items->push($refueling);
         }
 
         foreach ($vehicle->insurances as $insurance) {
-            $insuranceType = config('insurances.types');
-
             foreach ($insurance->months as $month) {
                 $insuranceClone = clone $insurance;
+
+                $insuranceClone->icon = 'mdi-shield-car';
+                $insuranceClone->link = 'insurances';
                 $insuranceClone->date = Carbon::parse($month . '-' . $insuranceClone->invoice_day);
-                $insuranceClone->icon = $insuranceType[$insurance->type]['icon'];
-                $insuranceClone->typeIcon = $insuranceType[$insurance->type]['icon'];
-                $insuranceClone->type = $insuranceType[$insurance->type]['name'];
-                $vehicle->maintenances->push($insuranceClone);
+                $insuranceClone->heading = __('Insurance');
+                $insuranceClone->badges = [
+                    [
+                        'title' => $insuranceType[$insurance->type]['name'],
+                        'color' => 'primary',
+                        'icon' => $insuranceType[$insurance->type]['icon'],
+                    ],
+                ];
+                $items->push($insuranceClone);
             }
         }
 
         foreach ($vehicle->taxes as $tax) {
             foreach ($tax->months as $month) {
                 $taxClone = clone $tax;
-                $taxClone->date = Carbon::parse($month . '-' . $taxClone->invoice_day);
                 $taxClone->icon = 'mdi-highway';
-                $vehicle->maintenances->push($taxClone);
+                $taxClone->link = 'taxes';
+                $taxClone->date = Carbon::parse($month . '-' . $taxClone->invoice_day);
+                $taxClone->heading = __('Road tax');
+                $items->push($taxClone);
             }
         }
 
-        foreach ($vehicle->parkings as $parking) {
-            $typeIcon = match ($parking->type) {
-                'street' => 'maki-parking-paid',
-                'garage' => 'maki-parking-garage',
-                default => '',
-            };
-            $parking->icon = $typeIcon;
-            $parking->typeIcon = $typeIcon;
+        foreach ($vehicle->parking as $parking) {
+            $parking->icon = 'fas-parking';
+            $parking->link = 'parking';
             $parking->date = $parking->end_time;
-            $parking->type = match ($parking->type) {
-                'street' => __('Street'),
-                'garage' => __('Parking garage'),
-            };
-
-            $vehicle->maintenances->push($parking);
+            $parking->heading = __('Parking');
+            $parking->badges = [
+                [
+                    'title' => ParkingType::from($parking->type)->getLabel(),
+                    'color' => 'primary',
+                    'icon' => ParkingType::from($parking->type)->getIcon(),
+                ],
+            ];
+            $items->push($parking);
         }
 
         foreach ($vehicle->toll as $toll) {
-            $toll->typeIcon = match ($toll->type) {
-                'location' => 'gmdi-location-on-r',
-                'section' => 'gmdi-route-r',
-                default => '',
-            };
-            $toll->type = match ($toll->type) {
-                'location' => __('Location'),
-                'section' => __('Section'),
-            };
+            $toll->icon = 'maki-toll';
+            $toll->link = 'toll';
+            $toll->heading = __('Toll');
+            $toll->location = ! empty($toll->end_location) ? $toll->start_location . ' - ' . $toll->end_location : $toll->start_location;
 
-            if (! empty($toll->end_location)) {
-                $toll->start_location = $toll->start_location . ' - ' . $toll->end_location;
+            if (! empty($toll->road_type) && ! empty($toll->road) && ! empty($toll->country)) {
+                $toll->countryFlag = $toll->country;
+                $toll->roadConfig = [
+                    'roadType' => $toll->road_type,
+                    'road' => $toll->road,
+                    'country' => $toll->country,
+                ];
             }
 
-            $vehicle->maintenances->push($toll);
+            $items->push($toll);
         }
 
         foreach ($vehicle->fines as $fine) {
-            $fine->typeIcon = $fine->payed ? 'gmdi-check-r' : 'gmdi-timer-s';
-            $fine->typeColor = $fine->payed ? 'success' : 'danger';
-            $fine->type = $fine->payed ? __('Payed') : __('Pending payment');
-
-            $vehicle->maintenances->push($fine);
+            $fine->icon = 'maki-police';
+            $fine->link = 'fines';
+            $fine->heading = __('Fine');
+            $fine->badges = [
+                [
+                    'title' => $fine->payed ? __('Payed') : __('Pending payment'),
+                    'color' => $fine->payed ? 'success' : 'danger',
+                    'icon' => $fine->payed ? 'gmdi-check-r' : 'gmdi-timer-s',
+                ],
+            ];
+            $items->push($fine);
         }
 
         foreach ($vehicle->reconditionings as $reconditioning) {
-            $typeIcon = [];
-
-            $type = ReconditioningType::from($reconditioning->type)->getLabel(0);
-
             $reconditioning->icon = 'mdi-car-wash';
-            $reconditioning->typeIcon = $typeIcon;
-            $reconditioning->type = $type;
-            $reconditioning->executor = ReconditioningExecutor::from($reconditioning->executor)->getLabel();
-
-            $vehicle->maintenances->push($reconditioning);
+            $reconditioning->heading = ReconditioningType::from($reconditioning->type)->getLabel();
+            $reconditioning->badges = [
+                [
+                    'title' => ReconditioningExecutor::from($reconditioning->executor)->getLabel(),
+                    'color' => 'primary',
+                    'icon' => '',
+                ],
+            ];
+            $reconditioning->link = 'reconditionings';
+            $items->push($reconditioning);
         }
 
         foreach ($vehicle->vignettes as $vignette) {
-            $vignette->typeIcon = 'mdi-sticker-text';
             $vignette->icon = 'mdi-sticker-text';
+            $vignette->heading = __('Vignette');
             $vignette->date = $vignette->start_date;
-
-            $vehicle->maintenances->push($vignette);
+            $vignette->link = 'vignettes';
+            $vignette->countryFlag = $vignette->country;
+            $items->push($vignette);
         }
 
         foreach ($vehicle->environmentalStickers as $environmentalSticker) {
-            $environmentalSticker->typeIcon = 'mdi-sticker-text';
-            $environmentalSticker->icon = 'mdi-sticker-text';
+            $environmentalSticker->icon = 'fas-leaf';
+            $environmentalSticker->heading = __('Environmental sticker');
             $environmentalSticker->date = $environmentalSticker->start_date;
-
-            $vehicle->maintenances->push($environmentalSticker);
+            $environmentalSticker->link = 'environmental-stickers';
+            $environmentalSticker->countryFlag = $environmentalSticker->country;
+            $items->push($environmentalSticker);
         }
 
         foreach ($vehicle->ferries as $ferry) {
-            $ferry->typeIcon = 'mdi-ferry';
             $ferry->icon = 'mdi-ferry';
+            $ferry->heading = __('Ferry');
             $ferry->date = $ferry->start_date;
-
-            $vehicle->maintenances->push($ferry);
+            $ferry->link = 'ferries';
+            $items->push($ferry);
         }
 
         foreach ($vehicle->products as $product) {
-            $product->typeIcon = 'mdi-oil';
             $product->icon = 'mdi-oil';
-
-            $vehicle->maintenances->push($product);
+            $product->heading = $product->name;
+            $product->link = 'products';
+            $items->push($product);
         }
 
-        $items = $vehicle->maintenances->merge($vehicle->refuelings)
-            ->sortByDesc(function ($item) {
-                return $item->date;
-            });
+        foreach ($vehicle->services as $service) {
+            $service->icon = ServiceType::from($service->type)->getIcon();
+            $service->heading = ServiceType::from($service->type)->getLabel();
+            $service->link = 'services';
+            $items->push($service);
+        }
 
-        $groupedItems = $items->groupBy(function ($item) {
-            return $item->date->isoFormat('MMMM Y');
+        return $items->sortByDesc('date')->groupBy(function ($item) {
+            return Carbon::parse($item->date)->isoFormat('MMMM Y');
         });
-
-        return $groupedItems;
     }
 
-    public function getPredictions(): \Illuminate\Support\Collection
+    private function getPredictions(): Collection
     {
         $vehicle = Vehicle::selected()
             ->addSelect([
@@ -217,113 +275,107 @@ class Timeline extends Page
                 'maintenance' => Maintenance::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')
                     ->whereIn('type_maintenance', [
-                        'small_maintenance',
-                        'maintenance',
-                        'big_maintenance',
+                        MaintenanceTypeMaintenance::SmallMaintenance->value,
+                        MaintenanceTypeMaintenance::Maintenance->value,
+                        MaintenanceTypeMaintenance::BigMaintenance->value,
                     ])
                     ->orderByDesc('date')
                     ->limit(1),
                 'reconditioning' => Reconditioning::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')
                     ->where(function ($query) {
-                        $query->where('type', 'LIKE', '%exterior_cleaning%')
-                            ->orWhere('type', 'LIKE', '%carwash%');
+                        $query->where('type', 'LIKE', '%' . ReconditioningType::ExteriorCleaning->value . '%')
+                            ->orWhere('type', 'LIKE', '%' . ReconditioningType::Carwash->value . '%');
                     })
                     ->orderByDesc('date')
                     ->limit(1),
             ])
-            ->with([
-                'insurances',
-                'taxes',
-            ])
+            ->with(['insurances', 'taxes'])
             ->first();
 
+        if (! $vehicle) {
+            return collect();
+        }
+
         $items = collect();
-        $apk = Maintenance::find($vehicle->apk);
-        $maintenance = Maintenance::find($vehicle->maintenance);
-        $wash = Reconditioning::find($vehicle->reconditioning);
 
-        if (! empty($apk)) {
-            $apk->title = __('MOT');
-            $apk->categoryIcon = 'gmdi-security';
-            $apk->date = $apk->date->addYear();
+        $this->addNextMaintenancePrediction($vehicle, $items);
 
-            $items->push($apk);
-        }
+        $this->addInsurancePredictions($vehicle, $items);
 
-        if (! empty($maintenance)) {
-            $maintenance->title = __('Maintenance');
-            $maintenance->categoryIcon = 'mdi-car-wrench';
-            $maintenance->date = $maintenance->date->addYear();
-            $maintenance->badges = collect();
+        $this->addTaxPredictions($vehicle, $items);
 
-            if ($maintenance->apk) {
-                $maintenance->badges->push([
-                    'color' => 'primary',
-                    'title' => __('MOT'),
-                    'icon' => 'gmdi-security',
-                ]);
+        return $items->sortByDesc('date')->groupBy(function ($item) {
+            return Carbon::parse($item->date)->isoFormat('MMMM Y');
+        });
+    }
+
+    private function addNextMaintenancePrediction(Vehicle $vehicle, Collection &$items): void
+    {
+        $lastMaintenance = Maintenance::find($vehicle->maintenance);
+
+        if ($lastMaintenance) {
+            $nextMaintenanceDate = match ($lastMaintenance->type_maintenance) {
+                MaintenanceTypeMaintenance::SmallMaintenance->value => Carbon::parse($lastMaintenance->date)->addMonths(6),
+                MaintenanceTypeMaintenance::Maintenance->value => Carbon::parse($lastMaintenance->date)->addYear(),
+                MaintenanceTypeMaintenance::BigMaintenance->value => Carbon::parse($lastMaintenance->date)->addYears(2),
+                default => null,
+            };
+
+            if ($nextMaintenanceDate && $nextMaintenanceDate->isFuture()) {
+                $maintenanceClone = clone $lastMaintenance;
+                $maintenanceClone->icon = 'mdi-car-wrench';
+                $maintenanceClone->heading = __('Maintenance');
+                $maintenanceClone->date = $nextMaintenanceDate;
+                $maintenanceClone->badges = [
+                    [
+                        'title' => MaintenanceTypeMaintenance::from($lastMaintenance->type_maintenance)->getLabel(),
+                        'color' => 'primary',
+                        'icon' => 'mdi-car-wrench',
+                    ],
+                ];
+                $items->push($maintenanceClone);
             }
-
-            if ($maintenance->type_maintenance) {
-                $maintenance->badges->push([
-                    'color' => 'primary',
-                    'title' => __('Maintenance'),
-                    'icon' => 'mdi-car-wrench',
-                ]);
-            }
-
-            $items->push($maintenance);
         }
+    }
+
+    private function addInsurancePredictions(Vehicle $vehicle, Collection &$items): void
+    {
+        $insuranceType = config('insurances.types');
+        
 
         foreach ($vehicle->insurances as $insurance) {
             $nextInvoiceDate = $insurance->getNextInvoiceDate($insurance->start_date, $insurance->end_date, $insurance->invoice_day);
-            $insuranceType = config('insurances.types');
-
+    
             if ($nextInvoiceDate) {
-                $insurance->date = $nextInvoiceDate;
-                $insurance->title = __('Insurance');
-                $insurance->categoryIcon = 'mdi-shield-car';
-                $insurance->icon = $insuranceType[$insurance->type]['icon'];
-                $insurance->badges = collect();
-
-                if ($insurance->type) {
-                    $insurance->badges->push([
-                        'color' => 'primary',
+                $insuranceClone = clone $insurance;
+                $insuranceClone->icon = 'mdi-shield-car';
+                $insuranceClone->heading = __('Insurance');
+                $insuranceClone->date = $nextInvoiceDate;
+                $insuranceClone->badges = [
+                    [
                         'title' => $insuranceType[$insurance->type]['name'],
+                        'color' => 'primary',
                         'icon' => $insuranceType[$insurance->type]['icon'],
-                    ]);
-                }
-
-                $items->push($insurance);
+                    ],
+                ];
+                $items->push($insuranceClone);
             }
         }
+    }
 
+    private function addTaxPredictions(Vehicle $vehicle, Collection &$items): void
+    {
         foreach ($vehicle->taxes as $tax) {
             $nextInvoiceDate = $tax->getNextInvoiceDate($tax->start_date, $tax->end_date, $tax->invoice_day);
-
+    
             if ($nextInvoiceDate) {
-                $tax->date = $nextInvoiceDate;
-                $tax->title = __('Road tax');
-                $tax->categoryIcon = 'mdi-highway';
-                $items->push($tax);
+                $taxClone = clone $tax;
+                $taxClone->icon = 'mdi-highway';
+                $taxClone->heading = __('Road tax');
+                $taxClone->date = $nextInvoiceDate;
+                $items->push($taxClone);
             }
         }
-
-        if (! empty($wash)) {
-            $wash->title = __('Washing');
-            $wash->categoryIcon = 'mdi-car-wash';
-            $wash->date = $wash->date->addMonth();
-
-            $items->push($wash);
-        }
-
-        $groupedItems = $items->sortByDesc(function ($item) {
-            return $item->date;
-        })->groupBy(function ($item) {
-            return Carbon::parse($item->date)->isoFormat('MMMM Y');
-        });
-
-        return $groupedItems ?? collect();
     }
 }

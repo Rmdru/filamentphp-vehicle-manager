@@ -15,6 +15,7 @@ use App\Models\Parking;
 use App\Models\Product;
 use App\Models\Reconditioning;
 use App\Models\Refueling;
+use App\Models\Service;
 use App\Models\Tax;
 use App\Models\Toll;
 use App\Models\User;
@@ -39,7 +40,7 @@ class VehicleFactory extends Factory
         $powertrains = trans('powertrains');
         $countries = config('countries');
         $fuelTypes = trans('fuel_types');
-        $notifications = config('notifications');
+        $notifications = config('default_notification_settings');
 
         return [
             'id' => $this->faker->uuid(),
@@ -106,89 +107,5 @@ class VehicleFactory extends Factory
             })->toArray(),
             'notifications' => $notifications,
         ];
-    }
-
-    public function withRefuelings(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Refueling::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withMaintenances(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Maintenance::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withInsurances(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Insurance::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withReconditionings(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Reconditioning::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withTaxes(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Tax::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withParkings(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Parking::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withToll(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Toll::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withFines(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Fine::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withVignettes(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Vignette::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withEnvironmentalStickers(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            EnvironmentalSticker::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withFerries(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Ferry::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
-    }
-
-    public function withProducts(int $count = 5): self
-    {
-        return $this->afterCreating(function (Vehicle $vehicle) use ($count) {
-            Product::factory()->count($count)->create(['vehicle_id' => $vehicle->id]);
-        });
     }
 }

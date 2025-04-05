@@ -142,9 +142,9 @@ class ViewRefueling extends ViewRecord
                                     return 'gmdi-trending-up-r';
                                 } else if ($fuelConsumption < $avgFuelConsumption) {
                                     return 'gmdi-trending-down-r';
-                                } else {
-                                    return 'mdi-approximately-equal';
                                 }
+                                
+                                return 'mdi-approximately-equal';
                             })
                             ->badge()
                             ->color(function (Refueling $refueling) {
@@ -155,9 +155,9 @@ class ViewRefueling extends ViewRecord
                                     return 'danger';
                                 } else if ($fuelConsumption < $avgFuelConsumption) {
                                     return 'success';
-                                } else {
-                                    return 'warning';
                                 }
+                                
+                                return 'warning';
                             })
                             ->suffix($powertrain['consumption_unit']),
                         TextEntry::make('fuel_consumption_onboard_computer')
@@ -176,9 +176,9 @@ class ViewRefueling extends ViewRecord
                                     return 'gmdi-trending-up-r';
                                 } else if ($avgSpeed < $globalAvgSpeed) {
                                     return 'gmdi-trending-down-r';
-                                } else {
-                                    return 'mdi-approximately-equal';
                                 }
+
+                                return 'mdi-approximately-equal';
                             })
                             ->badge()
                             ->color(function (Refueling $refueling) {
@@ -189,9 +189,9 @@ class ViewRefueling extends ViewRecord
                                     return 'success';
                                 } else if ($avgSpeed < $globalAvgSpeed) {
                                     return 'danger';
-                                } else {
-                                    return 'warning';
                                 }
+                                
+                                return 'warning';
                             })
                             ->suffix('km/h'),
                     ]),
