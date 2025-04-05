@@ -29,7 +29,7 @@ class TimelineItem extends Component
         $this->countryFlag = $countryFlag;
         $this->heading = $heading;
         $this->price = is_numeric($price) ? (float) $price : null;
-        $this->mileage = $mileage;
+        $this->mileage = is_numeric($mileage) ? (int) $mileage : null;
         $this->location = $location;
         $this->badges = $badges;
         $this->roadConfig = $roadConfig;
