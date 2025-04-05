@@ -28,7 +28,7 @@ class TimelineItem extends Component
         $this->logo = $logo;
         $this->countryFlag = $countryFlag;
         $this->heading = $heading;
-        $this->price = $price;
+        $this->price = is_numeric($price) ? (float) $price : null;
         $this->mileage = $mileage;
         $this->location = $location;
         $this->badges = $badges;
