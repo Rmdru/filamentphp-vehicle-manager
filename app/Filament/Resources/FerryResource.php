@@ -6,7 +6,7 @@ use App\Filament\Resources\FerryResource\Pages;
 use App\Filament\Resources\FerryResource\RelationManagers;
 use App\Models\Ferry;
 use App\Models\Vehicle;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;

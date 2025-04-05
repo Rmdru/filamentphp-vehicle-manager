@@ -6,7 +6,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Vehicle;
 use App\Support\Cost;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable
 use Illuminate\Http\RedirectResponse;
 
 class MaintenanceController extends Controller

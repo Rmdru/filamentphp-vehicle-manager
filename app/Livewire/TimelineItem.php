@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable
 use Illuminate\View\View;
 use Livewire\Component;
 

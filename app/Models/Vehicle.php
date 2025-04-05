@@ -8,7 +8,7 @@ use App\Enums\MaintenanceTypeMaintenance;
 use App\Enums\VehicleStatus;
 use App\Services\VehicleCostsService;
 use App\Support\Cost;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
