@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Models\Accident;
 use App\Models\EnvironmentalSticker;
 use App\Models\Ferry;
 use App\Models\Fine;
@@ -29,7 +30,7 @@ class Cost
         return [
             'Fuel' => [
                 'model' => Refueling::class,
-                'field' => 'total_price',
+                'priceField' => 'total_price',
                 'dateColumn' => 'date',
                 'itemField' => 'CONCAT(amount, " ' . $powertrain['unit_short'] . '")',
                 'link' => 'refuelings',
@@ -37,7 +38,7 @@ class Cost
             ],
             'Maintenance' => [
                 'model' => Maintenance::class,
-                'field' => 'total_price',
+                'priceField' => 'total_price',
                 'dateColumn' => 'date',
                 'itemField' => 'description',
                 'link' => 'maintenances',
@@ -45,7 +46,7 @@ class Cost
             ],
             'Reconditioning' => [
                 'model' => Reconditioning::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'date',
                 'itemField' => 'REPLACE(type, "_", " ")',
                 'link' => 'reconditionings',
@@ -53,7 +54,7 @@ class Cost
             ],
             'Insurance' => [
                 'model' => Insurance::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'start_date',
                 'itemField' => 'type',
                 'link' => 'insurances',
@@ -63,7 +64,7 @@ class Cost
             ],
             'Tax' => [
                 'model' => Tax::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'start_date',
                 'link' => 'taxes',
                 'monthly' => true,
@@ -72,7 +73,7 @@ class Cost
             ],
             'Parking' => [
                 'model' => Parking::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'end_time',
                 'itemField' => 'location',
                 'link' => 'parking',
@@ -80,7 +81,7 @@ class Cost
             ],
             'Toll' => [
                 'model' => Toll::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'date',
                 'itemField' => "CASE 
                     WHEN end_location IS NOT NULL AND end_location != '' 
@@ -92,7 +93,7 @@ class Cost
             ],
             'Fine' => [
                 'model' => Fine::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'date',
                 'itemField' => 'fact',
                 'link' => 'fines',
@@ -100,7 +101,7 @@ class Cost
             ],
             'Vignette' => [
                 'model' => Vignette::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'start_date',
                 'itemField' => 'country',
                 'link' => 'vignettes',
@@ -108,7 +109,7 @@ class Cost
             ],
             'Environmental sticker' => [
                 'model' => EnvironmentalSticker::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'start_date',
                 'itemField' => 'country',
                 'link' => 'enironmental-stickers',
@@ -116,7 +117,7 @@ class Cost
             ],
             'Ferry' => [
                 'model' => Ferry::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'start_date',
                 'itemField' => "CONCAT(start_location, ' - ', end_location)",
                 'link' => 'ferries',
@@ -124,7 +125,7 @@ class Cost
             ],
             'Product' => [
                 'model' => Product::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'date',
                 'itemField' => 'name',
                 'link' => 'products',
@@ -132,11 +133,19 @@ class Cost
             ],
             'Service' => [
                 'model' => Service::class,
-                'field' => 'price',
+                'priceField' => 'price',
                 'dateColumn' => 'date',
                 'itemField' => 'REPLACE(type, "_", " ")',
                 'link' => 'services',
                 'icon' => 'mdi-tow-truck',
+            ],
+            'Accident' => [
+                'model' => Accident::class,
+                'priceField' => 'total_price',
+                'dateColumn' => 'datetime',
+                'itemField' => 'REPLACE(type, "_", " ")',
+                'link' => 'accidents',
+                'icon' => 'fas-car-crash',
             ],
         ];
     }

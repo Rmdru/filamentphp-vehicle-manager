@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\Timeline;
+use App\Filament\Resources\AccidentResource;
 use App\Filament\Resources\EnvironmentalStickerResource;
 use App\Filament\Resources\FerryResource;
 use App\Filament\Resources\FineResource;
@@ -88,6 +89,7 @@ class AccountPanelProvider extends PanelProvider
                         ->items([
                             ...MaintenanceResource::getNavigationItems(),
                             ...ReconditioningResource::getNavigationItems(),
+                            ...AccidentResource::getNavigationItems(),
                             ...ProductResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make()

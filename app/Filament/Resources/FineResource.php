@@ -190,7 +190,7 @@ class FineResource extends Resource
                             ->sortable()
                             ->badge()
                             ->icon(fn(string $state): string => FineSanction::from($state)->getIcon())
-                            ->formatStateUsing(fn(string $state) => FineSanction::from($state)->getLabel()),
+                            ->formatStateUsing(fn(string $state): string => FineSanction::from($state)->getLabel()),
                     ])
                         ->space(),
                 ])

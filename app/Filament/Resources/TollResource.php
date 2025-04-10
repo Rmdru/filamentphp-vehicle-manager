@@ -143,13 +143,13 @@ class TollResource extends Resource
                     Stack::make([
                         TextColumn::make('payment_circumstances')
                             ->label(__('Payment circumstances'))
-                            ->color('gray')
+                            ->color('primary')
                             ->badge()
                             ->icon(fn(string $state): string => TollPaymentCircumstances::from($state)->getIcon())
                             ->formatStateUsing(fn(string $state) => TollPaymentCircumstances::from($state)->getLabel()),
                         TextColumn::make('payment_method')
                             ->label(__('Payment method'))
-                            ->color('gray')
+                            ->color('primary')
                             ->badge()
                             ->icon(fn(string $state): string => TollPaymentMethod::from($state)->getIcon())
                             ->formatStateUsing(fn(string $state) => TollPaymentMethod::from($state)->getLabel()),

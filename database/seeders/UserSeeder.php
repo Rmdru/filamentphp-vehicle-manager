@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Accident;
 use App\Models\EnvironmentalSticker;
 use App\Models\Ferry;
 use App\Models\Fine;
@@ -46,6 +47,7 @@ class UserSeeder extends Seeder
                     ->has(Ferry::factory()->count(2))
                     ->has(Product::factory()->count(5))
                     ->has(Service::factory()->count(5))
+                    ->has(Accident::factory()->count(2))
             , 'vehicles')
             ->create();
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Enums\AccidentSituation;
+use App\Enums\AccidentType;
 use App\Enums\MaintenanceTypeMaintenance;
 use App\Enums\ParkingType;
 use App\Enums\ReconditioningExecutor;
@@ -76,6 +78,7 @@ class Timeline extends Page
                 'ferries',
                 'products',
                 'services',
+                'accidents',
             ])
             ->latest()
             ->first();
@@ -256,6 +259,22 @@ class Timeline extends Page
             $service->heading = ServiceType::from($service->type)->getLabel();
             $service->link = 'services';
             $items->push($service);
+        }
+
+        foreach ($vehicle->accidents as $accident) {
+            $accident->icon = 'fas-car-crash';
+            $accident->heading = __('Accident');
+            $accident->link = 'accidents';
+            $accident->price = $accident->total_costs;
+            $accident->date = $accident->datetime;
+            $accident->badges = [
+                [
+                    'title' => AccidentType::from($accident->type)->getLabel(),
+                    'color' => 'primary',
+                    'icon' => AccidentType::from($accident->type)->getIcon(),
+                ],
+            ];
+            $items->push($accident);
         }
 
         return $items->sortByDesc('date')->groupBy(function ($item) {

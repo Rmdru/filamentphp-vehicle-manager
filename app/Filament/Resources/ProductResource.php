@@ -103,15 +103,13 @@ class ProductResource extends Resource
                 TextColumn::make('name')
                     ->label(__('Name'))
                     ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
                 TextColumn::make('price')
                     ->label(__('Price'))
                     ->searchable()
                     ->sortable()
                     ->money('EUR')
                     ->icon('mdi-hand-coin-outline')
-                    ->toggleable()
                     ->summarize([
                         Average::make()->label(__('Price average')),
                         Range::make()->label(__('Price range')),
@@ -121,8 +119,7 @@ class ProductResource extends Resource
                     ->icon('gmdi-calendar-month-r')
                     ->date()
                     ->searchable()
-                    ->sortable()
-                    ->toggleable(),
+                    ->sortable(),
             ])
             ->filters([
                 Filter::make('date')

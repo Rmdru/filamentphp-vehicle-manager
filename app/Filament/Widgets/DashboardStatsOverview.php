@@ -65,7 +65,8 @@ class DashboardStatsOverview extends BaseWidget
                 icon: 'mdi-speedometer',
                 latestValue: $this->calculateAvgSpeed(true),
                 suffix: 'km/h',
-                operator: '>'
+                operator: '>',
+                hide: empty($this->calculateAvgSpeed())
             ),
         ];
     }
@@ -77,9 +78,14 @@ class DashboardStatsOverview extends BaseWidget
         string $latestValue,
         string $prefix = '',
         string $suffix = '',
-        string $operator = '<'
-    ): Stat
+        string $operator = '<',
+        bool $hide = false
+    ): ?Stat
     {
+        if ($hide) {
+            return null;
+        }
+
         if ($operator === '<') {
             $descriptionColor = ($latestValue < $value) ? 'success' : 'danger';
             $descriptionIcon = ($latestValue < $value) ? 'gmdi-trending-down-r' : 'gmdi-trending-up-r';

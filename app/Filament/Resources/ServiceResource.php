@@ -120,21 +120,18 @@ class ServiceResource extends Resource
                         ->label(__('Type'))
                         ->searchable()
                         ->sortable()
-                        ->toggleable()
                         ->icon(fn(string $state): string => ServiceType::from($state)->getIcon())
                         ->formatStateUsing(fn(string $state) => ServiceType::from($state)->getLabel()),
                     TextColumn::make('name')
                         ->label(__('Name'))
                         ->searchable()
-                        ->sortable()
-                        ->toggleable(),
+                        ->sortable(),
                     TextColumn::make('price')
                         ->label(__('Price'))
                         ->searchable()
                         ->sortable()
                         ->money('EUR')
                         ->icon('mdi-hand-coin-outline')
-                        ->toggleable()
                         ->summarize([
                             Average::make()->label(__('Price average')),
                             Range::make()->label(__('Price range')),
@@ -144,8 +141,7 @@ class ServiceResource extends Resource
                         ->icon('gmdi-calendar-month-r')
                         ->date()
                         ->searchable()
-                        ->sortable()
-                        ->toggleable(),
+                        ->sortable(),
                 ])
                     ->from('lg'),
                 Panel::make([

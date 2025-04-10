@@ -87,7 +87,7 @@ class DashboardLatestCosts extends BaseWidget
     {
         $model = $config['model'];
         $dateColumn = $config['dateColumn'];
-        $field = $config['field'];
+        $priceField = $config['priceField'];
         $itemField = $config['itemField'] ?? '""';
         $link = $config['link'] ?? '';
         $invoiceDates = $config['invoiceDates'] ?? '';
@@ -96,7 +96,7 @@ class DashboardLatestCosts extends BaseWidget
 
         $dateSelect = ! empty($invoiceDates) ? $invoiceDates : $dateColumn;
 
-        return $model::selectRaw("id, $itemField as item, $field as price, $dateSelect as date")
+        return $model::selectRaw("id, $itemField as item, $priceField as price, $dateSelect as date")
             ->where('vehicle_id', $vehicleId)
             ->when($monthly, function ($query) {
                 return $query->whereDate('start_date', '<', now())

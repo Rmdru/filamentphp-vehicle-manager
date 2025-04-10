@@ -325,7 +325,7 @@ class Vehicle extends Model
 
         foreach ($costTypes as $label => $config) {
             $model = $config['model'];
-            $field = $config['field'];
+            $priceField = $config['priceField'];
             $monthly = $config['monthly'] ?? false;
             $dateColumn = $config['dateColumn'] ?? 'date';
 
@@ -336,8 +336,8 @@ class Vehicle extends Model
                     ->groupBy(function ($item) use ($dateColumn) {
                         return Carbon::parse($item->$dateColumn)->format('Y-m');
                     })
-                    ->map(function ($row) use ($field) {
-                        return $row->sum($field);
+                    ->map(function ($row) use ($priceField) {
+                        return $row->sum($priceField);
                     });
 
                 foreach ($data as $month => $value) {
@@ -378,7 +378,7 @@ class Vehicle extends Model
                     $start = Carbon::parse($record->start_date)->startOfMonth();
                     $end = Carbon::parse($record->end_date)->endOfMonth();
                     $paymentDay = $record->payment_day ?? 1;
-                    $monthlyAmount = $record->$field;
+                    $monthlyAmount = $record->$priceField;
 
                     while ($start <= $end) {
                         $month = $start->isoFormat('Y-MM');
@@ -499,5 +499,10 @@ class Vehicle extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function accidents(): HasMany
+    {
+        return $this->hasMany(Accident::class);
     }
 }

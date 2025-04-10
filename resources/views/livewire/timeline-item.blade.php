@@ -22,7 +22,7 @@
             @if (! empty($roadConfig))
                 <livewire:road-badge :roadType="$roadConfig['roadType']" :road="$roadConfig['road']" :country="$roadConfig['country']" />
             @endif
-            <div class="flex gap-2 flex-col">
+            <div class="flex flex-wrap gap-4">
                 @if (! empty($date))
                     <div class="flex gap-2 items-center">
                         <x-gmdi-calendar-month-r class="w-6 text-gray-400 dark:text-gray-500" />
@@ -48,7 +48,7 @@
                     </div>
                 @endif
             </div>
-            <div class="flex gap-2 flex-col">
+            <div class="flex flex-wrap gap-4">
                 @if (! empty($badges))
                     @foreach($badges as $badge)
                         <x-filament::badge :color="$badge['color']" :icon="$badge['icon']">

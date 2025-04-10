@@ -27,6 +27,7 @@
         "livewire/livewire": "^3.5",
         "owenvoke/blade-fontawesome": "^2.6",
         "postare/blade-mdi": "^1.0",
+        "secondnetwork/blade-tabler-icons": "^3.30",
         "thiagocordeiro/laravel-translator": "^1.2"
     },
     "require-dev": {
