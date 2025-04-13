@@ -15,6 +15,11 @@ class DashboardStatsOverview extends BaseWidget
 
     protected static ?string $pollingInterval = null;
 
+    public function getColumns(): int
+    {
+        return 3;
+    }
+
     protected function getStats(): array
     {
         $vehicle = Vehicle::selected()->first();
@@ -42,6 +47,15 @@ class DashboardStatsOverview extends BaseWidget
                 icon: 'gmdi-local-gas-station-r',
                 latestValue: $this->calculateAverageFuelConsumption(true),
                 suffix: $powertrain['consumption_unit'],
+            ),
+            $this->buildStat(
+                title: __('Average on-board computer deviation'),
+                value: $this->calculateAvgOnboardComputerDeviation(),
+                icon: 'mdi-content-save',
+                latestValue: $this->calculateAvgOnboardComputerDeviation(true),
+                suffix: $powertrain['consumption_unit'],
+                operator: '<',
+                hide: empty($this->calculateAvgOnboardComputerDeviation())
             ),
             $this->buildStat(
                 title: __('Average range'),
@@ -225,7 +239,7 @@ class DashboardStatsOverview extends BaseWidget
         }
 
         if ($latest) {
-            return round($refuelings->latest()->first()->fuel_consumption, 1);
+            return round($refuelings->latest()->first()->fuel_consumption, 2);
         }
 
         return round($refuelings->get()->avg('fuel_consumption'), 2);
@@ -286,5 +300,53 @@ class DashboardStatsOverview extends BaseWidget
         $avgRange = $tankCapacity / $fuelConsumption * 100;
 
         return round($avgRange);
+    }
+
+    private function calculateAvgOnboardComputerDeviation(bool $latest = false): float
+    {
+        $vehicleId = Vehicle::selected()->first()->id;
+        $startDate = $this->filters['startDate'] ?? null;
+        $endDate = $this->filters['endDate'] ?? null;
+
+        $refuelings = Refueling::where('vehicle_id', $vehicleId)
+            ->whereNotNull('fuel_consumption_onboard_computer');
+
+        if (! $refuelings->count()) {
+            return 0.0;
+        }
+
+        if ($startDate) {
+            $refuelings->whereDate('date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $refuelings->whereDate('date', '<=', $endDate);
+        }
+
+        if ($latest) {
+            $latestRefueling = $refuelings->latest()->first();
+
+            if ($latestRefueling) {
+                $deviation = $latestRefueling->fuel_consumption - $latestRefueling->fuel_consumption_onboard_computer;
+
+                return round($deviation, 3);
+            }
+
+            return 0.0;
+        }
+
+        $refuelingsData = $refuelings->get();
+        if ($refuelingsData->isEmpty()) {
+            return 0.0;
+        }
+
+        $totalDeviation = 0.0;
+        foreach ($refuelingsData as $refueling) {
+            $totalDeviation += $refueling->fuel_consumption - $refueling->fuel_consumption_onboard_computer;
+        }
+
+        $averageDeviation = $totalDeviation / $refuelingsData->count();
+
+        return round($averageDeviation, 3);
     }
 }
