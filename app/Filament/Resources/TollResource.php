@@ -24,7 +24,9 @@ use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ReplicateAction;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\Summarizers\Average;
@@ -202,7 +204,13 @@ class TollResource extends Resource
                     }),
             ])
             ->actions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    ReplicateAction::make()
+                        ->label(__('Duplicate'))
+                        ->icon('gmdi-file-copy-r')
+                        ->requiresConfirmation()
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

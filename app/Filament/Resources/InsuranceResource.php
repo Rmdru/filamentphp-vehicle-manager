@@ -16,6 +16,9 @@ use Filament\Resources\Resource;
 use Filament\Support\RawJs;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ReplicateAction;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
@@ -152,7 +155,13 @@ class InsuranceResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    ReplicateAction::make()
+                        ->label(__('Duplicate'))
+                        ->icon('gmdi-file-copy-r')
+                        ->requiresConfirmation()
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

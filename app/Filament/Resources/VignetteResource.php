@@ -19,6 +19,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ReplicateAction;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Summarizers\Average;
@@ -162,6 +163,10 @@ class VignetteResource extends Resource
             ->actions([
                 ActionGroup::make([
                     EditAction::make(),
+                    ReplicateAction::make()
+                        ->label(__('Duplicate'))
+                        ->icon('gmdi-file-copy-r')
+                        ->requiresConfirmation()
                 ]),
             ])
             ->bulkActions([
@@ -231,13 +236,6 @@ class VignetteResource extends Resource
                             ->label(__('Comments')),
                     ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

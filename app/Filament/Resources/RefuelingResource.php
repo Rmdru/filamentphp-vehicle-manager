@@ -28,6 +28,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ReplicateAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Summarizers\Average;
@@ -222,6 +223,11 @@ class RefuelingResource extends Resource
             ->actions([
                 ActionGroup::make([
                     EditAction::make(),
+                    ReplicateAction::make()
+                        ->label(__('Duplicate'))
+                        ->icon('gmdi-file-copy-r')
+                        ->requiresConfirmation()
+                        ->excludeAttributes(['distance'])
                 ]),
                 ViewAction::make()
                     ->iconButton()
