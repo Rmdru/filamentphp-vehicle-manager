@@ -1,8 +1,9 @@
 {
     "About :distance km": "Acerca de :distance km",
     "Accident": "Accidente",
-    "Accidents": "Accidentes",
     "Accident & damage": "Accidente y daño",
+    "Accidents": "Accidentes",
+    "Accidents & damage": "Accidentes y daños",
     "Add small check": "Añadir cheque pequeño",
     "Additional transportation methods": "Métodos de transporte adicionales",
     "Airco": "Aire acondicionado",
@@ -94,6 +95,7 @@
     "Drivers license confiscated": "Licencia de conducir confiscada",
     "Driving ban": "Prohibición de conducir",
     "Driving style": "Estilo de conducción",
+    "Duplicate": "Duplicar",
     "EMG course": "curso de EMG",
     "Edit": "Editar",
     "Emergency vehicle": "Vehículo de emergencia",
