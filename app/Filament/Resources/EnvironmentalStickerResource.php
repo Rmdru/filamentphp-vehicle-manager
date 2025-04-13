@@ -145,7 +145,12 @@ class EnvironmentalStickerResource extends Resource
                         ->requiresConfirmation()
                 ]),
             ])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                ])
+            ])
+            ->defaultSort('start_date', 'desc');
     }
 
     public static function form(Form $form): Form

@@ -282,7 +282,8 @@ class AccidentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('datetime', 'desc');
     }
 
     public static function getPages(): array
