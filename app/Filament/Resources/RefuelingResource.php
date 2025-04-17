@@ -324,8 +324,8 @@ class RefuelingResource extends Resource
                             ->numeric()
                             ->minValue(1)
                             ->visible(fn($get) => in_array($get('fuel_type'), [
-                                'Electricity >= 50 kW',
-                                'Electricity < 50 kW',
+                                'Electricity DC',
+                                'Electricity AC',
                             ])),
                         Checkbox::make('service_by_attendant')
                             ->label(__('Service by attendant'))

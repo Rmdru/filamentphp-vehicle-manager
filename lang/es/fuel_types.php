@@ -15,6 +15,6 @@ return [
     "CNG" => "gas natural (GNC)",
     "Hydrogen" => "Hidrógeno",
     "E85" => "E85",
-    "Electricity >= 50 kW" => "Electricidad >= 50 kW",
-    "Electricity < 50 kW" => "Electricidad < 50 kW",
+    "Electricity DC" => "Electricidad CC",
+    "Electricity AC" => "Electricidad CA",
 ];
