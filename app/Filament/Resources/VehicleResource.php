@@ -258,7 +258,57 @@ class VehicleResource extends Resource
                                             ->default(true),
                                     ]),
                             ]),
-                    ]),
+                        Tabs\Tab::make('privacy')
+                            ->label(__('Privacy'))
+                            ->icon('gmdi-lock')
+                            ->schema([
+                                Placeholder::make('privacy_info')
+                                    ->hiddenLabel()
+                                    ->content(__('Share data from the following modules public to others:')),
+                                Checkbox::make('privacy_settings.maintenances')
+                                    ->label(__('Maintenance & repairs'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.reconditionings')
+                                    ->label(__('Reconditioning & washing'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.accidents')
+                                    ->label(__('Accidents & damage'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.products')
+                                    ->label(__('Products & accessory'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.refuelings')
+                                    ->label(__('Refuelings'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.insurances')
+                                    ->label(__('Insurances'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.taxes')
+                                    ->label(__('Road tax'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.parking')
+                                    ->label(__('Parking'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.toll')
+                                    ->label(__('Toll'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.fines')
+                                    ->label(__('Fines'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.vignettes')
+                                    ->label(__('Vignettes'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.environmental_stickers')
+                                    ->label(__('Environmental stickers'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.services')
+                                    ->label(__('Services'))
+                                    ->default(false),
+                                Checkbox::make('privacy_settings.ferries')
+                                    ->label(__('Ferries'))
+                                    ->default(false),
+                            ]),
+                        ]),
             ]);
     }
 
@@ -343,14 +393,6 @@ class VehicleResource extends Resource
                             ->color('gray')
                             ->sortable()
                             ->label(__('Status')),
-                        TextColumn::make('is_private')
-                            ->icon(fn(Vehicle $vehicle) => $vehicle->is_private ? 'gmdi-lock' : 'gmdi-public')
-                            ->badge()
-                            ->default('OK')
-                            ->color('gray')
-                            ->sortable()
-                            ->formatStateUsing(fn(Vehicle $vehicle) => $vehicle->is_private ? __('Private') : __('Public'))
-                            ->label(__('Privacy')),
                     ])
                         ->space(),
                 ]),

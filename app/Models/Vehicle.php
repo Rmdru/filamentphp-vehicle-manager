@@ -45,21 +45,21 @@ class Vehicle extends Model
         'license_plate',
         'powertrain',
         'country_registration',
-        'is_private',
         'status',
         'fuel_types',
         'tank_capacity',
         'specifications',
         'notifications',
+        'privacy_settings',
     ];
 
     protected $casts = [
         'purchase_date' => 'date:Y-m-d',
         'construction_date' => 'date:Y-m-d',
-        'private' => 'boolean',
         'fuel_types' => 'array',
         'specifications' => 'array',
         'notifications' => 'array',
+        'privacy_settings' => 'array',
     ];
 
     protected $appends = [
