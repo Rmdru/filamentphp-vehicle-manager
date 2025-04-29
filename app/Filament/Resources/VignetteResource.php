@@ -226,7 +226,8 @@ class VignetteResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
-                            ->options((new self())->getCountryOptions()),
+                            ->options((new self())->getCountryOptions())
+                            ->default(Vehicle::selected()->first()->country_registration),
                         Textarea::make('areas')
                             ->label(__('Areas')),
                     ]),

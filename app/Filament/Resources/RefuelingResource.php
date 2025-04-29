@@ -279,7 +279,8 @@ class RefuelingResource extends Resource
                             ->label(__('Country'))
                             ->searchable()
                             ->native(false)
-                            ->options((new self())->getCountryOptions()),
+                            ->options((new self())->getCountryOptions())
+                            ->default($vehicle->country_registration),
                         TextInput::make('gas_station')
                             ->label(__('Gas station'))
                             ->required()

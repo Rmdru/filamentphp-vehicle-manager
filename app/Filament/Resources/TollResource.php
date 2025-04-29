@@ -269,7 +269,8 @@ class TollResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->options((new self())->getCountryOptions())
-                            ->required(fn(callable $get) => $get('road') ?? false),
+                            ->required(fn(callable $get) => $get('road') ?? false)
+                            ->default(Vehicle::selected()->first()->country_registration),
                         ToggleButtons::make('road_type')
                             ->label(__('Road type'))
                             ->inline()

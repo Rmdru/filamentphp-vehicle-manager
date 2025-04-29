@@ -202,7 +202,8 @@ class EnvironmentalStickerResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->options((new self())
-                        ->getCountryOptions()),
+                        ->getCountryOptions())
+                        ->default(Vehicle::selected()->first()->country_registration),
                     Textarea::make('areas')
                     ->label(__('Areas')),
                 ]),

@@ -77,18 +77,18 @@ class Vehicle extends Model
     protected static function booted()
     {
         static::addGlobalScope('ownVehicles', function (Builder $builder) {
-            $builder->where('user_id', Auth::id());
+            $builder->where('user_id', auth()->id());
         });
     }
 
     public function scopeSelected(Builder $query): void
     {
-        $vehicleId = Session::get('vehicle_id') ?? Vehicle::latest()->first()->id;
+        $vehicleId = session('vehicle_id') ?? Vehicle::latest()->first()->id;
 
-        Session::put('vehicle_id', $vehicleId);
+        session(['vehicle_id' => $vehicleId]);
 
         $query->where([
-            'id' => Session::get('vehicle_id'),
+            'id' => session('vehicle_id'),
             'user_id' => Auth::id(),
         ]);
     }

@@ -327,7 +327,8 @@ class FineResource extends Resource
                             ->searchable()
                             ->native(false)
                             ->required(fn(callable $get) => $get('road') ?? false)
-                            ->options((new self())->getCountryOptions()),
+                            ->options((new self())->getCountryOptions())
+                            ->default(Vehicle::selected()->first()->country_registration),
                         TextInput::make('location')
                             ->label(__('Location'))
                             ->maxLength(100),
