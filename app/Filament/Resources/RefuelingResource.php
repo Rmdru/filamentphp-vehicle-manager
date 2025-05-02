@@ -105,72 +105,78 @@ class RefuelingResource extends Resource
                                 return new HtmlString('<div class="w-5/12 min-h-16 max-h-40 flex items-center bg-white border border-gray-200 rounded p-2"><img class="max-h-40" src="' . $logo . '" /></div>');
                             }
                     ),
-                TextColumn::make('date')
-                    ->sortable()
-                    ->label(__('Date'))
-                    ->date()
-                    ->icon('gmdi-calendar-month-r'),
-                TextColumn::make('gas_station')
-                    ->label(__('Gas station'))
-                    ->sortable()
-                    ->icon('gmdi-location-on-s')
-                    ->searchable()
-                    ->summarize(
-                        Summarizer::make()
-                            ->hidden((new self)->isMobile())
-                            ->label(__('Most visited gas station'))
-                            ->using(function (BuilderQuery $query): string {
-                                return $query->select('gas_station')
-                                    ->selectRaw('COUNT(*) as count')
-                                    ->groupBy('gas_station')
-                                    ->orderByDesc('count')
-                                    ->limit(1)
-                                    ->pluck('gas_station')
-                                    ->first();
-                            })
-                    ),
-                TextColumn::make('total_price')
-                    ->sortable()
-                    ->label(__('Total price'))
-                    ->icon('mdi-hand-coin-outline')
-                    ->money('EUR')
-                    ->summarize([
-                        Average::make()->label(__('Total price average')),
-                        Range::make()->label(__('Total price range')),
-                    ]),
-                TextColumn::make('fuel_consumption')
-                    ->sortable()
-                    ->label(__('Fuel consumption'))
-                    ->icon(function (Refueling $refueling) {
-                        $fuelConsumption = $refueling->fuel_consumption;
-                        $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
+                    TextColumn::make('date')
+                        ->sortable()
+                        ->label(__('Date'))
+                        ->date()
+                        ->icon('gmdi-calendar-month-r'),
+                    TextColumn::make('gas_station')
+                        ->label(__('Gas station'))
+                        ->sortable()
+                        ->icon('gmdi-location-on-s')
+                        ->searchable()
+                        ->summarize(
+                            Summarizer::make()
+                                ->hidden((new self)->isMobile())
+                                ->label(__('Most visited gas station'))
+                                ->using(function (BuilderQuery $query): string {
+                                    return $query->select('gas_station')
+                                        ->selectRaw('COUNT(*) as count')
+                                        ->groupBy('gas_station')
+                                        ->orderByDesc('count')
+                                        ->limit(1)
+                                        ->pluck('gas_station')
+                                        ->first();
+                                })
+                        ),
+                    TextColumn::make('total_price')
+                        ->sortable()
+                        ->label(__('Total price'))
+                        ->icon('mdi-hand-coin-outline')
+                        ->money('EUR')
+                        ->summarize([
+                            Average::make()->label(__('Total price average')),
+                            Range::make()->label(__('Total price range')),
+                        ]),
+                    TextColumn::make('fuel_consumption')
+                        ->sortable()
+                        ->label(__('Fuel consumption'))
+                        ->icon(function (Refueling $refueling) {
+                            $fuelConsumption = $refueling->fuel_consumption;
+                            $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
 
-                        if ($fuelConsumption > $avgFuelConsumption) {
-                            return 'gmdi-trending-up-r';
-                        } else if ($fuelConsumption < $avgFuelConsumption) {
-                            return 'gmdi-trending-down-r';
-                        }
-                        
-                        return 'mdi-approximately-equal';
-                    })
-                    ->badge()
-                    ->color(function (Refueling $refueling) {
-                        $fuelConsumption = $refueling->fuel_consumption;
-                        $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
+                            if ($fuelConsumption > $avgFuelConsumption) {
+                                return 'gmdi-trending-up-r';
+                            } else if ($fuelConsumption < $avgFuelConsumption) {
+                                return 'gmdi-trending-down-r';
+                            }
+                            
+                            return 'mdi-approximately-equal';
+                        })
+                        ->badge()
+                        ->color(function (Refueling $refueling) {
+                            $fuelConsumption = $refueling->fuel_consumption;
+                            $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
 
-                        if ($fuelConsumption > $avgFuelConsumption) {
-                            return 'danger';
-                        } else if ($fuelConsumption < $avgFuelConsumption) {
-                            return 'success';
-                        }
-                        
-                        return 'warning';
-                    })
-                    ->suffix($powertrain['consumption_unit'])
-                    ->summarize([
-                        Average::make()->label(__('Fuel consumption average'))->hidden((new self)->isMobile()),
-                        Range::make()->label(__('Fuel consumption range'))->hidden((new self)->isMobile()),
-                    ])
+                            if ($fuelConsumption > $avgFuelConsumption) {
+                                return 'danger';
+                            } else if ($fuelConsumption < $avgFuelConsumption) {
+                                return 'success';
+                            }
+                            
+                            return 'warning';
+                        })
+                        ->suffix($powertrain['consumption_unit'])
+                        ->summarize([
+                            Average::make()->label(__('Fuel consumption average'))->hidden((new self)->isMobile()),
+                            Range::make()->label(__('Fuel consumption range'))->hidden((new self)->isMobile()),
+                        ]),
+                    TextColumn::make('fuel_type')
+                        ->sortable()
+                        ->badge()
+                        ->label(__('Fuel type'))
+                        ->icon('gmdi-local-gas-station-r')
+                        ->formatStateUsing(fn(string $state) => trans('fuel_types')[$state]),
                 ])
                     ->from('xl'),
             ])
@@ -303,6 +309,16 @@ class RefuelingResource extends Resource
                             ->required()
                             ->suffix($powertrain['unit_short'])
                             ->step(0.01),
+                        TextInput::make('percentage')
+                            ->label(__('Tank percentage after refueling'))
+                            ->numeric()
+                            ->default(100)
+                            ->required()
+                            ->suffix('%')
+                            ->step(0.01)
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->helperText(__('Default value is 100%')),
                         TextInput::make('unit_price')
                             ->label(__('Unit price'))
                             ->numeric()

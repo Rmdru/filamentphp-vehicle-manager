@@ -27,6 +27,7 @@ class Refueling extends Model
         'total_price',
         'mileage_begin',
         'mileage_end',
+        'percentage',
         'fuel_consumption_onboard_computer',
         'fuel_consumption',
         'costs_per_kilometer',

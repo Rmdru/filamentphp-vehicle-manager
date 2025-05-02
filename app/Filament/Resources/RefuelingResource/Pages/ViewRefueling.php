@@ -108,6 +108,10 @@ class ViewRefueling extends ViewRecord
                                 return 'mdi-fuel';
                             })
                             ->suffix($powertrain['unit_short']),
+                        TextEntry::make('percentage')
+                            ->label(__('Tank percentage after refueling'))
+                            ->icon('mdi-water-percent')
+                            ->suffix('%'),
                         TextEntry::make('unit_price')
                             ->label(__('Price'))
                             ->icon('gmdi-local-offer')
