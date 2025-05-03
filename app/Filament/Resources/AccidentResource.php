@@ -70,7 +70,7 @@ class AccidentResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -92,7 +92,7 @@ class AccidentResource extends Resource
                         DateTimePicker::make('datetime')
                             ->label(__('Date and time'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y H:i'),
                         TextInput::make('location')
                             ->label(__('Location'))
@@ -232,10 +232,10 @@ class AccidentResource extends Resource
                     ->form([
                         DatePicker::make('date_from')
                             ->label(__('Date from'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('date_until')
                             ->label(__('Date until'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query

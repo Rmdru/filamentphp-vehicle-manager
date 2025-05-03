@@ -123,10 +123,10 @@ class ParkingResource extends Resource
                     ->form([
                         DateTimePicker::make('time_from')
                             ->label(__('Time from'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DateTimePicker::make('time_until')
                             ->label(__('Time until'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -189,7 +189,7 @@ class ParkingResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -219,11 +219,11 @@ class ParkingResource extends Resource
                         DateTimePicker::make('start_time')
                             ->label(__('Start time'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y H:i'),
                         DateTimePicker::make('end_time')
                             ->label(__('End time'))
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y H:i'),
                     ]),
                 Fieldset::make('Payment')

@@ -123,10 +123,10 @@ class VignetteResource extends Resource
                     ->form([
                         DatePicker::make('start_date')
                             ->label(__('Start date'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('end_date')
                             ->label(__('End date'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -189,7 +189,7 @@ class VignetteResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -216,16 +216,16 @@ class VignetteResource extends Resource
                         DatePicker::make('start_date')
                             ->label(__('Start date'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y'),
                         DatePicker::make('end_date')
                             ->label(__('End date'))
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y'),
                         Select::make('country')
                             ->label(__('Country'))
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->options((new self())->getCountryOptions())
                             ->default(Vehicle::selected()->first()->country_registration),
                         Textarea::make('areas')

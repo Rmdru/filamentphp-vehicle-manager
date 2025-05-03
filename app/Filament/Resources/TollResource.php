@@ -166,10 +166,10 @@ class TollResource extends Resource
                     ->form([
                         DatePicker::make('date_from')
                             ->label(__('Date from'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('date_until')
                             ->label(__('Date until'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -232,7 +232,7 @@ class TollResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -247,7 +247,7 @@ class TollResource extends Resource
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
                     ]),
@@ -267,7 +267,7 @@ class TollResource extends Resource
                         Select::make('country')
                             ->label(__('Country'))
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->options((new self())->getCountryOptions())
                             ->required(fn(callable $get) => $get('road') ?? false)
                             ->default(Vehicle::selected()->first()->country_registration),

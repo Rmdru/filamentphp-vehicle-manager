@@ -117,10 +117,10 @@ class InsuranceResource extends Resource
                     ->form([
                         DatePicker::make('start_date')
                             ->label(__('Start date'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('end_date')
                             ->label(__('End date'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -183,7 +183,7 @@ class InsuranceResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -203,7 +203,7 @@ class InsuranceResource extends Resource
                             ->label(__('Type'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->options((new self())->getInsuranceTypeOptions()),
                     ]),
                 Fieldset::make('Payment')
@@ -231,12 +231,12 @@ class InsuranceResource extends Resource
                         DatePicker::make('start_date')
                             ->label(__('Start date'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
                         DatePicker::make('end_date')
                             ->label(__('End date'))
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y'),
                     ]),
             ]);

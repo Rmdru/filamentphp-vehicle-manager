@@ -205,10 +205,10 @@ class FineResource extends Resource
                     ->form([
                         DatePicker::make('date_from')
                             ->label(__('Date from'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('date_until')
                             ->label(__('Date until'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -271,7 +271,7 @@ class FineResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -291,7 +291,7 @@ class FineResource extends Resource
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
                         ToggleButtons::make('provider')
@@ -325,7 +325,7 @@ class FineResource extends Resource
                         Select::make('country')
                             ->label(__('Country'))
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->required(fn(callable $get) => $get('road') ?? false)
                             ->options((new self())->getCountryOptions())
                             ->default(Vehicle::selected()->first()->country_registration),
@@ -364,7 +364,7 @@ class FineResource extends Resource
                             ->step(0.01),
                         DatePicker::make('payment_date')
                             ->label(__('Payment date'))
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
                         ToggleButtons::make('payment_method')

@@ -55,7 +55,7 @@ class ProductResource extends Resource
                     ->label(__('Vehicle'))
                     ->required()
                     ->searchable()
-                    ->native(false)
+                    ->native((new self)->isMobile())
                     ->relationship('vehicle')
                     ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                     ->options(function () {
@@ -81,7 +81,7 @@ class ProductResource extends Resource
                 DatePicker::make('date')
                     ->label(__('Date'))
                     ->maxDate(date('Y-m-d'))
-                    ->native(false)
+                    ->native((new self)->isMobile())
                     ->required(),
             ]);
     }
@@ -130,10 +130,10 @@ class ProductResource extends Resource
                     ->form([
                         DatePicker::make('date_from')
                             ->label(__('Date from'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('date_until')
                             ->label(__('Date until'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query

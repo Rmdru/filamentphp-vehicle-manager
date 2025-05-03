@@ -186,10 +186,10 @@ class RefuelingResource extends Resource
                     ->form([
                         DatePicker::make('date_from')
                             ->label(__('Date from'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('date_until')
                             ->label(__('Date until'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -263,7 +263,7 @@ class RefuelingResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default($vehicle->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -278,13 +278,13 @@ class RefuelingResource extends Resource
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
                         Select::make('country')
                             ->label(__('Country'))
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->options((new self())->getCountryOptions())
                             ->default($vehicle->country_registration),
                         TextInput::make('gas_station')
@@ -299,7 +299,7 @@ class RefuelingResource extends Resource
                         Select::make('fuel_type')
                             ->label(__('Fuel type'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->options((new self())->getFuelTypeOptions())
                             ->reactive()
                             ->afterStateUpdated(fn($state, callable $set) => $set('fuel_type', $state)),

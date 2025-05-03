@@ -111,7 +111,7 @@ class EnvironmentalStickerResource extends Resource
             ->filters([
                 Filter::make('date')
                     ->label(__('Date'))
-                    ->form([DatePicker::make('start_date')->label(__('Start date'))->native(false), DatePicker::make('end_date')->label(__('End date'))->native(false)])
+                    ->form([DatePicker::make('start_date')->label(__('Start date'))->native((new self)->isMobile()), DatePicker::make('end_date')->label(__('End date'))->native((new self)->isMobile())])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when($data['start_date'], fn(Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date))->when($data['end_date'], fn(Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date));
                     })
@@ -164,7 +164,7 @@ class EnvironmentalStickerResource extends Resource
                         ->label(__('Vehicle'))
                         ->required()
                         ->searchable()
-                        ->native(false)
+                        ->native((new self)->isMobile())
                         ->relationship('vehicle')
                         ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                         ->options(function (Vehicle $vehicle) {
@@ -191,16 +191,16 @@ class EnvironmentalStickerResource extends Resource
                     DatePicker::make('start_date')
                         ->label(__('Start date'))
                         ->required()
-                        ->native(false)
+                        ->native((new self)->isMobile())
                         ->displayFormat('d-m-Y'),
                     DatePicker::make('end_date')
                         ->label(__('End date'))
-                        ->native(false)
+                        ->native((new self)->isMobile())
                         ->displayFormat('d-m-Y'),
                     Select::make('country')
                         ->label(__('Country'))
                         ->searchable()
-                        ->native(false)
+                        ->native((new self)->isMobile())
                         ->options((new self())
                         ->getCountryOptions())
                         ->default(Vehicle::selected()->first()->country_registration),

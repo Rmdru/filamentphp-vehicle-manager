@@ -153,10 +153,10 @@ class MaintenanceResource extends Resource
                     ->form([
                         DatePicker::make('date_from')
                             ->label(__('Date from'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                         DatePicker::make('date_until')
                             ->label(__('Date until'))
-                            ->native(false),
+                            ->native((new self)->isMobile()),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -223,7 +223,7 @@ class MaintenanceResource extends Resource
                             ->label(__('Vehicle'))
                             ->required()
                             ->searchable()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
                             ->options(function (Vehicle $vehicle) {
@@ -238,7 +238,7 @@ class MaintenanceResource extends Resource
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
                             ->maxDate(now()),
                         TextInput::make('garage')
@@ -265,7 +265,7 @@ class MaintenanceResource extends Resource
                             ->label(__('MOT')),
                         DatePicker::make('apk_date')
                             ->label(__('MOT date'))
-                            ->native(false)
+                            ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y'),
                         Toggle::make('airco_check')
                             ->label(__('Airco check')),

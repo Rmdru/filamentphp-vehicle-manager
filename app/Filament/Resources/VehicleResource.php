@@ -82,7 +82,7 @@ class VehicleResource extends Resource
                                         Select::make('brand')
                                             ->label(__('Brand'))
                                             ->required()
-                                            ->native(false)
+                                            ->native((new self)->isMobile())
                                             ->searchable()
                                             ->options(config('vehicles.brands')),
                                         TextInput::make('model')
@@ -98,7 +98,7 @@ class VehicleResource extends Resource
                                             ->maxLength(50),
                                         Select::make('powertrain')
                                             ->label(__('Powertrain'))
-                                            ->native(false)
+                                            ->native((new self)->isMobile())
                                             ->searchable()
                                             ->options((new self())->getPowerTrainOptions())
                                             ->reactive()
@@ -135,12 +135,12 @@ class VehicleResource extends Resource
                                             ->minValue(0),
                                         DatePicker::make('purchase_date')
                                             ->label(__('Purchase date'))
-                                            ->native(false)
+                                            ->native((new self)->isMobile())
                                             ->displayFormat('d-m-Y')
                                             ->maxDate(now()),
                                         DatePicker::make('construction_date')
                                             ->label(__('Construction date'))
-                                            ->native(false)
+                                            ->native((new self)->isMobile())
                                             ->required()
                                             ->displayFormat('d-m-Y')
                                             ->maxDate(now()),
@@ -153,7 +153,7 @@ class VehicleResource extends Resource
                                         Select::make('country_registration')
                                             ->label(__('Country of registration'))
                                             ->searchable()
-                                            ->native(false)
+                                            ->native((new self)->isMobile())
                                             ->required()
                                             ->options((new self())->getCountryOptions())
                                             ->reactive()
