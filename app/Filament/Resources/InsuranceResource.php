@@ -6,6 +6,7 @@ use App\Filament\Resources\InsuranceResource\Pages;
 use App\Models\Insurance;
 use App\Models\Vehicle;
 use App\Traits\InsuranceTypeOptions;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -30,6 +31,7 @@ use Illuminate\Support\HtmlString;
 class InsuranceResource extends Resource
 {
     use InsuranceTypeOptions;
+    use IsMobile;
 
     protected static ?string $model = Insurance::class;
 

@@ -6,6 +6,7 @@ use App\Filament\Resources\VignetteResource\Pages;
 use App\Models\Vehicle;
 use App\Models\Vignette;
 use App\Traits\CountryOptions;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -34,6 +35,7 @@ use Livewire\Livewire;
 class VignetteResource extends Resource
 {
     use CountryOptions;
+    use IsMobile;
 
     protected static ?string $model = Vignette::class;
 

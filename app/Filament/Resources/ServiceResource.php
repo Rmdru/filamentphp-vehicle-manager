@@ -8,6 +8,7 @@ use App\Enums\ServiceType;
 use App\Filament\Resources\ServiceResource\Pages;
 use App\Models\Service;
 use App\Models\Vehicle;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -34,6 +35,8 @@ use Illuminate\Support\HtmlString;
 
 class ServiceResource extends Resource
 {
+    use IsMobile;
+
     protected static ?string $model = Service::class;
 
     protected static ?string $navigationIcon = 'mdi-tow-truck';

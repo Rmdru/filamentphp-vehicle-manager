@@ -6,6 +6,7 @@ use App\Filament\Resources\FerryResource\Pages;
 use App\Filament\Resources\FerryResource\RelationManagers;
 use App\Models\Ferry;
 use App\Models\Vehicle;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -31,6 +32,8 @@ use Illuminate\Support\HtmlString;
 
 class FerryResource extends Resource
 {
+    use IsMobile;
+    
     protected static ?string $model = Ferry::class;
 
     protected static ?string $navigationIcon = 'mdi-ferry';

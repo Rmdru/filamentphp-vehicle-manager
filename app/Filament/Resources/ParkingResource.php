@@ -7,6 +7,7 @@ use App\Enums\ParkingType;
 use App\Filament\Resources\ParkingResource\Pages;
 use App\Models\Parking;
 use App\Models\Vehicle;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
@@ -32,6 +33,8 @@ use Illuminate\Support\HtmlString;
 
 class ParkingResource extends Resource
 {
+    use IsMobile;
+
     protected static ?string $model = Parking::class;
 
     protected static ?string $navigationIcon = 'fas-parking';

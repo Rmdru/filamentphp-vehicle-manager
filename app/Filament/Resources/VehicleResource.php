@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\VehicleStatusService;
 use App\Traits\CountryOptions;
+use App\Traits\IsMobile;
 use App\Traits\PowerTrainOptions;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -39,6 +40,7 @@ class VehicleResource extends Resource
 {
     use CountryOptions;
     use PowerTrainOptions;
+    use IsMobile;
 
     protected static ?string $model = Vehicle::class;
 

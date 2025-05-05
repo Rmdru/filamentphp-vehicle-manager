@@ -10,6 +10,7 @@ use App\Enums\AccidentType;
 use App\Filament\Resources\AccidentResource\Pages;
 use App\Models\Accident;
 use App\Models\Vehicle;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -29,8 +30,6 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ReplicateAction;
 use Filament\Tables\Columns\Layout\Split;
-use Filament\Tables\Columns\Summarizers\Average;
-use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
@@ -39,6 +38,8 @@ use Illuminate\Support\HtmlString;
 
 class AccidentResource extends Resource
 {
+    use IsMobile;
+
     protected static ?string $model = Accident::class;
 
     protected static ?string $navigationIcon = 'fas-car-crash';

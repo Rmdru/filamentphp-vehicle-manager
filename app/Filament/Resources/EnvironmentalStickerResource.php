@@ -6,6 +6,7 @@ use App\Filament\Resources\EnvironmentalStickerResource\Pages;
 use App\Models\EnvironmentalSticker;
 use App\Models\Vehicle;
 use App\Traits\CountryOptions;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -34,6 +35,7 @@ use Livewire\Livewire;
 class EnvironmentalStickerResource extends Resource
 {
     use CountryOptions;
+    use IsMobile;
 
     protected static ?string $model = EnvironmentalSticker::class;
 

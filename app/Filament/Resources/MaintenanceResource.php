@@ -7,6 +7,7 @@ use App\Enums\MaintenanceTypeMaintenance;
 use App\Filament\Resources\MaintenanceResource\Pages;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
+use App\Traits\IsMobile;
 use App\Traits\MaintenanceTypeOptions;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
@@ -36,11 +37,11 @@ use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\HtmlString;
-use Symfony\Component\HtmlSanitizer\Visitor\Node\TextNode;
 
 class MaintenanceResource extends Resource
 {
     use MaintenanceTypeOptions;
+    use IsMobile;
 
     protected static ?string $model = Maintenance::class;
 

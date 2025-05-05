@@ -11,6 +11,7 @@ use App\Filament\Resources\FineResource\Pages;
 use App\Models\Fine;
 use App\Models\Vehicle;
 use App\Traits\CountryOptions;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -46,6 +47,7 @@ use Livewire\Livewire;
 class FineResource extends Resource
 {
     use CountryOptions;
+    use IsMobile;
 
     protected static ?string $model = Fine::class;
 

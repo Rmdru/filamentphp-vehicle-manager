@@ -7,6 +7,7 @@ use App\Enums\ReconditioningType;
 use App\Filament\Resources\ReconditioningResource\Pages;
 use App\Models\Reconditioning;
 use App\Models\Vehicle;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -33,6 +34,8 @@ use Illuminate\Support\HtmlString;
 
 class ReconditioningResource extends Resource
 {
+    use IsMobile;
+
     protected static ?string $model = Reconditioning::class;
 
     protected static ?string $navigationIcon = 'mdi-car-wash';

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use App\Models\Vehicle;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -27,6 +28,8 @@ use Illuminate\Support\HtmlString;
 
 class ProductResource extends Resource
 {
+    use IsMobile;
+
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'mdi-oil';

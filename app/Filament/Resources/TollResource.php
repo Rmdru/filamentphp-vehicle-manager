@@ -12,6 +12,7 @@ use App\Filament\Resources\TollResource\Pages;
 use App\Models\Toll;
 use App\Models\Vehicle;
 use App\Traits\CountryOptions;
+use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -41,6 +42,7 @@ use Livewire\Livewire;
 class TollResource extends Resource
 {
     use CountryOptions;
+    use IsMobile;
 
     protected static ?string $model = Toll::class;
 
