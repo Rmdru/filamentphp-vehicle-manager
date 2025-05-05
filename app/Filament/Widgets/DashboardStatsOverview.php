@@ -115,11 +115,11 @@ class DashboardStatsOverview extends BaseWidget
         }
 
         $value = $prefix . ' ' . $value . ' ' . $suffix;
-        $latestValue = __('Latest:') . ' ' . $prefix . ' ' . $latestValue . ' ' . $suffix;
+        $description = __('Latest:') . ' ' . $prefix . ' ' . $latestValue . ' ' . $suffix;
 
         return Stat::make($title, $value)
             ->icon($icon)
-            ->description($latestValue)
+            ->description($description)
             ->descriptionColor($descriptionColor)
             ->descriptionIcon($descriptionIcon);
     }

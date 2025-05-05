@@ -32,7 +32,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\HtmlString;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Livewire;
 
@@ -165,11 +164,20 @@ class VehicleResource extends Resource
                                             ->label(__('License plate'))
                                             ->required()
                                             ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false),
-                                        ToggleButtons::make('status')
-                                            ->label(__('Status'))
-                                            ->inline()
-                                            ->required()
-                                            ->options(VehicleStatus::class),
+                                        Section::make(__('Status'))
+                                            ->icon('mdi-list-status')
+                                            ->description(__('Default value: driveable. Click open to edit.'))
+                                            ->collapsible()
+                                            ->collapsed()
+                                            ->schema([
+                                                ToggleButtons::make('status')
+                                                    ->label(__('Status'))
+                                                    ->inline()
+                                                    ->required()
+                                                    ->options(VehicleStatus::class)
+                                                    ->columns(2)
+                                                    ->gridDirection('row'),
+                                            ]),
                                     ]),
                                 Fieldset::make('privacy')
                                     ->label(__('Privacy'))
