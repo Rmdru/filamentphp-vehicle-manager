@@ -94,6 +94,7 @@ class AccidentResource extends Resource
                             ->label(__('Date and time'))
                             ->required()
                             ->native((new self)->isMobile())
+                            ->default(now())
                             ->displayFormat('d-m-Y H:i'),
                         TextInput::make('location')
                             ->label(__('Location'))

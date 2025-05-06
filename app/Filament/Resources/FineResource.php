@@ -295,6 +295,7 @@ class FineResource extends Resource
                             ->required()
                             ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
+                            ->default(now())
                             ->maxDate(now()),
                         ToggleButtons::make('provider')
                             ->label(__('Provider'))

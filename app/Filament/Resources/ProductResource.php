@@ -85,6 +85,7 @@ class ProductResource extends Resource
                     ->label(__('Date'))
                     ->maxDate(date('Y-m-d'))
                     ->native((new self)->isMobile())
+                    ->default(now())
                     ->required(),
             ]);
     }

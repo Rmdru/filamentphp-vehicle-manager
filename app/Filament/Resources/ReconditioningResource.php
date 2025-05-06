@@ -195,6 +195,7 @@ class ReconditioningResource extends Resource
                     ->required()
                     ->native((new self)->isMobile())
                     ->displayFormat('d-m-Y')
+                    ->default(now())
                     ->maxDate(now()),
                 ToggleButtons::make('type')
                     ->label(__('Type'))

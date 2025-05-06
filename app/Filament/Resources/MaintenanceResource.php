@@ -241,6 +241,7 @@ class MaintenanceResource extends Resource
                             ->required()
                             ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
+                            ->default(now())
                             ->maxDate(now()),
                         TextInput::make('garage')
                             ->label(__('Garage'))

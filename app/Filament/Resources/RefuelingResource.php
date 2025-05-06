@@ -280,6 +280,7 @@ class RefuelingResource extends Resource
                             ->required()
                             ->native((new self)->isMobile())
                             ->displayFormat('d-m-Y')
+                            ->default(now())
                             ->maxDate(now()),
                         Select::make('country')
                             ->label(__('Country'))

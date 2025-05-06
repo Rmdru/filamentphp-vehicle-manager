@@ -223,10 +223,12 @@ class ParkingResource extends Resource
                             ->label(__('Start time'))
                             ->required()
                             ->native((new self)->isMobile())
+                            ->default(now())
                             ->displayFormat('d-m-Y H:i'),
                         DateTimePicker::make('end_time')
                             ->label(__('End time'))
                             ->native((new self)->isMobile())
+                            ->default(now())
                             ->displayFormat('d-m-Y H:i'),
                     ]),
                 Fieldset::make('Payment')
