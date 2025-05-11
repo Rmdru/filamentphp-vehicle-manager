@@ -76,6 +76,7 @@ class MaintenanceResource extends Resource
                     ->form([
                         Select::make('type_maintenance')
                             ->label(__('Type'))
+                            ->native((new self)->isMobile())
                             ->options((new self)->getMaintenanceTypeOptions([
                                 MaintenanceTypeMaintenance::TirePressureChecked,
                                 MaintenanceTypeMaintenance::LiquidsChecked,

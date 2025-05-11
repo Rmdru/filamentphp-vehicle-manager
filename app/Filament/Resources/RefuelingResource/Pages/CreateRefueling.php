@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\RefuelingResource\Pages;
 
 use App\Filament\Resources\RefuelingResource;
-use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Resources\Pages\CreateRecord;
 

@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 return [
-    "Premium Unleaded (E10)" => "Sans Plomb 95 (E10)",
-    "Premium Unleaded (E5)" => "Sans Plomb 95 (E5)",
-    "Super Plus 98" => "Super Sans Plomb 98",
-    "Super Plus 100" => "Super Sans Plomb 100",
-    "Super Plus 102" => "Super Sans Plomb 102",
+    "Unleaded 95 (E10)" => "SP95 (E10)",
+    "Unleaded 95 (E5)" => "SP95 (E5)",
+    "Super Plus 98" => "SP98",
+    "V-Power 100" => "V-Power 100",
+    "Ultimate 102" => "Ultimate 102",
     "Diesel" => "Gazole",
     "Premium diesel" => "Gazole haut de gamme",
     "Adblue" => "Adblue",

@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -309,7 +310,28 @@ class RefuelingResource extends Resource
                             ->numeric()
                             ->required()
                             ->suffix($powertrain['unit_short'])
-                            ->step(0.01),
+                            ->step(0.01)
+                            ->reactive()
+                            ->afterStateUpdated(function ($set, $state, $get) {
+                                if (empty($state)) {
+                                    return;
+                                }
+
+                                $unitPrice = $get('unit_price');
+                                $totalPrice = $get('total_price');
+
+                                $unitPrice = $totalPrice / $state;
+
+                                if (! empty($unitPrice) && $unitPrice > 0) {
+                                    $set('unit_price', $unitPrice);
+                                }
+
+                                $totalPrice = $state * $unitPrice;
+
+                                if (! empty($totalPrice) && $totalPrice > 0) {
+                                    $set('total_price', $totalPrice);
+                                }
+                            }),
                         TextInput::make('percentage')
                             ->label(__('Tank percentage after refueling'))
                             ->numeric()
@@ -323,12 +345,33 @@ class RefuelingResource extends Resource
                         TextInput::make('unit_price')
                             ->label(__('Unit price'))
                             ->numeric()
-                            ->mask(RawJs::make('$money($input, ' . ', ', ', 3)'))
+                            ->mask(RawJs::make('$money($input, " . ", ", ", 3)'))
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
                             ->suffix('/' . $powertrain['unit_short'])
-                            ->step(0.001),
+                            ->step(0.001)
+                            ->reactive()
+                            ->afterStateUpdated(function ($set, $state, $get) {
+                                if (empty($state)) {
+                                    return;
+                                }
+
+                                $amount = $get('amount');
+                                $totalPrice = $get('total_price');
+
+                                $amount = $totalPrice / $state;
+
+                                if (! empty($amount) && $amount > 0) {
+                                    $set('amount', $amount);
+                                }
+
+                                $totalPrice = $amount * $state;
+
+                                if (! empty($totalPrice) && $totalPrice > 0) {
+                                    $set('total_price', $totalPrice);
+                                }
+                            }),
                         TextInput::make('total_price')
                             ->label(__('Total price'))
                             ->numeric()
@@ -336,7 +379,28 @@ class RefuelingResource extends Resource
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
-                            ->step(0.01),
+                            ->step(0.01)
+                            ->reactive()
+                            ->afterStateUpdated(function ($set, $state, $get) {
+                                if (empty($state)) {
+                                    return;
+                                }
+
+                                $amount = $get('amount');
+                                $unitPrice = $get('unit_price');
+
+                                $amount = $state / $unitPrice;
+
+                                if (! empty($amount) && $amount > 0) {
+                                    $set('amount', $amount);
+                                }
+
+                                $unitPrice = $state / $amount;
+
+                                if (! empty($unitPrice) && $unitPrice > 0) {
+                                    $set('unit_price', $unitPrice);
+                                }
+                            }),
                         TextInput::make('charge_time')
                             ->label(__('Charge time'))
                             ->numeric()
@@ -344,15 +408,16 @@ class RefuelingResource extends Resource
                             ->visible(fn($get) => in_array($get('fuel_type'), [
                                 'Electricity DC',
                                 'Electricity AC',
-                            ])),
+                            ]))
+                            ->reactive(),
                         Checkbox::make('service_by_attendant')
                             ->label(__('Service by attendant'))
                             ->visible(fn($get) => in_array($get('fuel_type'), [
-                                'Premium Unleaded (E10)',
-                                'Premium Unleaded (E5)',
-                                'Super Plus 98',
-                                'Super Plus 100',
-                                'Super Plus 102',
+                                'Unleaded 95 (E10)',
+                                'Unleaded 95 (E5)',
+                                'Super Plus',
+                                'V-Power 100',
+                                'Ultimate 102',
                                 'Diesel',
                                 'Premium diesel',
                                 'Adblue',

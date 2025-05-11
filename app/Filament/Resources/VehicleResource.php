@@ -108,6 +108,7 @@ class VehicleResource extends Resource
                                         Select::make('fuel_types')
                                             ->required()
                                             ->label(__('Compatible fuel types'))
+                                            ->native((new self)->isMobile())
                                             ->multiple()
                                             ->options($fuelTypes),
                                         TextInput::make('tank_capacity')
@@ -248,7 +249,7 @@ class VehicleResource extends Resource
                                     ->collapsible()
                                     ->schema([
                                         Checkbox::make('notifications.refueling.old_fuel')
-                                            ->label(__('Outdated fuel (only premium unleaded (E10))'))
+                                            ->label(__('Outdated fuel (only unleaded 95 (E10))'))
                                             ->default(true),
                                     ]),
                                 Section::make(__('Insurances'))
