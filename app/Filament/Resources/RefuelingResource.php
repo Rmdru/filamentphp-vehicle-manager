@@ -320,7 +320,9 @@ class RefuelingResource extends Resource
                                 $unitPrice = $get('unit_price');
                                 $totalPrice = $get('total_price');
 
-                                $unitPrice = $totalPrice / $state;
+                                if (! empty($totalPrice) && ! empty($unitPrice)) {
+                                    $unitPrice = $totalPrice / $state;
+                                }
 
                                 if (! empty($unitPrice) && $unitPrice > 0) {
                                     $set('unit_price', $unitPrice);
@@ -360,7 +362,9 @@ class RefuelingResource extends Resource
                                 $amount = $get('amount');
                                 $totalPrice = $get('total_price');
 
-                                $amount = $totalPrice / $state;
+                                if (! empty($totalPrice) && ! empty($unitPrice)) {
+                                    $amount = $totalPrice / $state;
+                                }
 
                                 if (! empty($amount) && $amount > 0) {
                                     $set('amount', $amount);
@@ -389,13 +393,17 @@ class RefuelingResource extends Resource
                                 $amount = $get('amount');
                                 $unitPrice = $get('unit_price');
 
-                                $amount = $state / $unitPrice;
+                                if (! empty($unitPrice) && ! empty($unitPrice)) {
+                                    $amount = $state / $unitPrice;
+                                }
 
                                 if (! empty($amount) && $amount > 0) {
                                     $set('amount', $amount);
                                 }
 
-                                $unitPrice = $state / $amount;
+                                if (! empty($amount) && ! empty($unitPrice)) {
+                                    $unitPrice = $state / $amount;
+                                }
 
                                 if (! empty($unitPrice) && $unitPrice > 0) {
                                     $set('unit_price', $unitPrice);
