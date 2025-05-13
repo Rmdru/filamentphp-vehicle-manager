@@ -313,26 +313,28 @@ class RefuelingResource extends Resource
                             ->step(0.01)
                             ->reactive()
                             ->afterStateUpdated(function ($set, $state, $get) {
-                                if (empty($state)) {
-                                    return;
-                                }
+                                rescue(function () use ($set, $state, $get) {
+                                    if (empty($state)) {
+                                        return;
+                                    }
 
-                                $unitPrice = $get('unit_price');
-                                $totalPrice = $get('total_price');
+                                    $unitPrice = $get('unit_price') ?? 0;
+                                    $totalPrice = $get('total_price') ?? 0;
 
-                                if (! empty($totalPrice) && ! empty($unitPrice)) {
-                                    $unitPrice = $totalPrice / $state;
-                                }
+                                    $totalPrice = $state * $unitPrice;
 
-                                if (! empty($unitPrice) && $unitPrice > 0) {
-                                    $set('unit_price', $unitPrice);
-                                }
+                                    if (! empty($totalPrice) && $totalPrice > 0) {
+                                        $set('total_price', $totalPrice);
+                                    }
 
-                                $totalPrice = $state * $unitPrice;
+                                    if (! empty($totalPrice) && ! empty($unitPrice)) {
+                                        $unitPrice = $totalPrice / $state;
+                                    }
 
-                                if (! empty($totalPrice) && $totalPrice > 0) {
-                                    $set('total_price', $totalPrice);
-                                }
+                                    if (! empty($unitPrice) && $unitPrice > 0) {
+                                        $set('unit_price', $unitPrice);
+                                    }
+                                });
                             }),
                         TextInput::make('percentage')
                             ->label(__('Tank percentage after refueling'))
@@ -355,26 +357,28 @@ class RefuelingResource extends Resource
                             ->step(0.001)
                             ->reactive()
                             ->afterStateUpdated(function ($set, $state, $get) {
-                                if (empty($state)) {
-                                    return;
-                                }
+                                rescue(function () use ($set, $state, $get) {
+                                    if (empty($state)) {
+                                        return;
+                                    }
 
-                                $amount = $get('amount');
-                                $totalPrice = $get('total_price');
+                                    $amount = $get('amount') ?? 0;
+                                    $totalPrice = $get('total_price') ?? 0;
 
-                                if (! empty($totalPrice) && ! empty($unitPrice)) {
-                                    $amount = $totalPrice / $state;
-                                }
+                                    if (! empty($totalPrice) && ! empty($state)) {
+                                        $amount = $totalPrice / $state;
+                                    }
 
-                                if (! empty($amount) && $amount > 0) {
-                                    $set('amount', $amount);
-                                }
+                                    if (! empty($amount) && $amount > 0) {
+                                        $set('amount', $amount);
+                                    }
 
-                                $totalPrice = $amount * $state;
+                                    $totalPrice = $amount * $state;
 
-                                if (! empty($totalPrice) && $totalPrice > 0) {
-                                    $set('total_price', $totalPrice);
-                                }
+                                    if (! empty($totalPrice) && $totalPrice > 0) {
+                                        $set('total_price', $totalPrice);
+                                    }
+                                });
                             }),
                         TextInput::make('total_price')
                             ->label(__('Total price'))
@@ -386,28 +390,30 @@ class RefuelingResource extends Resource
                             ->step(0.01)
                             ->reactive()
                             ->afterStateUpdated(function ($set, $state, $get) {
-                                if (empty($state)) {
-                                    return;
-                                }
+                                rescue(function () use ($set, $state, $get) {
+                                    if (empty($state)) {
+                                        return;
+                                    }
 
-                                $amount = $get('amount');
-                                $unitPrice = $get('unit_price');
+                                    $amount = $get('amount') ?? 0;
+                                    $unitPrice = $get('unit_price') ?? 0;
 
-                                if (! empty($unitPrice) && ! empty($unitPrice)) {
-                                    $amount = $state / $unitPrice;
-                                }
+                                    if (! empty($unitPrice) && ! empty($unitPrice)) {
+                                        $amount = $state / $unitPrice;
+                                    }
 
-                                if (! empty($amount) && $amount > 0) {
-                                    $set('amount', $amount);
-                                }
+                                    if (! empty($amount) && $amount > 0) {
+                                        $set('amount', $amount);
+                                    }
 
-                                if (! empty($amount) && ! empty($unitPrice)) {
-                                    $unitPrice = $state / $amount;
-                                }
+                                    if (! empty($amount) && ! empty($unitPrice)) {
+                                        $unitPrice = $state / $amount;
+                                    }
 
-                                if (! empty($unitPrice) && $unitPrice > 0) {
-                                    $set('unit_price', $unitPrice);
-                                }
+                                    if (! empty($unitPrice) && $unitPrice > 0) {
+                                        $set('unit_price', $unitPrice);
+                                    }
+                                });
                             }),
                         TextInput::make('charge_time')
                             ->label(__('Charge time'))
