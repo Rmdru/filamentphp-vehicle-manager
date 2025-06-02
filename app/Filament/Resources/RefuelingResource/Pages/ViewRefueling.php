@@ -113,7 +113,7 @@ class ViewRefueling extends ViewRecord
                             ->icon('mdi-water-percent')
                             ->suffix('%'),
                         TextEntry::make('unit_price')
-                            ->label(__('Price'))
+                            ->label(__('Unit price'))
                             ->icon('gmdi-local-offer')
                             ->suffix('/' . $powertrain['unit_short'])
                             ->money('EUR'),

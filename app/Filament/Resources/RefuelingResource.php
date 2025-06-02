@@ -311,7 +311,7 @@ class RefuelingResource extends Resource
                             ->required()
                             ->suffix($powertrain['unit_short'])
                             ->step(0.01)
-                            ->reactive()
+                            ->lazy()
                             ->afterStateUpdated(function ($set, $state, $get) {
                                 rescue(function () use ($set, $state, $get) {
                                     if (empty($state)) {
@@ -346,7 +346,7 @@ class RefuelingResource extends Resource
                             ->prefix('€')
                             ->suffix('/' . $powertrain['unit_short'])
                             ->step(0.001)
-                            ->reactive()
+                            ->lazy()
                             ->afterStateUpdated(function ($set, $state, $get) {
                                 rescue(function () use ($set, $state, $get) {
                                     if (empty($state)) {
@@ -370,8 +370,7 @@ class RefuelingResource extends Resource
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
-                            ->step(0.01)
-                            ->reactive(),
+                            ->step(0.01),
                         TextInput::make('charge_time')
                             ->label(__('Charge time'))
                             ->numeric()
