@@ -198,6 +198,12 @@ class ViewRefueling extends ViewRecord
                                 return 'warning';
                             })
                             ->suffix('km/h'),
+                    TextEntry::make('charge_time')
+                        ->label(__('Charge time'))
+                        ->hidden(fn($state) => empty($state))
+                        ->formatStateUsing(fn($state) => $state ? $state->format('H:i') : null)
+                        ->suffix(' h')
+                        ->icon('mdi-timer-sand'),
                     ]),
                 Section::make('cirumstances')
                     ->columns()

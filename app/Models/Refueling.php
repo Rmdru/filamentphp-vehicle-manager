@@ -48,6 +48,7 @@ class Refueling extends Model
         'climate_control' => 'array',
         'routes' => 'array',
         'servie_by_attendant' => 'boolean',
+        'charge_time' => 'datetime:H:i',
     ];
 
     public function vehicle(): BelongsTo

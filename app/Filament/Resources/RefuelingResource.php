@@ -21,6 +21,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -105,7 +106,7 @@ class RefuelingResource extends Resource
 
                                 return new HtmlString('<div class="w-5/12 min-h-16 max-h-40 flex items-center bg-white border border-gray-200 rounded p-2"><img class="max-h-40" src="' . $logo . '" /></div>');
                             }
-                    ),
+                        ),
                     TextColumn::make('date')
                         ->sortable()
                         ->label(__('Date'))
@@ -151,7 +152,7 @@ class RefuelingResource extends Resource
                             } else if ($fuelConsumption < $avgFuelConsumption) {
                                 return 'gmdi-trending-down-r';
                             }
-                            
+
                             return 'mdi-approximately-equal';
                         })
                         ->badge()
@@ -164,7 +165,7 @@ class RefuelingResource extends Resource
                             } else if ($fuelConsumption < $avgFuelConsumption) {
                                 return 'success';
                             }
-                            
+
                             return 'warning';
                         })
                         ->suffix($powertrain['consumption_unit'])
@@ -371,10 +372,9 @@ class RefuelingResource extends Resource
                             ->required()
                             ->prefix('€')
                             ->step(0.01),
-                        TextInput::make('charge_time')
+                        TimePicker::make('charge_time')
                             ->label(__('Charge time'))
-                            ->numeric()
-                            ->minValue(1)
+                            ->native((new self)->isMobile())
                             ->visible(fn($get) => in_array($get('fuel_type'), [
                                 'Electricity DC',
                                 'Electricity AC',
