@@ -371,7 +371,30 @@ class RefuelingResource extends Resource
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
-                            ->step(0.01),
+                            ->step(0.01)
+                            ->lazy()
+                            ->afterStateUpdated(function ($set, $state, $get) {
+                                rescue(function () use ($set, $state, $get) {
+                                    if (
+                                        empty($state)
+                                        || (
+                                            ! empty($get('amount'))
+                                            && ! empty($get('unit_price'))
+                                        )
+                                    ) {
+                                        return;
+                                    }
+
+                                    $unitPrice = $get('unit_price') ?? 0;
+                                    $totalPrice = $get('total_price') ?? 0;
+
+                                    $amount = $totalPrice / $unitPrice;
+
+                                    if (! empty($amount) && $amount > 0) {
+                                        $set('amount', $amount);
+                                    }
+                                });
+                            }),
                         TimePicker::make('charge_time')
                             ->label(__('Charge time'))
                             ->native((new self)->isMobile())
@@ -404,12 +427,16 @@ class RefuelingResource extends Resource
                             ->required()
                             ->suffix(' km')
                             ->numeric()
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->mileage_latest ?? null),
+                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->mileage_latest ?? null)
+                            ->lazy()
+                            ->afterStateUpdated(fn($state, callable $set) => $set('mileage_begin', $state)),
                         TextInput::make('mileage_end')
                             ->label(__('Mileage end'))
                             ->required()
                             ->suffix(' km')
-                            ->numeric(),
+                            ->numeric()
+                            ->lazy()
+                            ->minValue(fn($get) => ! empty($get('mileage_begin')) ? $get('mileage_begin') : 0),
                         TextInput::make('fuel_consumption_onboard_computer')
                             ->label(__('Fuel consumption onboard computer'))
                             ->suffix($powertrain['consumption_unit'])
