@@ -251,6 +251,9 @@ class VehicleResource extends Resource
                                         Checkbox::make('notifications.refueling.old_fuel')
                                             ->label(__('Outdated fuel (only unleaded 95 (E10))'))
                                             ->default(true),
+                                        Checkbox::make('notifications.refueling.periodic_e5')
+                                            ->label(__('1 in 5 times fill up with E5 fuel'))
+                                            ->default(true),
                                     ]),
                                 Section::make(__('Insurances'))
                                     ->icon('mdi-shield-car')

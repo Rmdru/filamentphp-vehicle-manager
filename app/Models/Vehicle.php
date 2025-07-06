@@ -121,18 +121,38 @@ class Vehicle extends Model
         return $brands[$this->brand] . ' ' . $this->model . ' (' . $this->license_plate . ')';
     }
 
-    public function getFuelStatusAttribute(): ?int
+    public function getFuelStatusAttribute(): ?array
     {
         if ($this->refuelings->isNotEmpty() && $this->refuelings->where('fuel_type', 'Unleaded 95 (E10)')->count() > 0) {
             $latestRefueling = $this->refuelings->sortByDesc('date')->first();
 
             if (! empty($latestRefueling) && $latestRefueling->fuel_type === 'Unleaded 95 (E10)') {
                 $diff = Carbon::parse($latestRefueling->date)->addMonths(2)->diffInDays(now());
-                return (int) max(0, $diff - ($diff * 2));
+                return [
+                    'time' => (int) max(0, $diff - ($diff * 2))
+                ];
             }
         }
 
-        return null;
+        return [];
+    }
+
+    public function getPeriodicE5Attribute(): array
+    {
+        if ($this->refuelings->isNotEmpty()) {
+            return [
+                 'recordCount' => $this->refuelings()
+                    ->latest()
+                    ->limit(3)
+                    ->get()
+                    ->where('fuel_type', 'Unleaded 95 (E10)')
+                    ->count(),
+            ];
+        }
+
+        return [
+            'recordCount' => 0,
+        ];
     }
 
     public function getMaintenanceStatusAttribute(): array

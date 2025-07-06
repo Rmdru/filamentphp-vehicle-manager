@@ -41,7 +41,7 @@ class VehicleStatusService
                 continue;
             }
 
-            $this->processNotification($notifications, $status['time'] ?? null, $mapping);
+            $this->processNotification($notifications, $status ?? null, $mapping);
         }
 
         if (empty($notifications)) {
@@ -72,27 +72,32 @@ class VehicleStatusService
         return $this->types[$notification['type']];
     }
 
-    private function processNotification(array &$notifications, ?float $timeTill, array $mapping): void
+    private function processNotification(array &$notifications, ?array $status, array $mapping): void
     {
-        if (! isset($timeTill)) {
+        if (! isset($status)) {
             return;
         }
 
         $thresholds = $mapping['thresholds'];
+        $thresholdType = $mapping['thresholdType'];
         $messages = $mapping['messages'];
         $icon = $mapping['icon'];
 
-        if (isset($thresholds['critical']) && $timeTill < $thresholds['critical']) {
+        if (isset($thresholds['critical']) && $thresholdType === 'days' && $status['time'] < $thresholds['critical']) {
             $notifications[] = $this->createNotification('critical', $messages['critical'], $icon);
             return;
         }
 
-        if (isset($thresholds['warning']) && $timeTill < $thresholds['warning']) {
+        if (isset($thresholds['warning']) && $thresholdType === 'days' && $status['time'] < $thresholds['warning']) {
             $notifications[] = $this->createNotification('warning', $messages['warning'], $icon);
             return;
         }
 
-        if (isset($thresholds['info']) && $timeTill < $thresholds['info']) {
+        if (isset($thresholds['info']) && $thresholdType === 'days' && $status['time'] < $thresholds['info']) {
+            $notifications[] = $this->createNotification('info', $messages['info'], $icon);
+        }
+
+        if (isset($thresholds['info']) && $thresholdType === 'recordCount' && $status['recordCount'] >= $thresholds['info']) {
             $notifications[] = $this->createNotification('info', $messages['info'], $icon);
         }
     }
