@@ -93,11 +93,13 @@ class VehicleStatusService
             return;
         }
 
-        if (isset($thresholds['info']) && $thresholdType === 'days' && $status['time'] < $thresholds['info']) {
-            $notifications[] = $this->createNotification('info', $messages['info'], $icon);
-        }
-
-        if (isset($thresholds['info']) && $thresholdType === 'recordCount' && $status['recordCount'] >= $thresholds['info']) {
+        if (
+            (
+                isset($thresholds['info']) && $thresholdType === 'days' && $status['time'] < $thresholds['info']
+            ) || (
+                isset($thresholds['info']) && $thresholdType === 'recordCount' && $status['recordCount'] >= $thresholds['info']
+            )
+        ) {
             $notifications[] = $this->createNotification('info', $messages['info'], $icon);
         }
     }
