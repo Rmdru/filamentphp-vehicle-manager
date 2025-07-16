@@ -176,6 +176,7 @@ class VehicleResource extends Resource
                                                     ->inline()
                                                     ->required()
                                                     ->options(VehicleStatus::class)
+                                                    ->default(VehicleStatus::Drivable->value)
                                                     ->columns(2)
                                                     ->gridDirection('row'),
                                             ]),
