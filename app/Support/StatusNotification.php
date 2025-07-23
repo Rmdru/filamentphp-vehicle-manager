@@ -70,12 +70,12 @@ class StatusNotification
                 ],
                 'icon' => 'gmdi-local-gas-station-r',
             ],
-            'periodic_e5' => [
-                'statusKey' => 'periodic_e5',
+            'periodic_super_plus' => [
+                'statusKey' => 'periodic_super_plus',
                 'thresholds' => ['info' => 3],
                 'thresholdType' => 'recordCount',
                 'messages' => [
-                    'info' => __('Next time fill up with E5 fuel!'),
+                    'info' => __('Next time fill up with Super Plus fuel!'),
                 ],
                 'icon' => 'gmdi-local-gas-station-r',
             ],

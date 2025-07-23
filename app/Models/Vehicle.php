@@ -137,15 +137,20 @@ class Vehicle extends Model
         return [];
     }
 
-    public function getPeriodicE5Attribute(): array
+    public function getPeriodicSuperPlusAttribute(): array
     {
+        $fuelTypes = [
+            'Unleaded 95 (E10)',
+            'Unleaded 95 (E5)',
+        ];
+
         if ($this->refuelings->isNotEmpty()) {
             return [
                  'recordCount' => $this->refuelings()
                     ->latest()
                     ->limit(3)
                     ->get()
-                    ->where('fuel_type', 'Unleaded 95 (E10)')
+                    ->whereIn('fuel_type', $fuelTypes)
                     ->count(),
             ];
         }

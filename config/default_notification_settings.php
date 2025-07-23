@@ -15,7 +15,7 @@ return [
     ],
     'refueling' => [
         'old_fuel' => true,
-        'periodic_e5' => true,
+        'periodic_super_plus' => true,
     ],
     'insurance' => [
         'status' => true,
