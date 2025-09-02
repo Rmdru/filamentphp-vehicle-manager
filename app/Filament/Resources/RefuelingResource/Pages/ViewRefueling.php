@@ -116,7 +116,8 @@ class ViewRefueling extends ViewRecord
                             ->label(__('Unit price'))
                             ->icon('gmdi-local-offer')
                             ->suffix('/' . $powertrain['unit_short'])
-                            ->money('EUR'),
+                            ->numeric(3)
+                            ->prefix('€ '),
                         TextEntry::make('total_price')
                             ->label(__('Total price'))
                             ->icon('mdi-hand-coin-outline')

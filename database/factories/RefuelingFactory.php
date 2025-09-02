@@ -42,7 +42,7 @@ class RefuelingFactory extends Factory
             'gas_station' => str($this->faker->randomElement(array_keys($gasStationBrands)))->ucfirst() . ' ' . $roadNumber . ' ' . $this->faker->word(),
             'fuel_type' => $this->faker->randomElement(array_keys($fuelTypes)),
             'amount' => $this->faker->randomFloat(2, 1, 100),
-            'unit_price' => $this->faker->randomFloat(2, 1, 2),
+            'unit_price' => $this->faker->randomFloat(3, 1, 2),
             'total_price' => $this->faker->randomFloat(2, 1, 200),
             'mileage_begin' => $this->faker->numberBetween(0, 500000),
             'mileage_end' => function (array $attributes) {
