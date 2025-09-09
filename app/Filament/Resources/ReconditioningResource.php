@@ -159,6 +159,12 @@ class ReconditioningResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Reconditioning $replica): Reconditioning {
+                            $replica['date'] = today();
+
+                            return $replica;
+                        })
                 ]),
             ])
             ->bulkActions([
@@ -181,7 +187,7 @@ class ReconditioningResource extends Resource
                     ->native((new self)->isMobile())
                     ->relationship('vehicle')
                     ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                    ->options(function (Vehicle $vehicle) {
+                    ->options(function () {
                         $vehicles = Vehicle::all();
 
                         $vehicles->car = $vehicles->map(function ($index) {

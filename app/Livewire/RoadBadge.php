@@ -51,8 +51,10 @@ class RoadBadge extends Component
             $road = $this->road;
 
             return [
-                'roadTypeConfig' => $roadTypeConfig,
-                'road' => $road,
+                [
+                    'roadTypeConfig' => $roadTypeConfig,
+                    'road' => $road,
+                ],
             ];
         }
 
