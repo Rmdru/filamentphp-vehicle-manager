@@ -277,7 +277,7 @@ class MaintenanceResource extends Resource
                         TextInput::make('total_price')
                             ->label(__('Total price'))
                             ->numeric()
-                            ->mask(RawJs::make('$money($input)'))
+                            ->mask(RawJs::make('$money($input, \',\', \'.\',)'))
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')
@@ -293,7 +293,7 @@ class MaintenanceResource extends Resource
                                     ->label(__('Task')),
                                 TextInput::make('price')
                                     ->label(__('Price'))
-                                    ->mask(RawJs::make('$money($input)'))
+                                    ->mask(RawJs::make('$money($input, \',\', \'.\',)'))
                                     ->stripCharacters(',')
                                     ->prefix('€')
                                     ->step(0.01),

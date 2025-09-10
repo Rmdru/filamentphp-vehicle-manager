@@ -268,7 +268,7 @@ class RefuelingResource extends Resource
                             ->native((new self)->isMobile())
                             ->relationship('vehicle')
                             ->default($vehicle->id ?? null)
-                            ->options(function (Vehicle $vehicle) {
+                            ->options(function () {
                                 $vehicles = Vehicle::all();
 
                                 $vehicles->car = $vehicles->map(function ($index) {
@@ -341,8 +341,7 @@ class RefuelingResource extends Resource
                         TextInput::make('unit_price')
                             ->label(__('Unit price'))
                             ->numeric()
-                            ->mask(RawJs::make('$money($input, " . ", ", ", 3)'))
-                            ->stripCharacters(',')
+                            ->mask(RawJs::make('$money($input, \',\', \'.\', 3)'))
                             ->required()
                             ->prefix('€')
                             ->suffix('/' . $powertrain['unit_short'])
@@ -367,8 +366,7 @@ class RefuelingResource extends Resource
                         TextInput::make('total_price')
                             ->label(__('Total price'))
                             ->numeric()
-                            ->mask(RawJs::make('$money($input)'))
-                            ->stripCharacters(',')
+                            ->mask(RawJs::make('$money($input, \',\', \'.\',)'))
                             ->required()
                             ->prefix('€')
                             ->step(0.01)
