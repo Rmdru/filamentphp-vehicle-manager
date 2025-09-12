@@ -17,7 +17,6 @@ use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -54,7 +53,6 @@ class RefuelingResource extends Resource
     protected static ?string $model = Refueling::class;
 
     protected static ?string $navigationIcon = 'gmdi-local-gas-station';
-
 
     public static function getNavigationLabel(): string
     {
@@ -254,7 +252,7 @@ class RefuelingResource extends Resource
     {
         $vehicle = Vehicle::selected()->first();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
-
+        
         return $form
             ->schema([
                 Fieldset::make('Refueling')
