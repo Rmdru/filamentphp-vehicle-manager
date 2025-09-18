@@ -148,7 +148,7 @@ class VehicleResource extends Resource
                                             ->maxDate(now()),
                                         TextInput::make('purchase_price')
                                             ->label(__('Purchase price'))
-                                            ->mask(RawJs::make('$money($input, \',\', \'.\',)'))
+                                            ->mask(RawJs::make('$money($input, \'.\', \' \',)'))
                                             ->stripCharacters(',')
                                             ->prefix('€')
                                             ->step(0.01),
