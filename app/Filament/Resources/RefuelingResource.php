@@ -252,6 +252,10 @@ class RefuelingResource extends Resource
     {
         $vehicle = Vehicle::selected()->first();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
+        $previousRefueling = Refueling::query()
+            ->where('vehicle_id', $vehicle->id)
+            ->latest()
+            ->first();
         
         return $form
             ->schema([
@@ -448,21 +452,25 @@ class RefuelingResource extends Resource
                         ToggleButtons::make('tires')
                             ->label(__('Tires'))
                             ->inline()
-                            ->options(RefuelingTires::class),
+                            ->options(RefuelingTires::class)
+                            ->default($previousRefueling->tires ?? null),
                         ToggleButtons::make('climate_control')
                             ->label(__('Climate control'))
                             ->multiple()
                             ->inline()
-                            ->options(RefuelingClimateControl::class),
+                            ->options(RefuelingClimateControl::class)
+                            ->default($previousRefueling->climate_control ?? null),
                         ToggleButtons::make('routes')
                             ->label(__('Routes'))
                             ->inline()
                             ->multiple()
-                            ->options(RefuelingRoutes::class),
+                            ->options(RefuelingRoutes::class)
+                            ->default($previousRefueling->routes ?? null),
                         ToggleButtons::make('driving_style')
                             ->label(__('Driving style'))
                             ->inline()
-                            ->options(RefuelingDrivingStyle::class),
+                            ->options(RefuelingDrivingStyle::class)
+                            ->default($previousRefueling->driving_style ?? null),
                         Textarea::make('comments')
                             ->label(__('Comments')),
                     ]),
