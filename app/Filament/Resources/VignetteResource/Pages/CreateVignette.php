@@ -8,6 +8,11 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateVignette extends CreateRecord
 {
     protected static string $resource = VignetteResource::class;
+    
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     public function creating(Vehicle $vehicle): void
     {

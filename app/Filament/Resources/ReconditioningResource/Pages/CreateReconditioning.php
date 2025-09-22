@@ -9,6 +9,11 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateReconditioning extends CreateRecord
 {
     protected static string $resource = ReconditioningResource::class;
+    
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     public function creating(Vehicle $vehicle): void
     {

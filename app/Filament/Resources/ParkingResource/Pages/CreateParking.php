@@ -9,6 +9,11 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateParking extends CreateRecord
 {
     protected static string $resource = ParkingResource::class;
+    
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     public function creating(Vehicle $vehicle): void
     {

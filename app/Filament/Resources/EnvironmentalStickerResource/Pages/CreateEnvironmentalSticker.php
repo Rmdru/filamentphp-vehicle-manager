@@ -10,6 +10,11 @@ class CreateEnvironmentalSticker extends CreateRecord
 {
     protected static string $resource = EnvironmentalStickerResource::class;
     
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+    
     public function creating(Vehicle $vehicle): void
     {
         $vehicle->vehicle_id = auth()->user()->vehicle_id;
