@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Models\Vehicle;
+use Filament\Facades\Filament;
 
 trait FuelTypeOptions
 {
     public function getFuelTypeOptions(): array
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $fuelTypes = trans('fuel_types');
         $fuelTypeOptions = [];
 

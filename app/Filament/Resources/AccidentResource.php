@@ -12,12 +12,12 @@ use App\Models\Accident;
 use App\Models\Vehicle;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
@@ -66,23 +66,6 @@ class AccidentResource extends Resource
                 Fieldset::make('you')
                     ->label(__('You, your vehicle, your passengers and your objects'))
                     ->schema([
-                        Select::make('vehicle_id')
-                            ->disabled()
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native((new self)->isMobile())
-                            ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                            ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::all();
-
-                                $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->full_name_with_license_plate;
-                                });
-
-                                return $vehicles->pluck('full_name_with_license_plate', 'id');
-                            }),
                         ToggleButtons::make('type')
                             ->label(__('Type'))
                             ->required()
@@ -186,11 +169,6 @@ class AccidentResource extends Resource
                     ->modalCancelActionLabel(__('Close'))
                     ->modalSubmitAction(false),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->columns([
                 Split::make([
                     TextColumn::make('datetime')

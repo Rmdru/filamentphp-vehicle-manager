@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\Tenancy\RegisterVehicle;
 use App\Filament\Pages\Timeline;
 use App\Filament\Resources\AccidentResource;
 use App\Filament\Resources\EnvironmentalStickerResource;
@@ -24,6 +25,7 @@ use App\Models\Vehicle;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
@@ -36,7 +38,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AccountPanelProvider extends PanelProvider
@@ -76,6 +77,14 @@ class AccountPanelProvider extends PanelProvider
             ->spa()
             ->viteTheme('resources/css/filament/account/theme.css')
             ->sidebarFullyCollapsibleOnDesktop()
+            ->tenant(Vehicle::class)
+            ->tenantRegistration(RegisterVehicle::class)
+            ->tenantMenuItems([
+                MenuItem::make()
+                    ->label(__('My garage'))
+                    ->url(fn (): string => VehicleResource::getUrl())
+                    ->icon('mdi-garage'),
+            ])
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->groups([
                     NavigationGroup::make()
@@ -122,34 +131,7 @@ class AccountPanelProvider extends PanelProvider
                         ->items([
                             ...FerryResource::getNavigationItems(),
                         ]),
-                    NavigationGroup::make()
-                        ->label(__('My vehicles'))
-                        ->items([
-                            ...VehicleResource::getNavigationItems(),
-                            ...$this->getVehicleMenuItems(),
-                        ]),
                 ]);
             });
-    }
-
-    private function getVehicleMenuItems(): array
-    {
-        $menuItems = [];
-
-        $vehicles = Vehicle::all();
-        $brands = config('vehicles.brands');
-        $countries = config('countries');
-
-        foreach ($vehicles as $vehicle) {
-            $menuItems[] = NavigationItem::make($vehicle->full_name)
-                ->label($vehicle->full_name)
-                ->group('My Vehicles')
-                ->badge($vehicle->license_plate, $countries[$vehicle->country_registration]['license_plate']['filament_color'])
-                ->url(fn(): string => route('switch-vehicle', ['vehicleId' => $vehicle->id]))
-                ->isActiveWhen(fn(): bool => Session::get('vehicle_id') === $vehicle->id)
-                ->icon('si-' . str($brands[$vehicle->brand])->replace([' ', '-'], '')->lower()->ascii());
-        }
-
-        return $menuItems;
     }
 }

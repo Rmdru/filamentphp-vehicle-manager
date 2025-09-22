@@ -14,6 +14,7 @@ use App\Models\Vehicle;
 use App\Models\Maintenance;
 use App\Models\Reconditioning;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Illuminate\Support\Collection;
 
@@ -55,7 +56,7 @@ class Timeline extends Page
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
 
-        $vehicle = Vehicle::selected()
+        $vehicle = Filament::getTenant()
             ->with([
                 'maintenances' => function ($query) {
                     $query->whereIn('type_maintenance', [
@@ -282,7 +283,7 @@ class Timeline extends Page
 
     private function getPredictions(): Collection
     {
-        $vehicle = Vehicle::selected()
+        $vehicle = Filament::getTenant()
             ->addSelect([
                 'apk' => Maintenance::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')

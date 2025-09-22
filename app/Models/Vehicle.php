@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\MaintenanceTypeMaintenance;
-use App\Enums\VehicleStatus;
 use App\Services\VehicleCostsService;
 use App\Support\Cost;
 use Carbon\Carbon;
+use Filament\Models\Contracts\HasName;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,11 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Session;
 
-class Vehicle extends Model
+class Vehicle extends Model implements HasName
 {
     use HasFactory;
     use HasUuids;
@@ -74,23 +73,14 @@ class Vehicle extends Model
         'liquids_check_status',
     ];
 
-    protected static function booted()
+    public function getFilamentName(): string
     {
-        static::addGlobalScope('ownVehicles', function (Builder $builder) {
-            $builder->where('user_id', auth()->id());
-        });
+        return $this->full_name;
     }
 
-    public function scopeSelected(Builder $query): void
+    public function scopeOwnVehicles(Builder $query): void
     {
-        $vehicleId = session('vehicle_id') ?? Vehicle::latest()->first()->id;
-
-        session(['vehicle_id' => $vehicleId]);
-
-        $query->where([
-            'id' => session('vehicle_id'),
-            'user_id' => Auth::id(),
-        ]);
+        $query->where('user_id', auth()->id());
     }
 
     public function scopeOnlyDriveable(Builder $query): void
@@ -111,7 +101,9 @@ class Vehicle extends Model
     {
         $brands = config('vehicles.brands');
 
-        return $brands[$this->brand] . ' ' . $this->model;
+        $brandName = $brands[$this->brand] ?? $this->brand;
+
+        return $brandName . ' ' . $this->model;
     }
 
     public function getFullNameWithLicensePlateAttribute(): string
@@ -332,7 +324,7 @@ class Vehicle extends Model
 
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
     {
-        $vehicleId = Vehicle::selected()->first()->id;
+        $vehicleId = Filament::getTenant()->id;
         $costTypes = Cost::types();
 
         if (empty($startDate) || empty($endDate)) {

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Vehicle;
 use Filament\Actions\Concerns\InteractsWithRecord;
+use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Support\Htmlable;
 
@@ -32,7 +32,7 @@ class Dashboard extends Page
 
     protected function getViewData(): array
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $brands = config('vehicles.brands');
 
         $vehicle->brand = $brands[$vehicle->brand];

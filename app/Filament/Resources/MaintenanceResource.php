@@ -37,6 +37,7 @@ use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\HtmlString;
+use Filament\Facades\Filament;
 
 class MaintenanceResource extends Resource
 {
@@ -65,11 +66,6 @@ class MaintenanceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->headerActions([
                 Action::make('small_checks')
                     ->label(__('Add small check'))
@@ -92,7 +88,7 @@ class MaintenanceResource extends Resource
                             'vehicle_id' => Session::get('vehicle_id'),
                             'type_maintenance' => $data['type_maintenance'],
                             'date' => $data['date'] ?? Carbon::today()->format('Y-m-d'),
-                            'mileage' => Vehicle::selected()->first()->mileage_latest ?? Vehicle::selected()->first()->mileage_start,
+                            'mileage' => Filament::getTenant()->mileage_latest ?? Filament::getTenant()->mileage_start,
                         ]);
                     }),
                 Action::make('info')
@@ -220,23 +216,6 @@ class MaintenanceResource extends Resource
                 Fieldset::make('maintenance')
                     ->label(__('Maintenance'))
                     ->schema([
-                        Select::make('vehicle_id')
-                            ->disabled()
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native((new self)->isMobile())
-                            ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                            ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::all();
-
-                                $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->full_name_with_license_plate;
-                                });
-
-                                return $vehicles->pluck('full_name_with_license_plate', 'id');
-                            }),
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()

@@ -35,6 +35,7 @@ use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
@@ -76,11 +77,6 @@ class TollResource extends Resource
                     ->modalCancelActionLabel(__('Close'))
                     ->modalSubmitAction(false),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->columns([
                 Split::make([
                     Stack::make([
@@ -229,23 +225,6 @@ class TollResource extends Resource
                 Fieldset::make('Basic')
                     ->label(__('Basic'))
                     ->schema([
-                        Select::make('vehicle_id')
-                            ->disabled()
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native((new self)->isMobile())
-                            ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                            ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::all();
-
-                                $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->full_name_with_license_plate;
-                                });
-
-                                return $vehicles->pluck('full_name_with_license_plate', 'id');
-                            }),
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()
@@ -273,7 +252,7 @@ class TollResource extends Resource
                             ->native((new self)->isMobile())
                             ->options((new self())->getCountryOptions())
                             ->required(fn(callable $get) => $get('road') ?? false)
-                            ->default(Vehicle::selected()->first()->country_registration),
+                            ->default(Filament::getTenant()->country_registration),
                         ToggleButtons::make('road_type')
                             ->label(__('Road type'))
                             ->inline()

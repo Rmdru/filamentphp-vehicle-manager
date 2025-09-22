@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Widgets;
 
 use App\Models\Vehicle;
+use Filament\Facades\Filament;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -38,7 +39,7 @@ class DashboardStatusOverview extends BaseWidget
 
     private function fillStatuses(): void
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
 
         $this->getMaintenanceStatus($vehicle);
         $this->getApkStatus($vehicle);

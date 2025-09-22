@@ -21,9 +21,9 @@ class CreateFirstVehicle
         if (
             auth()->user()
             && ! User::isOnboarded()
-            && ! $request->routeIs('filament.account.resources.vehicles.create')
+            && ! $request->routeIs('filament.account.tenant.registration')
         ) {
-            return redirect()->route('filament.account.resources.vehicles.create');
+            return redirect()->route('filament.account.tenant.registration');
         }
 
         return $next($request);

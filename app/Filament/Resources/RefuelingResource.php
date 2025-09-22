@@ -14,6 +14,7 @@ use App\Traits\CountryOptions;
 use App\Traits\FuelTypeOptions;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -73,7 +74,7 @@ class RefuelingResource extends Resource
     {
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return $table
@@ -87,10 +88,7 @@ class RefuelingResource extends Resource
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query
-                    ->select('*', DB::raw('mileage_end - mileage_begin as distance'))
-                    ->whereHas('vehicle', function ($query) {
-                        $query->selected();
-                    });
+                    ->select('*', DB::raw('mileage_end - mileage_begin as distance'));
             })
             ->columns([
                 Split::make([
@@ -250,7 +248,7 @@ class RefuelingResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
         $previousRefueling = Refueling::query()
             ->where('vehicle_id', $vehicle->id)
@@ -262,23 +260,6 @@ class RefuelingResource extends Resource
                 Fieldset::make('Refueling')
                     ->label(__('Refueling'))
                     ->schema([
-                        Select::make('vehicle_id')
-                            ->disabled()
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native((new self)->isMobile())
-                            ->relationship('vehicle')
-                            ->default($vehicle->id ?? null)
-                            ->options(function () {
-                                $vehicles = Vehicle::all();
-
-                                $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->full_name_with_license_plate;
-                                });
-
-                                return $vehicles->pluck('full_name_with_license_plate', 'id');
-                            }),
                         DatePicker::make('date')
                             ->label(__('Date'))
                             ->required()
@@ -427,7 +408,7 @@ class RefuelingResource extends Resource
                             ->required()
                             ->suffix(' km')
                             ->numeric()
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->mileage_latest ?? null)
+                            ->default(fn(Vehicle $vehicle) => Filament::getTenant()->mileage_latest ?? null)
                             ->lazy()
                             ->afterStateUpdated(fn($state, callable $set) => $set('mileage_begin', $state)),
                         TextInput::make('mileage_end')

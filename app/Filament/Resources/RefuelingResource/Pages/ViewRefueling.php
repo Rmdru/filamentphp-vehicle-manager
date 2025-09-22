@@ -12,6 +12,7 @@ use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use Filament\Facades\Filament;
 use Filament\Infolists\Components\Group;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
@@ -35,7 +36,7 @@ class ViewRefueling extends ViewRecord
     public function infolist(Infolist $infolist): Infolist
     {
         $gasStationLogos = config('refuelings.gas_station_logos');
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return $infolist

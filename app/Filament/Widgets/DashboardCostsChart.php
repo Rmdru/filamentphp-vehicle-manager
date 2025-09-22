@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Vehicle;
 use App\Traits\GenerateRandomHexColor;
 use App\Traits\IsMobile;
+use Filament\Facades\Filament;
 use Filament\Widgets\ChartWidget;
 
 class DashboardCostsChart extends ChartWidget
@@ -16,7 +17,7 @@ class DashboardCostsChart extends ChartWidget
 
     protected function getData(): array
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $costData = $vehicle->calculateMonthlyCosts(now()->subYear(), now());
 
         $datasets = [];

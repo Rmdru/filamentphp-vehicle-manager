@@ -12,15 +12,18 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateAccident extends CreateRecord
 {
     protected static string $resource = AccidentResource::class;
-
-    protected function mutateFormDataBeforeCreate(array $data): array
+    
+    public function creating(Vehicle $vehicle): void
     {
-        if (array_search(AccidentSituation::VehicleNotRollable->value, $data['situation'])) {
-            Vehicle::update(['id' => $data['vehicle_id']], ['status' => VehicleStatus::NotRollable->value]);
+        $vehicle->vehicle_id = auth()->user()->vehicle_id;
+
+        
+        if (array_search(AccidentSituation::VehicleNotRollable->value, $vehicle->situation)) {
+            Vehicle::update(['id' => $vehicle->vehicle_id], ['status' => VehicleStatus::NotRollable->value]);
         }
 
-        $data['total_price'] = ($data['damage_own'] + $data['damage_others']) - ($data['damage_own_insured'] + $data['damage_others_insured']);
+        $vehicle->total_price = ($vehicle->damage_own + $vehicle->damage_others) - ($vehicle->damage_own_insured + $vehicle->damage_others_insured);
 
-        return $data;
+        $vehicle->vehicle()->associate(auth()->user()->vehicle);
     }
 }

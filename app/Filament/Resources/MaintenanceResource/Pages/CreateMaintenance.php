@@ -4,15 +4,16 @@ namespace App\Filament\Resources\MaintenanceResource\Pages;
 
 use App\Filament\Resources\MaintenanceResource;
 use App\Models\Vehicle;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateMaintenance extends CreateRecord
 {
     protected static string $resource = MaintenanceResource::class;
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    public function creating(Vehicle $vehicle): void
     {
-        return $data;
+        $vehicle->vehicle_id = auth()->user()->vehicle_id;
+
+        $vehicle->vehicle()->associate(auth()->user()->vehicle);
     }
 }

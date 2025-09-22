@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Refueling;
 use App\Models\Vehicle;
+use Filament\Facades\Filament;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -22,7 +23,7 @@ class DashboardStatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return [
@@ -126,7 +127,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAverageMonthlyCosts(bool $thisMonth = false): int
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $startDate = $this->filters['startDate'] ?? '';
         $endDate = $this->filters['endDate'] ?? '';
 
@@ -177,7 +178,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAverageMonthlyDistance(bool $thisMonth = false): int
     {
-        $vehicleId = Vehicle::selected()->first()->id;
+        $vehicleId = Filament::getTenant()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -220,7 +221,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAverageFuelConsumption(bool $latest = false): float
     {
-        $vehicleId = Vehicle::selected()->first()->id;
+        $vehicleId = Filament::getTenant()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -262,7 +263,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function getRefuelings(): ?Builder
     {
-        $vehicleId = Vehicle::selected()->first()->id;
+        $vehicleId = Filament::getTenant()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -296,7 +297,7 @@ class DashboardStatsOverview extends BaseWidget
             $fuelConsumption = $this->calculateAverageFuelConsumption(true);
         }
 
-        $tankCapacity = Vehicle::selected()->first()->tank_capacity;
+        $tankCapacity = Filament::getTenant()->tank_capacity;
         $avgRange = $tankCapacity / $fuelConsumption * 100;
 
         return round($avgRange);
@@ -304,7 +305,7 @@ class DashboardStatsOverview extends BaseWidget
 
     private function calculateAvgOnboardComputerDeviation(bool $latest = false): float
     {
-        $vehicleId = Vehicle::selected()->first()->id;
+        $vehicleId = Filament::getTenant()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 

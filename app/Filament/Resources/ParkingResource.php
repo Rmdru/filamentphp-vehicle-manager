@@ -67,11 +67,6 @@ class ParkingResource extends Resource
                     ->modalCancelActionLabel(__('Close'))
                     ->modalSubmitAction(false),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->columns([
                 Grid::make([
                     'xl' => 6,
@@ -187,23 +182,6 @@ class ParkingResource extends Resource
                 Fieldset::make('Basic')
                     ->label(__('Basic'))
                     ->schema([
-                        Select::make('vehicle_id')
-                            ->disabled()
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native((new self)->isMobile())
-                            ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                            ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::all();
-
-                                $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->full_name_with_license_plate;
-                                });
-
-                                return $vehicles->pluck('full_name_with_license_plate', 'id');
-                            }),
                         ToggleButtons::make('type')
                             ->label(__('Type'))
                             ->inline()

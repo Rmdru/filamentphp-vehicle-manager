@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Models\Vehicle;
 use App\Services\VehicleStatusService;
+use Filament\Facades\Filament;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -15,7 +16,7 @@ class StatusNotification extends Component
 
     public function mount(VehicleStatusService $statusService): void
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $this->notifications = $statusService->getNotifications($vehicle);
     }
 

@@ -34,6 +34,7 @@ use Guava\FilamentIconPicker\Forms\IconPicker;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Livewire;
+use Illuminate\Database\Eloquent\Builder;
 
 class VehicleResource extends Resource
 {
@@ -60,9 +61,15 @@ class VehicleResource extends Resource
         return __('Vehicle');
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return Vehicle::ownVehicles();
+    }
+    
     public static function form(Form $form): Form
     {
         $fuelTypes = trans('fuel_types');
+        $countries = config('countries');
 
         return $form
             ->schema([
@@ -399,7 +406,7 @@ class VehicleResource extends Resource
                                 return $badge['filamentColor'] ?? null;
                             })
                             ->badge()
-                            ->label(__('Status')),
+                            ->label(__('Notifications')),
                         TextColumn::make('status')
                             ->icon(fn(string $state) => VehicleStatus::from($state)->getIcon() ?? null)
                             ->formatStateUsing(fn(string $state) => VehicleStatus::from($state)->getLabel() ?? '')
@@ -412,7 +419,6 @@ class VehicleResource extends Resource
                         ->space(),
                 ]),
             ])
-            ->defaultSort('purchase_date', 'desc')
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,

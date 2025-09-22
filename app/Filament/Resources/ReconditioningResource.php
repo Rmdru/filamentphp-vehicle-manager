@@ -58,11 +58,6 @@ class ReconditioningResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->headerActions([
                 Action::make('info')
                     ->modalHeading(__('Reconditioning & washing'))
@@ -179,23 +174,6 @@ class ReconditioningResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('vehicle_id')
-                    ->disabled()
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native((new self)->isMobile())
-                    ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                    ->options(function () {
-                        $vehicles = Vehicle::all();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->full_name_with_license_plate;
-                        });
-
-                        return $vehicles->pluck('full_name_with_license_plate', 'id');
-                    }),
                 DatePicker::make('date')
                     ->label(__('Date'))
                     ->required()

@@ -10,6 +10,7 @@ use App\Models\Service;
 use App\Models\Vehicle;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -61,23 +62,6 @@ class ServiceResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('vehicle_id')
-                    ->disabled()
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native((new self)->isMobile())
-                    ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                    ->options(function () {
-                        $vehicles = Vehicle::all();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->full_name_with_license_plate;
-                        });
-
-                        return $vehicles->pluck('full_name_with_license_plate', 'id');
-                    }),
                 ToggleButtons::make('type')
                     ->label(__('Type'))
                     ->inline()
@@ -116,11 +100,6 @@ class ServiceResource extends Resource
                     ->modalCancelActionLabel(__('Close'))
                     ->modalSubmitAction(false),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->columns([
                 Split::make([
                     TextColumn::make('type')

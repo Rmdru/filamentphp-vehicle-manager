@@ -3,12 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FerryResource\Pages;
-use App\Filament\Resources\FerryResource\RelationManagers;
 use App\Models\Ferry;
 use App\Models\Vehicle;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
-use Filament\Forms;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -27,7 +26,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 
 class FerryResource extends Resource
@@ -57,23 +55,6 @@ class FerryResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('vehicle_id')
-                    ->disabled()
-                    ->label(__('Vehicle'))
-                    ->required()
-                    ->searchable()
-                    ->native((new self)->isMobile())
-                    ->relationship('vehicle')
-                    ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                    ->options(function (Vehicle $vehicle) {
-                        $vehicles = Vehicle::all();
-
-                        $vehicles->car = $vehicles->map(function ($index) {
-                            return $index->full_name_with_license_plate;
-                        });
-
-                        return $vehicles->pluck('full_name_with_license_plate', 'id');
-                    }),
                 TextInput::make('start_location')
                     ->label(__('Start location'))
                     ->required()
@@ -115,11 +96,6 @@ class FerryResource extends Resource
                     ->modalCancelActionLabel(__('Close'))
                     ->modalSubmitAction(false),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->columns([
                 Grid::make([
                     'xl' => 3,

@@ -13,6 +13,7 @@ use App\Models\Vehicle;
 use App\Traits\CountryOptions;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
@@ -79,11 +80,6 @@ class FineResource extends Resource
                     ->modalCancelActionLabel(__('Close'))
                     ->modalSubmitAction(false),
             ])
-            ->modifyQueryUsing(function (Builder $query) {
-                return $query->whereHas('vehicle', function ($query) {
-                    $query->selected();
-                });
-            })
             ->columns([
                 Split::make([
                     TextColumn::make('icon')
@@ -268,23 +264,6 @@ class FineResource extends Resource
                 Fieldset::make('Basic')
                     ->label(__('Basic'))
                     ->schema([
-                        Select::make('vehicle_id')
-                            ->disabled()
-                            ->label(__('Vehicle'))
-                            ->required()
-                            ->searchable()
-                            ->native((new self)->isMobile())
-                            ->relationship('vehicle')
-                            ->default(fn(Vehicle $vehicle) => $vehicle->selected()->first()->id ?? null)
-                            ->options(function (Vehicle $vehicle) {
-                                $vehicles = Vehicle::all();
-
-                                $vehicles->car = $vehicles->map(function ($index) {
-                                    return $index->full_name_with_license_plate;
-                                });
-
-                                return $vehicles->pluck('full_name_with_license_plate', 'id');
-                            }),
                         ToggleButtons::make('type')
                             ->label(__('Type'))
                             ->inline()
@@ -331,7 +310,7 @@ class FineResource extends Resource
                             ->native((new self)->isMobile())
                             ->required(fn(callable $get) => $get('road') ?? false)
                             ->options((new self())->getCountryOptions())
-                            ->default(Vehicle::selected()->first()->country_registration),
+                            ->default(Filament::getTenant()->country_registration),
                         TextInput::make('location')
                             ->label(__('Location'))
                             ->maxLength(100),

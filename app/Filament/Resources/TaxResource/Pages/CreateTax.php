@@ -9,4 +9,11 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateTax extends CreateRecord
 {
     protected static string $resource = TaxResource::class;
+
+    public function creating(Vehicle $vehicle): void
+    {
+        $vehicle->vehicle_id = auth()->user()->vehicle_id;
+
+        $vehicle->vehicle()->associate(auth()->user()->vehicle);
+    }
 }

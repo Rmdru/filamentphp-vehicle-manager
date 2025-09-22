@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Vehicle;
+use Filament\Facades\Filament;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -20,7 +21,7 @@ class LicensePlate extends Component
     public function render(): View
     {
         $countries = config('countries');
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
 
         if ($this->vehicleId) {
             $vehicle = Vehicle::where('id', $this->vehicleId)->latest()->first();

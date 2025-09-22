@@ -3,14 +3,18 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasTenants
 {
     use HasFactory;
     use Notifiable;
@@ -57,16 +61,28 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-    /**
-     * Get the vehicles that the user has
-     */
     public function vehicles(): HasMany
     {
         return $this->hasMany(Vehicle::class);
     }
 
+    public function getTenants(Panel $panel): Collection
+    {
+        return $this->vehicles;
+    }
+
+    public function getDefaultTenant(Panel $panel): ?Model
+    {
+        return $this->vehicles()->latest()->first();
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return $this->vehicles()->whereKey($tenant)->exists();
+    }
+
     public static function isOnboarded(): bool
     {
-        return User::find(auth()->id())->vehicles()->exists();
+        return User::find(Auth::id())->vehicles()->exists();
     }
 }

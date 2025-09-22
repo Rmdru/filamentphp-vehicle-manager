@@ -19,12 +19,13 @@ use App\Models\Tax;
 use App\Models\Toll;
 use App\Models\Vehicle;
 use App\Models\Vignette;
+use Filament\Facades\Filament;
 
 class Cost
 {
     public static function types(): array
     {
-        $vehicle = Vehicle::selected()->first();
+        $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return [

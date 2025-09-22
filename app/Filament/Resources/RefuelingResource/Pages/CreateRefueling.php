@@ -4,6 +4,7 @@ namespace App\Filament\Resources\RefuelingResource\Pages;
 
 use App\Filament\Resources\RefuelingResource;
 use App\Models\Vehicle;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateRefueling extends CreateRecord
@@ -12,7 +13,7 @@ class CreateRefueling extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $vehicle = Vehicle::find($data['vehicle_id']);
+        $vehicle = Filament::getTenant();
 
         $distance = $data['mileage_end'] - $data['mileage_begin'];
 
