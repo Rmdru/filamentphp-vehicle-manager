@@ -40,7 +40,10 @@
                     :badges="$item->badges ?? []"
                     :roadConfig="$item->roadConfig ?? []"
                     :link="[
-                        'url' => route('filament.account.resources.' . $item->link . '.edit', ['record' => $item->id]),
+                        'url' => route('filament.account.resources.' . $item->link . '.edit', [
+                            'tenant' => $tenant->id,
+                            'record' => $item->id,
+                        ]),
                         'icon' => 'gmdi-remove-red-eye-r',
                         'text' => __('Show'),
                     ]"
@@ -49,7 +52,7 @@
         </x-filament::fieldset>
     @endforeach
     @if (! $historyItems->count())
-        <x-filament::fieldset>
+        <x-filament::fieldset>w
             <h1 class="font-bold text-xl">{{ __('Nothing to show') }}</h1>
         </x-filament::fieldset>
     @endif

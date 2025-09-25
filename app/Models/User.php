@@ -83,6 +83,6 @@ class User extends Authenticatable implements FilamentUser, HasTenants
 
     public static function isOnboarded(): bool
     {
-        return User::find(Auth::id())->vehicles()->exists();
+        return auth()->user()->vehicles()->exists();
     }
 }

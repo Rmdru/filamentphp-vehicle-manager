@@ -47,6 +47,7 @@ class Timeline extends Page
         return [
             'historyItems' => $historyItems,
             'predictions' => $predictions,
+            'tenant' => Filament::getTenant(),
         ];
     }
 
@@ -56,31 +57,30 @@ class Timeline extends Page
         $gasStationLogos = config('refuelings.gas_station_logos');
         $fuelTypes = trans('fuel_types');
 
-        $vehicle = Filament::getTenant()
-            ->with([
-                'maintenances' => function ($query) {
-                    $query->whereIn('type_maintenance', [
-                        'small_maintenance',
-                        'maintenance',
-                        'big_maintenance',
-                    ]);
-                },
-                'refuelings',
-                'insurances',
-                'taxes',
-                'parking',
-                'toll',
-                'fines',
-                'reconditionings',
-                'vignettes',
-                'environmentalStickers',
-                'ferries',
-                'products',
-                'services',
-                'accidents',
-            ])
-            ->latest()
-            ->first();
+        $vehicle = Filament::getTenant();
+
+        $vehicle->load([
+            'maintenances' => function ($query) {
+                $query->whereIn('type_maintenance', [
+                    'small_maintenance',
+                    'maintenance',
+                    'big_maintenance',
+                ]);
+            },
+            'refuelings',
+            'insurances',
+            'taxes',
+            'parking',
+            'toll',
+            'fines',
+            'reconditionings',
+            'vignettes',
+            'environmentalStickers',
+            'ferries',
+            'products',
+            'services',
+            'accidents',
+        ]);
 
         $items = collect();
 
@@ -283,7 +283,7 @@ class Timeline extends Page
 
     private function getPredictions(): Collection
     {
-        $vehicle = Filament::getTenant()
+        $vehicle = Vehicle::find(Filament::getTenant()->id)
             ->addSelect([
                 'apk' => Maintenance::select('id')
                     ->whereColumn('vehicle_id', 'vehicles.id')

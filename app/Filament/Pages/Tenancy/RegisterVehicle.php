@@ -18,7 +18,6 @@ class RegisterVehicle extends RegisterTenant
         return __('Create vehicle');
     }
    
-
     public function getTitle(): string
     {
         return __('Create your first vehicle');

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use Carbon\Carbon;
+use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\View\View;
 use Livewire\Component;
 
