@@ -473,12 +473,12 @@ class Vehicle extends Model implements HasName
         return $this->hasMany(Tax::class);
     }
 
-    public function parking(): HasMany
+    public function parkings(): HasMany
     {
         return $this->hasMany(Parking::class);
     }
 
-    public function toll(): HasMany
+    public function tolls(): HasMany
     {
         return $this->hasMany(Toll::class);
     }
