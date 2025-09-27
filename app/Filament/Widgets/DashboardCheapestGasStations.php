@@ -32,17 +32,6 @@ class DashboardCheapestGasStations extends BaseWidget
             ->paginated(false)
             ->columns([
                 TextColumn::make('gas_station')
-                    ->hidden()
-                    ->formatStateUsing(
-                        function (Refueling $refueling) use ($gasStationLogos) {
-                            $gasStationBrand = str($refueling->gas_station)->lower()->explode(' ')[0];
-
-                            $logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
-
-                            return new HtmlString('<div class="w-5/12 min-h-16 max-h-40 flex items-center bg-white border border-gray-200 rounded p-2"><img class="max-h-40" src="' . $logo . '" /></div>');
-                        }
-                    ),
-                TextColumn::make('gas_station')
                     ->label(__('Gas station')),
                 TextColumn::make('visit_count')
                     ->label(__('Visit count')),
