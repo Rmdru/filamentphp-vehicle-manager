@@ -6,6 +6,7 @@ use App\Filament\Resources\RefuelingResource;
 use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Actions;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\EditRecord;
 
 class EditRefueling extends EditRecord
@@ -14,7 +15,7 @@ class EditRefueling extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $vehicle = Vehicle::find($data['vehicle_id']);
+        $vehicle = Vehicle::find(Filament::getTenant()->id);
 
         $distance = $data['mileage_end'] - $data['mileage_begin'];
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Widgets;
 
-use App\Models\Vehicle;
 use App\Support\Cost;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
@@ -68,8 +67,7 @@ class DashboardLatestCosts extends BaseWidget
 
     private function getLatestCosts(): Builder
     {
-        $vehicle = Filament::getTenant();
-        $vehicleId = $vehicle->id;
+        $vehicleId = Filament::getTenant()->id;
 
         $queries = [];
         foreach (Cost::types() as $type => $config) {

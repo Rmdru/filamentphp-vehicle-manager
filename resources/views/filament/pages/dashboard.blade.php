@@ -62,6 +62,19 @@
         @livewire(\App\Filament\Widgets\DashboardCostsChart::class)
     </x-filament::section>
     <x-filament::section
+        icon="gmdi-local-gas-station-r"
+        collapsible
+        persist-collapsed
+        id="cheapest-gas-stations"
+    >
+        <x-slot name="heading">
+            <span class="flex gap-2">
+                {{ __('Cheapest gas stations') }}
+            </span>
+        </x-slot>
+        @livewire(\App\Filament\Widgets\DashboardCheapestGasStations::class)
+    </x-filament::section>
+    <x-filament::section
         icon="mdi-hand-coin-outline"
         collapsible
         persist-collapsed

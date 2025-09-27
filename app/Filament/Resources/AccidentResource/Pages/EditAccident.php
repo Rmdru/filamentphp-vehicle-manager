@@ -23,7 +23,7 @@ class EditAccident extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if (array_search(AccidentSituation::VehicleNotRollable->value, $data['situation'])) {
-            Vehicle::update(['id' => $data['vehicle_id']], ['status' => VehicleStatus::NotRollable->value]);
+            Vehicle::update(['id' => Filament::getTenant()->id], ['status' => VehicleStatus::NotRollable->value]);
         }
 
         $data['total_price'] = ($data['damage_own'] + $data['damage_others']) - ($data['damage_own_insured'] + $data['damage_others_insured']);
