@@ -70,8 +70,8 @@ class Timeline extends Page
             'refuelings',
             'insurances',
             'taxes',
-            'parking',
-            'toll',
+            'parkings',
+            'tolls',
             'fines',
             'reconditionings',
             'vignettes',
@@ -159,7 +159,7 @@ class Timeline extends Page
             }
         }
 
-        foreach ($vehicle->parking as $parking) {
+        foreach ($vehicle->parkings as $parking) {
             $parking->icon = 'fas-parking';
             $parking->link = 'parking';
             $parking->date = $parking->end_time;
@@ -174,7 +174,7 @@ class Timeline extends Page
             $items->push($parking);
         }
 
-        foreach ($vehicle->toll as $toll) {
+        foreach ($vehicle->tolls as $toll) {
             $toll->icon = 'maki-toll';
             $toll->link = 'toll';
             $toll->heading = __('Toll');
