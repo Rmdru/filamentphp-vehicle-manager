@@ -54,7 +54,7 @@ class DashboardCheapestGasStations extends BaseWidget
         $gasStations = Refueling::query()
             ->where('vehicle_id', Filament::getTenant()->id)
             ->select(
-                'id',
+                DB::raw('MIN(id) as id'),
                 'gas_station',
                 DB::raw('COUNT(*) as visit_count'),
                 DB::raw('AVG(unit_price) as avg_price'),
