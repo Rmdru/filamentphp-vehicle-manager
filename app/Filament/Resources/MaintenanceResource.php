@@ -117,7 +117,7 @@ class MaintenanceResource extends Resource
                         ->label(__('Type maintenance'))
                         ->badge()
                         ->default('')
-                        ->formatStateUsing(fn(string $state) => MaintenanceTypeMaintenance::from($state)->getLabel() ?? '')
+                        ->formatStateUsing(fn(string $state) => ! empty($state) ? MaintenanceTypeMaintenance::from($state)->getLabel() : '')
                         ->color('gray'),
                     TextColumn::make('apk')
                         ->sortable()
