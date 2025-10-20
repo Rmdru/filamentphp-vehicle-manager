@@ -67,7 +67,7 @@ class ProductResource extends Resource
                     ->step(0.01),
                 DatePicker::make('date')
                     ->label(__('Date'))
-                    ->maxDate(date('Y-m-d'))
+                    ->maxDate(now())
                     ->native((new self)->isMobile())
                     ->default(now())
                     ->required(),
