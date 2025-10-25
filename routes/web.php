@@ -3,6 +3,7 @@
 use App\Http\Controllers\MaintenanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VehicleController;
+use Filament\Facades\Filament;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,11 +18,16 @@ use App\Http\Controllers\VehicleController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
-        return redirect(route('filament.account.pages.dashboard'));
+        return redirect(route('filament.account.pages.dashboard', ['tenant' => Filament::getTenant()]));
     });
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/', function () {
+        return redirect(route('filament.account.pages.dashboard', [
+            'tenant' => auth()->user()->getDefaultTenant(Filament::getPanel('account'))->id,
+        ]));
+    });
     Route::get('/account/switch-vehicle/{vehicleId}', [VehicleController::class, 'switchVehicle'])
         ->name('switch-vehicle');
 
