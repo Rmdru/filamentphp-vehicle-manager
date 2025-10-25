@@ -25,7 +25,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return redirect(route('filament.account.pages.dashboard', [
-            'tenant' => auth()->user()->getDefaultTenant(Filament::getPanel('account'))->id,
+            'tenant' => auth()->user()->getDefaultTenant()->id,
         ]));
     });
     Route::get('/account/switch-vehicle/{vehicleId}', [VehicleController::class, 'switchVehicle'])

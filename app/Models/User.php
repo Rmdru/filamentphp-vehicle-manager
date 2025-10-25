@@ -71,7 +71,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         return $this->vehicles;
     }
 
-    public function getDefaultTenant(Panel $panel): ?Model
+    public function getDefaultTenant(): ?Model
     {
         return $this->vehicles()->latest()->first();
     }
