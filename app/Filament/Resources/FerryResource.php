@@ -179,6 +179,12 @@ class FerryResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Ferry $replica): Ferry {
+                            $replica['start_date'] = today();
+
+                            return $replica;
+                        })
                 ]),
             ])
             ->bulkActions([

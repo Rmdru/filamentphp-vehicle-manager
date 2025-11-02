@@ -231,7 +231,12 @@ class RefuelingResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
-                        ->excludeAttributes(['distance'])
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Refueling $replica): Refueling {
+                            $replica['date'] = today();
+
+                            return $replica;
+                        })
                 ]),
                 ViewAction::make()
                     ->iconButton()

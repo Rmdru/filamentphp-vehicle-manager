@@ -165,6 +165,12 @@ class ParkingResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Parking $replica): Parking {
+                            $replica['start_time'] = today();
+
+                            return $replica;
+                        })
                 ]),
             ])
             ->bulkActions([

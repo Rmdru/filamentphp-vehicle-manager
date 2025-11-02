@@ -256,6 +256,12 @@ class AccidentResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Accident $replica): Accident {
+                            $replica['datetime'] = now();
+
+                            return $replica;
+                        })
                 ]),
             ])
             ->bulkActions([

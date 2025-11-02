@@ -143,6 +143,12 @@ class TaxResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Tax $replica): Tax {
+                            $replica['start_date'] = today();
+
+                            return $replica;
+                        })
                 ]),
             ])
             ->bulkActions([

@@ -195,6 +195,12 @@ class MaintenanceResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Maintenance $replica): Maintenance {
+                            $replica['date'] = today();
+
+                            return $replica;
+                        })
                 ]),
                 ViewAction::make()
                     ->iconButton()

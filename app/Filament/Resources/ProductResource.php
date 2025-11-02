@@ -157,6 +157,12 @@ class ProductResource extends Resource
                         ->label(__('Duplicate'))
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
+                        ->modalIcon('gmdi-file-copy-r')
+                        ->beforeReplicaSaved(function (Product $replica): Product {
+                            $replica['date'] = today();
+
+                            return $replica;
+                        })
                 ]),
             ])
             ->bulkActions([
