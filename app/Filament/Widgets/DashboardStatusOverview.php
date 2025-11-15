@@ -64,12 +64,21 @@ class DashboardStatusOverview extends BaseWidget
             return;
         }
 
+        $value = [
+            'primary' => str($maintenanceStatus['timeDiffHumans'])->ucfirst()->toString(),
+            'secondary' => __('About :distance km', ['distance' => $maintenanceStatus['distance']]),
+        ];
+
+        if ($maintenanceStatus['daysTillDistanceDeadline'] < $maintenanceStatus['daysTillTimeDeadline']) {
+            $value = [
+                'primary' => __('About :distance km', ['distance' => $maintenanceStatus['distance']]),
+                'secondary' => str($maintenanceStatus['timeDiffHumans'])->ucfirst()->toString(),
+            ];
+        }
+        
         $this->statuses[] = [
             'title' => __('Maintenance'),
-            'value' => [
-                'primary' => str($maintenanceStatus['timeDiffHumans'])->ucfirst(),
-                'secondary' => __('About :distance km', ['distance' => $maintenanceStatus['distance']]),
-            ],
+            'value' => $value,
             'icon' => 'mdi-car-wrench',
         ];
     }

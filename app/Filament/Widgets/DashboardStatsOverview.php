@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
-use App\Models\Refueling;
-use App\Models\Vehicle;
 use Filament\Facades\Filament;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
+use App\Traits\VehicleStats;
 
 class DashboardStatsOverview extends BaseWidget
 {
     use InteractsWithPageFilters;
+    use VehicleStats;
 
     protected static ?string $pollingInterval = null;
 
@@ -29,7 +30,7 @@ class DashboardStatsOverview extends BaseWidget
         return [
             $this->buildStat(
                 title: __('Average monthly costs'),
-                value: $this->calculateAverageMonthlyCosts(),
+                value: round($this->calculateAverageMonthlyCosts(), 2),
                 icon: 'mdi-hand-coin-outline',
                 latestValue: $this->calculateAverageMonthlyCosts(true),
                 prefix: '€',
@@ -88,9 +89,9 @@ class DashboardStatsOverview extends BaseWidget
 
     private function buildStat(
         string $title,
-        string $value,
+        string|float $value,
         string $icon,
-        string $latestValue,
+        string|float $latestValue,
         string $prefix = '',
         string $suffix = '',
         string $operator = '<',
@@ -123,231 +124,5 @@ class DashboardStatsOverview extends BaseWidget
             ->description($description)
             ->descriptionColor($descriptionColor)
             ->descriptionIcon($descriptionIcon);
-    }
-
-    private function calculateAverageMonthlyCosts(bool $thisMonth = false): int
-    {
-        $vehicle = Filament::getTenant();
-        $startDate = $this->filters['startDate'] ?? '';
-        $endDate = $this->filters['endDate'] ?? '';
-
-        if ($thisMonth) {
-            $startDate = now()->startOfMonth()->toDateString();
-            $endDate = now()->endOfMonth()->toDateString();
-        }
-
-        $costData = $vehicle->calculateMonthlyCosts($startDate, $endDate);
-
-        $totalCosts = 0;
-        $uniqueMonths = count($costData['labels']);
-
-        foreach ($costData['monthlyCosts'] as $costs) {
-            foreach ($costs as $cost) {
-                $totalCosts += $cost;
-            }
-        }
-
-        return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
-    }
-
-    private function calculateCostsPerKilometer(bool $thisMonth = false): float
-    {
-        $averageMonthlyCosts = $this->calculateAverageMonthlyCosts();
-        $currentMonthlyCosts = $this->calculateAverageMonthlyCosts(true);
-        $averageMonthlyDistance = $this->calculateAverageMonthlyDistance();
-        $currentMonthlyDistance = $this->calculateAverageMonthlyDistance(true);
-
-        if ($thisMonth) {
-            $rawCostsPerKilometerCurrentMonth = 0;
-
-            if ($currentMonthlyDistance > 0) {
-                $rawCostsPerKilometerCurrentMonth = $currentMonthlyCosts / $currentMonthlyDistance;
-            }
-
-            return round($rawCostsPerKilometerCurrentMonth, 3);
-        }
-
-        $rawCostsPerKilometer = 0;
-
-        if ($averageMonthlyDistance > 0) {
-            $rawCostsPerKilometer = $averageMonthlyCosts / $averageMonthlyDistance;
-        }
-
-        return round($rawCostsPerKilometer, 3);
-    }
-
-    private function calculateAverageMonthlyDistance(bool $thisMonth = false): int
-    {
-        $vehicleId = Filament::getTenant()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
-
-        if ($thisMonth) {
-            $startDate = now()->startOfMonth()->toDateString();
-            $endDate = now()->endOfMonth()->toDateString();
-        }
-
-        $query = Refueling::query()
-            ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(mileage_end - mileage_begin) as total_distance')
-            ->where('vehicle_id', $vehicleId);
-
-        if ($startDate) {
-            $query->whereDate('date', '>=', $startDate);
-        }
-
-        if ($endDate) {
-            $query->whereDate('date', '<=', $endDate);
-        }
-
-        $query->groupBy('year', 'month');
-
-        $results = $query->get();
-
-        $totalDistance = 0;
-        $monthsCount = $results->count();
-
-        foreach ($results as $result) {
-            $totalDistance += $result->total_distance;
-        }
-
-        if ($monthsCount === 0) {
-            return 0;
-        }
-
-        $averageMonthlyDistance = $totalDistance / $monthsCount;
-
-        return round($averageMonthlyDistance);
-    }
-
-    private function calculateAverageFuelConsumption(bool $latest = false): float
-    {
-        $vehicleId = Filament::getTenant()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
-
-        $refuelings = Refueling::where('vehicle_id', $vehicleId);
-
-        if (! $refuelings->count()) {
-            return 0;
-        }
-
-        if ($startDate) {
-            $refuelings->whereDate('date', '>=', $startDate);
-        }
-
-        if ($endDate) {
-            $refuelings->whereDate('date', '<=', $endDate);
-        }
-
-        if ($latest) {
-            return round($refuelings->latest()->first()->fuel_consumption, 2);
-        }
-
-        return round($refuelings->get()->avg('fuel_consumption'), 2);
-    }
-
-    private function calculateAvgSpeed(bool $latest = false): int
-    {
-        $refuelings = $this->getRefuelings();
-
-        if (empty($refuelings)) {
-            return 0;
-        }
-
-        if ($latest) {
-            return round($refuelings->latest()->first()->avg_speed, 1);
-        }
-
-        return round($refuelings->get()->avg('avg_speed'), 1);
-    }
-
-    private function getRefuelings(): ?Builder
-    {
-        $vehicleId = Filament::getTenant()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
-
-        $refuelings = Refueling::query()
-            ->where('vehicle_id', $vehicleId);
-
-        if (! $refuelings->count()) {
-            return null;
-        }
-
-        if ($startDate) {
-            $refuelings->whereDate('date', '>=', $startDate);
-        }
-
-        if ($endDate) {
-            $refuelings->whereDate('date', '<=', $endDate);
-        }
-
-        return $refuelings;
-    }
-
-    private function calculateAverageRange(bool $latest = false): float
-    {
-        $fuelConsumption = $this->calculateAverageFuelConsumption();
-
-        if (! $fuelConsumption) {
-            return 0.0;
-        }
-
-        if ($latest) {
-            $fuelConsumption = $this->calculateAverageFuelConsumption(true);
-        }
-
-        $tankCapacity = Filament::getTenant()->tank_capacity;
-        $avgRange = $tankCapacity / $fuelConsumption * 100;
-
-        return round($avgRange);
-    }
-
-    private function calculateAvgOnboardComputerDeviation(bool $latest = false): float
-    {
-        $vehicleId = Filament::getTenant()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
-
-        $refuelings = Refueling::where('vehicle_id', $vehicleId)
-            ->whereNotNull('fuel_consumption_onboard_computer');
-
-        if (! $refuelings->count()) {
-            return 0.0;
-        }
-
-        if ($startDate) {
-            $refuelings->whereDate('date', '>=', $startDate);
-        }
-
-        if ($endDate) {
-            $refuelings->whereDate('date', '<=', $endDate);
-        }
-
-        if ($latest) {
-            $latestRefueling = $refuelings->latest()->first();
-
-            if ($latestRefueling) {
-                $deviation = $latestRefueling->fuel_consumption - $latestRefueling->fuel_consumption_onboard_computer;
-
-                return round($deviation, 3);
-            }
-
-            return 0.0;
-        }
-
-        $refuelingsData = $refuelings->get();
-        if ($refuelingsData->isEmpty()) {
-            return 0.0;
-        }
-
-        $totalDeviation = 0.0;
-        foreach ($refuelingsData as $refueling) {
-            $totalDeviation += $refueling->fuel_consumption - $refueling->fuel_consumption_onboard_computer;
-        }
-
-        $averageDeviation = $totalDeviation / $refuelingsData->count();
-
-        return round($averageDeviation, 3);
     }
 }

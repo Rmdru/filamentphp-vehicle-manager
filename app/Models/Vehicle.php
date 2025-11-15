@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\MaintenanceTypeMaintenance;
+use App\Traits\VehicleStats;
 use App\Services\VehicleCostsService;
 use App\Support\Cost;
 use Carbon\Carbon;
@@ -24,6 +25,7 @@ class Vehicle extends Model implements HasName
     use HasFactory;
     use HasUuids;
     use SoftDeletes;
+    use VehicleStats;
 
     /**
      * The attributes that are mass assignable.
@@ -167,15 +169,20 @@ class Vehicle extends Model implements HasName
             $maintenanceDiff = $maintenanceDate->diffInDays(now());
             $timeDiffHumans = $maintenanceDate->isFuture() ? $maintenanceDate->diffForHumans() : __('Now');
 
-            $timeTillMaintenance = max(0, $maintenanceDiff - ($maintenanceDiff * 2));
+            $timeTillMaintenance = $maintenanceDiff - ($maintenanceDiff * 2);
 
             $distanceTillMaintenance = 15000 + $latestMaintenance->mileage - $this->mileage_latest;
         }
+
+        $daysTillDistanceDeadline = (int) $this->calculateAverageMonthlyDistance() > 30.44 ? $distanceTillMaintenance / ($this->calculateAverageMonthlyDistance() / 30.44) : $distanceTillMaintenance;
+        $daysTillTimeDeadline = (int) Carbon::now()->daysInYear - $timeTillMaintenance;
 
         return [
             'time' => $timeTillMaintenance,
             'timeDiffHumans' => $timeDiffHumans,
             'distance' => $distanceTillMaintenance,
+            'daysTillDistanceDeadline' => $daysTillDistanceDeadline,
+            'daysTillTimeDeadline' => $daysTillTimeDeadline,
         ];
     }
 
