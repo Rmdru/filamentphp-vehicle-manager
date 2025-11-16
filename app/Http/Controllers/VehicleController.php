@@ -11,13 +11,6 @@ use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller
 {
-    public function switchVehicle($vehicleId)
-    {
-        session(['vehicle_id' => $vehicleId]);
-
-        return back();
-    }
-
     public function image(Vehicle $vehicle)
     {
         $imageBasePath = 'vehicles/' . $vehicle->id;

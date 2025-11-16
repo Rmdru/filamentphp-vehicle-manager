@@ -85,7 +85,7 @@ class MaintenanceResource extends Resource
                     ->modalSubmitActionLabel(__('Save'))
                     ->action(function (array $data): void {
                         Maintenance::create([
-                            'vehicle_id' => Session::get('vehicle_id'),
+                            'vehicle_id' => Filament::getTenant()->id,
                             'type_maintenance' => $data['type_maintenance'],
                             'date' => $data['date'] ?? Carbon::today()->format('Y-m-d'),
                             'mileage' => Filament::getTenant()->mileage_latest ?? Filament::getTenant()->mileage_start,

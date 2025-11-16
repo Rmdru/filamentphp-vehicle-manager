@@ -32,7 +32,7 @@ class DashboardStatsOverview extends BaseWidget
                 title: __('Average monthly costs'),
                 value: round($this->calculateAverageMonthlyCosts(), 2),
                 icon: 'mdi-hand-coin-outline',
-                latestValue: $this->calculateAverageMonthlyCosts(true),
+                latestValue: round($this->calculateAverageMonthlyCosts(true), 2),
                 prefix: '€',
             ),
             $this->buildStat(
