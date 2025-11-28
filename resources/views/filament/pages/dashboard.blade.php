@@ -8,6 +8,11 @@
             {{ $vehicle->brand . ' ' . $vehicle->model }}
         </div>
         <livewire:license-plate :vehicleId="$vehicle->id" />
+        @if (! empty($vehicle->mileage_latest))
+            <x-filament::badge>
+                {{ $vehicle->mileage_latest }} km
+            </x-filament::badge>
+        @endif
     </div>
     <x-filament::section
         icon="gmdi-notifications-active-r"
