@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class Vehicle extends Model implements HasName
 {
@@ -92,11 +92,28 @@ class Vehicle extends Model implements HasName
         ]);
     }
 
-    public function getImageUrlAttribute()
+    public function getImagePathAttribute(): string
     {
-        $url = url(route('vehicle.image', ['vehicle' => $this->id]));
+        $extensions = ['jpg', 'jpeg', 'png', 'gif'];
+        foreach ($extensions as $extension) {
+            return 'vehicles/' . $this->id . '.' . $extension;
+        }
 
-        return Http::head($url)->successful() ? $url : null;
+        return '';
+    }
+
+    public function getImageExistAttribute(): bool
+    {
+        return Storage::disk('private')->exists($this->image_path);
+    }
+
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->image_exist) {
+            return url(route('vehicle.image', ['vehicle' => $this->id]));
+        }
+        
+        return '';
     }
 
     public function getFullNameAttribute(): string
