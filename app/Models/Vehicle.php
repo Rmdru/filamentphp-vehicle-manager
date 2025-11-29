@@ -102,14 +102,14 @@ class Vehicle extends Model implements HasName
         return '';
     }
 
-    public function getImageExistAttribute(): bool
+    public function getImageExistsAttribute(): bool
     {
         return Storage::disk('private')->exists($this->image_path);
     }
 
     public function getImageUrlAttribute(): string
     {
-        if ($this->image_exist) {
+        if ($this->image_exists) {
             return url(route('vehicle.image', ['vehicle' => $this->id]));
         }
         

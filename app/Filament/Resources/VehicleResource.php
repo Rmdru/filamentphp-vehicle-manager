@@ -351,7 +351,7 @@ class VehicleResource extends Resource
                     ->extraAttributes(['class' => 'mb-5'])
                     ->width('100%')
                     ->height('100%')
-                    ->hidden(fn (Vehicle $vehicle) => ! Storage::disk('private')->exists('vehicles/' . $vehicle->id . '.jpg')),
+                    ->hidden(fn (Vehicle $vehicle) => ! $vehicle->image_exists),
                 Tables\Columns\Layout\Split::make([
                     Stack::make([
                         TextColumn::make('brand')

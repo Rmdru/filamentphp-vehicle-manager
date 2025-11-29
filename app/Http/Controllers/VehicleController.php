@@ -12,7 +12,7 @@ class VehicleController extends Controller
 {
     public function image(Vehicle $vehicle)
     {
-        if (! $vehicle->image_exist) {
+        if (! $vehicle->image_exists) {
             return Response::make(status: 404);
         }
 

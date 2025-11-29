@@ -19,9 +19,9 @@ Route::middleware('auth')->group(function () {
         ]));
     });
 
-    Route::get('/account/complete-small-check/{vehicle}/{typeMaintenance}/{date}', MaintenanceController::class)
+    Route::get('/account/{vehicle}/complete-small-check/{typeMaintenance}/{date}', MaintenanceController::class)
         ->name('complete-small-check');
 
-    Route::get('/account/vehicles/{vehicle}/image', [VehicleController::class, 'image'])
+    Route::get('/account/{vehicle}/image', [VehicleController::class, 'image'])
         ->name('vehicle.image');
 });

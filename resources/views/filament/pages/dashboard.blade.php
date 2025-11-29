@@ -1,5 +1,5 @@
 <x-filament::page>
-    @if (! empty($vehicle->image_url))
+    @if ($vehicle->image_exists)
         <img src="{{ $vehicle->image_url }}" class="w-96" />
     @endif
     <div class="w-fit flex gap-4 items-center">

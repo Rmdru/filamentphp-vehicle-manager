@@ -16,7 +16,7 @@ class MaintenanceController extends Controller
             'vehicle_id' => $vehicle->id,
             'type_maintenance' => $typeMaintenance,
             'date' => $date ?? Carbon::today()->format('Y-m-d'),
-            'mileage' => Filament::getTenant()->mileage_latest ?? Filament::getTenant()->mileage_start,
+            'mileage' => $vehicle->mileage_latest ?? $vehicle->mileage_start,
         ]);
 
         return redirect()->back();
