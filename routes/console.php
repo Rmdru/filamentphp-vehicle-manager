@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+declare(strict_types=1);
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+use App\Console\Commands\SyncVehicleData;
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command(SyncVehicleData::class)->daily();

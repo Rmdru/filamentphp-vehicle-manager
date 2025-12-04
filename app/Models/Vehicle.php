@@ -52,6 +52,7 @@ class Vehicle extends Model implements HasName
         'specifications',
         'notifications',
         'privacy_settings',
+        'rdw_data',
     ];
 
     protected $casts = [
@@ -61,6 +62,7 @@ class Vehicle extends Model implements HasName
         'specifications' => 'array',
         'notifications' => 'array',
         'privacy_settings' => 'array',
+        'rdw_data' => 'array',
     ];
 
     protected $appends = [
@@ -130,6 +132,11 @@ class Vehicle extends Model implements HasName
         $brands = config('vehicles.brands');
 
         return $brands[$this->brand] . ' ' . $this->model . ' (' . $this->license_plate . ')';
+    }
+
+    public function getLicensePlateNormalizedAttribute(): string
+    {
+        return str_replace([' ', '-', '+'], '', strtoupper($this->license_plate));
     }
 
     public function getFuelStatusAttribute(): ?array
@@ -205,6 +212,21 @@ class Vehicle extends Model implements HasName
 
     public function getApkStatusAttribute(): array
     {
+        $rdwData = $this->rdw_data;
+
+        if (! empty($rdwData['vervaldatum_apk_dt'])) {
+            $apkDate = Carbon::parse($rdwData['vervaldatum_apk_dt']);
+            $apkDiff = $apkDate->diffInDays(now());
+            $timeDiffHumans = $apkDate->isFuture() ? $apkDate->diffForHumans() : __('Now');
+
+            $timeTillApk = max(0, $apkDiff - ($apkDiff * 2));
+
+            return [
+                'time' => $timeTillApk,
+                'timeDiffHumans' => $timeDiffHumans,
+            ];
+        }
+
         if ($this->maintenances->where('apk', true)->isEmpty()) {
             return [];
         }

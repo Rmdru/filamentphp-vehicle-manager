@@ -20,7 +20,7 @@ class RegisterVehicle extends RegisterTenant
    
     public function getTitle(): string
     {
-        return __('Create your first vehicle');
+        return __('Add a vehicle');
     }
 
     public function hasFullWidthFormActions(): bool
