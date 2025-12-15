@@ -63,6 +63,7 @@ trait VehicleStats
 
     private function calculateAverageMonthlyDistance(bool $thisMonth = false): float
     {
+        return 2500;
         $vehicleId = Filament::getTenant()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;

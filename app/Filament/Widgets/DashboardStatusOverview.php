@@ -66,12 +66,18 @@ class DashboardStatusOverview extends BaseWidget
 
         $value = [
             'primary' => str($maintenanceStatus['timeDiffHumans'])->ucfirst()->toString(),
-            'secondary' => __('About :distance km', ['distance' => $maintenanceStatus['distance']]),
+            'secondary' => __('About :distance km (:timeTillDistanceDeadlineHumans)', [
+                'distance' => $maintenanceStatus['distance'],
+                'timeTillDistanceDeadlineHumans' => $maintenanceStatus['timeTillDistanceDeadlineHumans'],
+            ]),
         ];
 
         if ($maintenanceStatus['daysTillDistanceDeadline'] < $maintenanceStatus['daysTillTimeDeadline']) {
             $value = [
-                'primary' => __('About :distance km', ['distance' => $maintenanceStatus['distance']]),
+                'primary' => __('About :distance km (:timeTillDistanceDeadlineHumans)', [
+                    'distance' => $maintenanceStatus['distance'],
+                    'timeTillDistanceDeadlineHumans' => $maintenanceStatus['timeTillDistanceDeadlineHumans'],
+                ]),
                 'secondary' => str($maintenanceStatus['timeDiffHumans'])->ucfirst()->toString(),
             ];
         }

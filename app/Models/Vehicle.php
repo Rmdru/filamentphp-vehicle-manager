@@ -200,12 +200,14 @@ class Vehicle extends Model implements HasName
 
         $daysTillDistanceDeadline = (int) $this->calculateAverageMonthlyDistance() > 30.44 ? $distanceTillMaintenance / ($this->calculateAverageMonthlyDistance() / 30.44) : $distanceTillMaintenance;
         $daysTillTimeDeadline = (int) Carbon::now()->daysInYear - $timeTillMaintenance;
+        $timeTillDistanceDeadlineHumans = now()->addDays($daysTillDistanceDeadline)->diffForHumans();
 
         return [
             'time' => $timeTillMaintenance,
             'timeDiffHumans' => $timeDiffHumans,
             'distance' => $distanceTillMaintenance,
             'daysTillDistanceDeadline' => $daysTillDistanceDeadline,
+            'timeTillDistanceDeadlineHumans' => $timeTillDistanceDeadlineHumans,
             'daysTillTimeDeadline' => $daysTillTimeDeadline,
         ];
     }
