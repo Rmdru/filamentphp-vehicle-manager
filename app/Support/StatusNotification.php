@@ -79,13 +79,23 @@ class StatusNotification
                 ],
                 'icon' => 'gmdi-local-gas-station-r',
             ],
-            'washing' => [
-                'statusKey' => 'washing_status',
+            'washing_carwash' => [
+                'statusKey' => 'carwash_status',
                 'thresholds' => ['warning' => 5, 'info' => 10],
                 'thresholdType' => 'days',
                 'messages' => [
-                    'warning' => __('Washing required!'),
-                    'info' => __('Washing required soon!'),
+                    'warning' => __('Carwash required!'),
+                    'info' => __('Carwash required soon!'),
+                ],
+                'icon' => 'mdi-car-wash',
+            ],
+            'self_washing' => [
+                'statusKey' => 'self_washing_status',
+                'thresholds' => ['warning' => 5, 'info' => 10],
+                'thresholdType' => 'days',
+                'messages' => [
+                    'warning' => __('Self washing required!'),
+                    'info' => __('Self washing required soon!'),
                 ],
                 'icon' => 'mdi-car-wash',
             ],

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\MaintenanceTypeMaintenance;
+use App\Services\OpenMeteoService;
 use App\Traits\VehicleStats;
 use App\Services\VehicleCostsService;
 use App\Support\Cost;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\LocationByIp;
 
 class Vehicle extends Model implements HasName
 {
@@ -26,6 +28,7 @@ class Vehicle extends Model implements HasName
     use HasUuids;
     use SoftDeletes;
     use VehicleStats;
+    use LocationByIp;
 
     /**
      * The attributes that are mass assignable.
@@ -76,6 +79,8 @@ class Vehicle extends Model implements HasName
         'tire_pressure_check_status',
         'liquids_check_status',
     ];
+
+    private array $historicalMinTemps = [];
 
     public function getFilamentName(): string
     {
@@ -342,32 +347,71 @@ class Vehicle extends Model implements HasName
         return [];
     }
 
+    private function setHistoricalMinTemps(): void
+    {
+        if (! empty($this->historicalMinTemps)) {
+            return;
+        }
+
+        $ipLocation = $this->getLocationDataByIp(request()->ip());
+        $latestWash = (new Reconditioning)->latestWash($this->reconditionings);
+
+        $this->historicalMinTemps = (new OpenMeteoService)->fetchHistoricalMinTempsInDateRange($ipLocation, $latestWash->date->format('Y-m-d'), now()->format('Y-m-d'));
+    }
+
+    private function getHistoricalMinTemps(): array
+    {
+        if (empty($this->historicalMinTemps)) {
+            $this->setHistoricalMinTemps();
+        }
+
+        return $this->historicalMinTemps;
+    }
+
     public function getWashingStatusAttribute(): array
     {
-        if ($this->reconditionings->isEmpty()) {
-            return [];
-        }
+        $latestWash = (new Reconditioning)->latestWash($this->reconditionings);
 
-        if ($this->reconditionings->isNotEmpty()) {
-            $latestWashDate = $this->reconditionings->filter(function ($item) {
-                $types = $item->type;
-                return collect($types)->contains(function ($type) {
-                    return str_contains($type, 'carwash') || str_contains($type, 'exterior_cleaning');
-                });
-            })->sortByDesc('date')
-                ->first();
+        $washDate = Carbon::parse($latestWash->date ?? now())->addMonth();
+        $washDiff = $washDate->diffInDays(now());
+        $timeDiffHumans = $washDate->isFuture() ? $washDate->diffForHumans() : __('Now');
 
-            $washDate = Carbon::parse($latestWashDate->date ?? now())->addMonth();
-            $washDiff = $washDate->diffInDays(now());
-            $timeDiffHumans = $washDate->isFuture() ? $washDate->diffForHumans() : __('Now');
-
-            $timeTillWash = max(0, $washDiff - ($washDiff * 2));
-        }
+        $timeTillWash = max(0, $washDiff - ($washDiff * 2));
 
         return [
             'time' => $timeTillWash,
             'timeDiffHumans' => $timeDiffHumans,
         ];
+    }
+
+    public function getCarwashStatusAttribute(): array
+    {
+        if ($this->reconditionings->isEmpty()) {
+            return [];
+        }
+        
+        $historicalMinTemps = $this->getHistoricalMinTemps();
+
+        if (min($historicalMinTemps['daily']['temperature_2m_min']) <= 4) {
+            return $this->washing_status;
+        }
+        
+        return [];
+    }
+
+    public function getSelfWashingStatusAttribute(): array
+    {
+        if ($this->reconditionings->isEmpty()) {
+            return [];
+        }
+        
+        $historicalMinTemps = $this->getHistoricalMinTemps();
+
+        if (min($historicalMinTemps['daily']['temperature_2m_min']) >= 4) {
+            return $this->washing_status;
+        }
+        
+        return [];
     }
 
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
