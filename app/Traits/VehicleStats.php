@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use App\Models\Refueling;
+use App\Models\Vehicle;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -63,7 +64,6 @@ trait VehicleStats
 
     private function calculateAverageMonthlyDistance(bool $thisMonth = false): float
     {
-        return 2500;
         $vehicleId = Filament::getTenant()->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
@@ -235,5 +235,63 @@ trait VehicleStats
         $averageDeviation = $totalDeviation / $refuelingsData->count();
 
         return round($averageDeviation, 3);
+    }
+
+    public function calculateRatioPremiumFuel(bool $thisMonth = false): float
+    {
+        $vehicleId = Filament::getTenant()->id;
+        $startDate = $this->filters['startDate'] ?? null;
+        $endDate = $this->filters['endDate'] ?? null;
+
+        if ($thisMonth) {
+            $startDate = now()->startOfMonth()->toDateString();
+            $endDate = now()->endOfMonth()->toDateString();
+        }
+
+        $refuelings = Refueling::where('vehicle_id', $vehicleId);
+
+        if (! $refuelings->count()) {
+            return 0.0;
+        }
+
+        if ($startDate) {
+            $refuelings->whereDate('date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $refuelings->whereDate('date', '<=', $endDate);
+        }
+
+        $refuelingsData = $refuelings->get();
+        if ($refuelingsData->isEmpty()) {
+            return 0.0;
+        }
+
+        $premiumFuelTypes = [
+            'Super Plus',
+            'V-Power 100',
+            'Ultimate 102',
+            'Premium diesel',
+            'Electricity DC',
+        ];
+
+        $totalAmount = 0.0;
+        $premiumAmount = 0.0;
+
+        foreach ($refuelingsData as $refueling) {
+            $totalAmount += $refueling->amount;
+
+            if (in_array($refueling->fuel_type, $premiumFuelTypes)) {
+                $premiumAmount += $refueling->amount;
+            }
+        }
+
+        if ($totalAmount === 0.0) {
+            return 0.0;
+        }
+
+        $ratio = ($premiumAmount / $totalAmount) * 100;
+
+        return round($ratio, 1);
     }
 }

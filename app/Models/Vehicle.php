@@ -356,6 +356,10 @@ class Vehicle extends Model implements HasName
         $ipLocation = $this->getLocationDataByIp(request()->ip());
         $latestWash = (new Reconditioning)->latestWash($this->reconditionings);
 
+        if (empty($latestWash)) {
+            return;
+        }
+        
         $this->historicalMinTemps = (new OpenMeteoService)->fetchHistoricalMinTempsInDateRange($ipLocation, $latestWash->date->format('Y-m-d'), now()->format('Y-m-d'));
     }
 
@@ -371,6 +375,10 @@ class Vehicle extends Model implements HasName
     public function getWashingStatusAttribute(): array
     {
         $latestWash = (new Reconditioning)->latestWash($this->reconditionings);
+
+        if (empty($latestWash)) {
+            return [];
+        }
 
         $washDate = Carbon::parse($latestWash->date ?? now())->addMonth();
         $washDiff = $washDate->diffInDays(now());
@@ -392,7 +400,7 @@ class Vehicle extends Model implements HasName
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
 
-        if (min($historicalMinTemps['daily']['temperature_2m_min']) <= 4) {
+        if (! empty($historicalMinTemps) && min($historicalMinTemps['daily']['temperature_2m_min']) <= 4) {
             return $this->washing_status;
         }
         
@@ -407,7 +415,7 @@ class Vehicle extends Model implements HasName
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
 
-        if (min($historicalMinTemps['daily']['temperature_2m_min']) >= 4) {
+        if (! empty($historicalMinTemps) && min($historicalMinTemps['daily']['temperature_2m_min']) >= 4) {
             return $this->washing_status;
         }
         

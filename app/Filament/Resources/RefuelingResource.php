@@ -384,26 +384,11 @@ class RefuelingResource extends Resource
                         TimePicker::make('charge_time')
                             ->label(__('Charge time'))
                             ->native((new self)->isMobile())
-                            ->visible(fn($get) => in_array($get('fuel_type'), [
-                                'Electricity DC',
-                                'Electricity AC',
-                            ]))
+                            ->visible(fn($get) => str($get('fuel_type'))->contains('electric', true))
                             ->reactive(),
                         Checkbox::make('service_by_attendant')
                             ->label(__('Service by attendant'))
-                            ->visible(fn($get) => in_array($get('fuel_type'), [
-                                'Unleaded 95 (E10)',
-                                'Unleaded 95 (E5)',
-                                'Super Plus',
-                                'V-Power 100',
-                                'Ultimate 102',
-                                'Diesel',
-                                'Premium diesel',
-                                'Adblue',
-                                'LPG',
-                                'CNG',
-                                'E85',
-                            ])),
+                            ->visible(fn($get) => ! str($get('fuel_type'))->contains('electric', true)),
                     ]),
                 Fieldset::make('car')
                     ->label(__('Car'))

@@ -27,6 +27,16 @@ class DashboardStatsOverview extends BaseWidget
         $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
+        $ratioPremiumFuelTitle = __('Ratio Super Plus vs Unleaded 95');
+
+        if (str($vehicle->powertrain)->contains('diesel', true)) {
+            $ratioPremiumFuelTitle = __('Ratio premium diesel vs regular diesel');
+        }
+
+        if (str($vehicle->powertrain)->contains('electric', true)) {
+            $ratioPremiumFuelTitle = __('Ratio DC charging vs AC charging');
+        }
+
         return [
             $this->buildStat(
                 title: __('Average monthly costs'),
@@ -46,7 +56,7 @@ class DashboardStatsOverview extends BaseWidget
             $this->buildStat(
                 title: __('Average fuel usage'),
                 value: $this->calculateAverageFuelConsumption(),
-                icon: 'gmdi-local-gas-station-r',
+                icon: 'mdi-engine',
                 latestValue: $this->calculateAverageFuelConsumption(true),
                 suffix: $powertrain['consumption_unit'],
             ),
@@ -83,6 +93,15 @@ class DashboardStatsOverview extends BaseWidget
                 suffix: 'km/h',
                 operator: '>',
                 hide: empty($this->calculateAvgSpeed())
+            ),
+            $this->buildStat(
+                title: $ratioPremiumFuelTitle,
+                value: $this->calculateRatioPremiumFuel(),
+                icon: 'gmdi-local-gas-station-r',
+                latestValue: $this->calculateRatioPremiumFuel(true),
+                suffix: '%',
+                operator: '>',
+                hide: empty($this->calculateRatioPremiumFuel())
             ),
         ];
     }
