@@ -27,7 +27,7 @@ class DashboardStatsOverview extends BaseWidget
         $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
-        $ratioPremiumFuelTitle = __('Ratio Super Plus vs Unleaded 95');
+        $ratioPremiumFuelTitle = __('Ratio premium gasoline vs Unleaded 95');
 
         if (str($vehicle->powertrain)->contains('diesel', true)) {
             $ratioPremiumFuelTitle = __('Ratio premium diesel vs regular diesel');
