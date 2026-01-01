@@ -12,7 +12,7 @@ class StatusNotification
             'insurance' => [
                 'statusKey' => 'insurance_status',
                 'thresholds' => ['critical' => 0, 'warning' => 31, 'info' => 62],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'critical' => __('No active insurance found! Your are currently not allowed to drive with the vehicle!'),
                     'warning' => __('Insurance expires within 1 month!'),
@@ -23,7 +23,7 @@ class StatusNotification
             'tax' => [
                 'statusKey' => 'tax_status',
                 'thresholds' => ['info' => 31],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'info' => __('New tax period within 1 month!'),
                 ],
@@ -32,7 +32,7 @@ class StatusNotification
             'apk' => [
                 'statusKey' => 'apk_status',
                 'thresholds' => ['critical' => 1, 'warning' => 31, 'info' => 62],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'critical' => __('MOT expired! Your are currently not allowed to drive with the vehicle!'),
                     'warning' => __('MOT expires within 1 month!'),
@@ -43,7 +43,8 @@ class StatusNotification
             'maintenance' => [
                 'statusKey' => 'maintenance_status',
                 'thresholds' => ['critical' => 31, 'warning' => 62],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
+                'thresholdCompareKeyTime' => 'minDaysTillDeadline',
                 'messages' => [
                     'critical' => __('Maintenance required now'),
                     'warning' => __('Maintenance required soon'),
@@ -53,7 +54,7 @@ class StatusNotification
             'airco_check' => [
                 'statusKey' => 'airco_check_status',
                 'thresholds' => ['critical' => 31, 'warning' => 62],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'critical' => __('Airco check required!'),
                     'warning' => __('Airco check required soon!'),
@@ -63,7 +64,7 @@ class StatusNotification
             'refueling' => [
                 'statusKey' => 'fuel_status',
                 'thresholds' => ['critical' => 10, 'warning' => 30],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'critical' => __('Fuel is too old!'),
                     'warning' => __('Fuel is getting old!'),
@@ -82,7 +83,7 @@ class StatusNotification
             'washing_carwash' => [
                 'statusKey' => 'carwash_status',
                 'thresholds' => ['warning' => 5, 'info' => 10],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'warning' => __('Carwash required!'),
                     'info' => __('Carwash required soon!'),
@@ -92,7 +93,7 @@ class StatusNotification
             'self_washing' => [
                 'statusKey' => 'self_washing_status',
                 'thresholds' => ['warning' => 5, 'info' => 10],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'warning' => __('Self washing required!'),
                     'info' => __('Self washing required soon!'),
@@ -102,7 +103,7 @@ class StatusNotification
             'tire_pressure_check' => [
                 'statusKey' => 'tire_pressure_check_status',
                 'thresholds' => ['warning' => 10, 'info' => 20],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'warning' => __('Check tire pressure!'),
                     'info' => __('Check tire pressure soon!'),
@@ -112,7 +113,7 @@ class StatusNotification
             'liquids_check' => [
                 'statusKey' => 'liquids_check_status',
                 'thresholds' => ['warning' => 5, 'info' => 10],
-                'thresholdType' => 'days',
+                'thresholdType' => 'time',
                 'messages' => [
                     'warning' => __('Check liquids!'),
                     'info' => __('Check liquids soon!'),

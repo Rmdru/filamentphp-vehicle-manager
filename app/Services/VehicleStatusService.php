@@ -80,22 +80,25 @@ class VehicleStatusService
 
         $thresholds = $mapping['thresholds'];
         $thresholdType = $mapping['thresholdType'];
+        $thresholdCompareKeyTime = $mapping['thresholdCompareKeyTime'] ?? 'time';
         $messages = $mapping['messages'];
         $icon = $mapping['icon'];
+        
+        $compareValueTime = $status[$thresholdCompareKeyTime] ?? null;
 
-        if (isset($thresholds['critical']) && $thresholdType === 'days' && $status['time'] < $thresholds['critical']) {
+        if (isset($thresholds['critical']) && $thresholdType === 'time' && $compareValueTime < $thresholds['critical']) {
             $notifications[] = $this->createNotification('critical', $messages['critical'], $icon);
             return;
         }
 
-        if (isset($thresholds['warning']) && $thresholdType === 'days' && $status['time'] < $thresholds['warning']) {
+        if (isset($thresholds['warning']) && $thresholdType === 'time' && $compareValueTime < $thresholds['warning']) {
             $notifications[] = $this->createNotification('warning', $messages['warning'], $icon);
             return;
         }
 
         if (
             (
-                isset($thresholds['info']) && $thresholdType === 'days' && $status['time'] < $thresholds['info']
+                isset($thresholds['info']) && $thresholdType === 'time' && $compareValueTime < $thresholds['info']
             ) || (
                 isset($thresholds['info']) && $thresholdType === 'recordCount' && $status['recordCount'] >= $thresholds['info']
             )
