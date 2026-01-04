@@ -272,7 +272,7 @@ trait VehicleStats
             'V-Power 100',
             'Ultimate 102',
             'Premium diesel',
-            'Electricity DC',
+            'Electricity AC',
         ];
 
         $totalAmount = 0.0;

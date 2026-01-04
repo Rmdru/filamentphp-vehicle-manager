@@ -34,7 +34,7 @@ class DashboardStatsOverview extends BaseWidget
         }
 
         if (str($vehicle->powertrain)->contains('electric', true)) {
-            $ratioPremiumFuelTitle = __('Ratio DC charging vs AC charging');
+            $ratioPremiumFuelTitle = __('Ratio AC charging vs DC charging');
         }
 
         return [
