@@ -52,6 +52,7 @@ class Vehicle extends Model implements HasName
         'status',
         'fuel_types',
         'tank_capacity',
+        'maintenance_interval',
         'specifications',
         'notifications',
         'privacy_settings',
@@ -189,7 +190,11 @@ class Vehicle extends Model implements HasName
 
         $latestMaintenance = $this->maintenances->whereIn('type_maintenance', $maintenanceTypes)->sortByDesc('date')->first();
 
-        if (empty($latestMaintenance) || ! in_array($latestMaintenance->type_maintenance, $maintenanceTypes)) {
+        if (
+            empty($latestMaintenance)
+            || ! in_array($latestMaintenance->type_maintenance, $maintenanceTypes)
+            || empty($this->maintenance_interval)
+        ) {
             return [];
         }
 
@@ -200,7 +205,7 @@ class Vehicle extends Model implements HasName
 
             $timeTillMaintenance = $maintenanceDiff - ($maintenanceDiff * 2);
 
-            $distanceTillMaintenance = 15000 + $latestMaintenance->mileage - $this->mileage_latest;
+            $distanceTillMaintenance = $this->maintenance_interval + $latestMaintenance->mileage - $this->mileage_latest;
         }
 
         $daysTillDistanceDeadline = (int) $this->calculateAverageMonthlyDistance() > 30.44 ? $distanceTillMaintenance / ($this->calculateAverageMonthlyDistance() / 30.44) : $distanceTillMaintenance;

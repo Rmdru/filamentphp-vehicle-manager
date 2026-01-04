@@ -108,7 +108,7 @@ class VehicleResource extends Resource
                                             ->label(__('Powertrain'))
                                             ->native((new self)->isMobile())
                                             ->searchable()
-                                            ->options((new self())->getPowerTrainOptions())
+                                            ->options((new self)->getPowerTrainOptions())
                                             ->reactive()
                                             ->required()
                                             ->afterStateUpdated(fn(callable $set, $state) => $set('powertrain', $state)),
@@ -123,6 +123,14 @@ class VehicleResource extends Resource
                                             ->required()
                                             ->label(__('Tank capacity'))
                                             ->suffix(fn ($get) => trans('powertrains')[$get('powertrain')]['unit_short'] ?? 'l'),
+                                        TextInput::make('maintenance_interval')
+                                            ->numeric()
+                                            ->required()
+                                            ->label(__('Maintenance interval'))
+                                            ->prefix(__('Every'))
+                                            ->default(15000)
+                                            ->minValue(1)
+                                            ->suffix('km'),
                                         FileUpload::make('image')
                                             ->disk('private')
                                             ->directory('vehicles')
@@ -156,7 +164,7 @@ class VehicleResource extends Resource
                                         TextInput::make('purchase_price')
                                             ->label(__('Purchase price'))
                                             ->mask(RawJs::make('$money($input, \'.\', \' \',)'))
-                                            ->stripCharacters(',')
+                                            ->stripCharacters(' ')
                                             ->prefix('€')
                                             ->step(0.01),
                                         Select::make('country_registration')
