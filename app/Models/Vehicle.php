@@ -52,7 +52,8 @@ class Vehicle extends Model implements HasName
         'status',
         'fuel_types',
         'tank_capacity',
-        'maintenance_interval',
+        'maintenance_interval_distance',
+        'maintenance_interval_time',
         'specifications',
         'notifications',
         'privacy_settings',
@@ -193,19 +194,19 @@ class Vehicle extends Model implements HasName
         if (
             empty($latestMaintenance)
             || ! in_array($latestMaintenance->type_maintenance, $maintenanceTypes)
-            || empty($this->maintenance_interval)
+            || empty($this->maintenance_interval_distance)
         ) {
             return [];
         }
 
         if (! empty($latestMaintenance) && in_array($latestMaintenance->type_maintenance, $maintenanceTypes)) {
-            $maintenanceDate = Carbon::parse($latestMaintenance->date ?? now())->addYear();
+            $maintenanceDate = Carbon::parse($latestMaintenance->date ?? now())->addMonths($this->maintenance_interval_time);
             $maintenanceDiff = $maintenanceDate->diffInDays(now());
             $timeDiffHumans = $maintenanceDate->isFuture() ? $maintenanceDate->diffForHumans() : __('Now');
 
             $timeTillMaintenance = $maintenanceDiff - ($maintenanceDiff * 2);
 
-            $distanceTillMaintenance = $this->maintenance_interval + $latestMaintenance->mileage - $this->mileage_latest;
+            $distanceTillMaintenance = $this->maintenance_interval_distance + $latestMaintenance->mileage - $this->mileage_latest;
         }
 
         $daysTillDistanceDeadline = (int) $this->calculateAverageMonthlyDistance() > 30.44 ? $distanceTillMaintenance / ($this->calculateAverageMonthlyDistance() / 30.44) : $distanceTillMaintenance;
@@ -250,7 +251,7 @@ class Vehicle extends Model implements HasName
 
             $apkDate = Carbon::parse($latestApk->date ?? now())->addYear();
             $apkDiff = $apkDate->diffInDays(now());
-            $timeDiffHumans = $apkDate->isFuture() ? $apkDate->diffForHumans() : __('Now');
+            $timeDiffHumans = $apkDate->isFuture() ? $apkDate->diffForHumans() : __('Now');           
 
             $timeTillApk = max(0, $apkDiff - ($apkDiff * 2));
         }

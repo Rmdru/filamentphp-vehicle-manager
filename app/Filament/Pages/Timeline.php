@@ -335,7 +335,7 @@ class Timeline extends Page
         if ($lastMaintenance) {
             $nextMaintenanceDate = match ($lastMaintenance->type_maintenance) {
                 MaintenanceTypeMaintenance::SmallMaintenance->value => Carbon::parse($lastMaintenance->date)->addMonths(6),
-                MaintenanceTypeMaintenance::Maintenance->value => Carbon::parse($lastMaintenance->date)->addYear(),
+                MaintenanceTypeMaintenance::Maintenance->value => Carbon::parse($lastMaintenance->date)->addMonths($vehicle->maintenance_interval_time),
                 MaintenanceTypeMaintenance::BigMaintenance->value => Carbon::parse($lastMaintenance->date)->addYears(2),
                 default => null,
             };
