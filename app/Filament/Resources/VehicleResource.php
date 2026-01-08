@@ -31,16 +31,19 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Guava\FilamentIconPicker\Forms\IconPicker;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Livewire;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\RdwService;
+use App\Traits\Vehicles;
+use Carbon\Carbon;
 
 class VehicleResource extends Resource
 {
     use CountryOptions;
     use PowerTrainOptions;
     use IsMobile;
+    use Vehicles;
 
     protected static ?string $model = Vehicle::class;
 
@@ -84,6 +87,56 @@ class VehicleResource extends Resource
                             ->label(__('Data'))
                             ->icon('gmdi-directions-car-filled-r')
                             ->schema([
+                                Fieldset::make('license_plate')
+                                    ->label(__('License plate'))
+                                    ->schema([
+                                        TextInput::make('license_plate')
+                                            ->label(__('License plate'))
+                                            ->required()
+                                            ->columnSpan(2)
+                                            ->helperText(__('When you complete typing, some fields will be automatically filled in based on data from the RDW (only for vehicles registered in the Netherlands).'))
+                                            ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false)
+                                            ->live(true)
+                                            ->afterStateUpdated(function ($state, callable $set, RdwService $rdwService) {
+                                                $licensePlate = Vehicles::normalizeLicensePlate($state);
+                                                $vehicleRdwData = json_decode($rdwService->fetchVehicleDataByLicensePlate($licensePlate), true);
+                                                $powertrainRdwData = json_decode($rdwService->fetchPowertrainDataByLicensePlate($licensePlate), true);
+                                                $brands = config('vehicles.brands');
+
+                                                if (empty($vehicleRdwData)) {
+                                                    return;
+                                                }
+
+                                                $engine = '';
+
+                                                if (! empty($vehicleRdwData[0]['cilinderinhoud'])) {
+                                                    $engine .= ucfirst(strtolower($vehicleRdwData[0]['cilinderinhoud'])) . ' cc';
+                                                }
+
+                                                if (! empty($vehicleRdwData[0]['aantal_cilinders'])) {
+                                                    $engine .= ' ' . $vehicleRdwData[0]['aantal_cilinders'] . ' ' . __('cylinder');
+                                                }
+
+                                                $vehicleData = $vehicleRdwData[0];
+                                                $set('brand', array_search(ucfirst(strtolower($vehicleData['merk'])), $brands) ?? null);
+                                                $set('model', ucfirst(strtolower($vehicleData['handelsbenaming'])) ?? null);
+                                                $set('version', ucfirst(strtolower($vehicleData['type'])) ?? null);
+                                                $set('engine', $engine);
+                                                $set('purchase_date', isset($vehicleData['datum_tenaamsteplling']) ? Carbon::createFromFormat('Ymd', $vehicleData['datum_tenaamstelling']) : null);
+                                                $set('construction_date', isset($vehicleData['datum_eerste_toelating']) ? Carbon::createFromFormat('Ymd', $vehicleData['datum_eerste_toelating']) : null);
+                                                $set('country_registration', 'netherlands');
+
+                                                if (empty($powertrainRdwData)) {
+                                                    return;
+                                                }
+
+                                                $powertrainData = $powertrainRdwData[0];
+
+                                                if (! empty($powertrainData['nettomaximumvermogen'])) {
+                                                    $set('engine', $engine . ' ' . ((int) $powertrainData['nettomaximumvermogen']) . ' kW');
+                                                }
+                                            }),
+                                    ]),
                                 Fieldset::make('basic')
                                     ->label(__('Basic'))
                                     ->schema([
@@ -96,6 +149,7 @@ class VehicleResource extends Resource
                                         TextInput::make('model')
                                             ->label(__('Model'))
                                             ->required()
+                                            ->reactive()
                                             ->maxLength(50),
                                         TextInput::make('version')
                                             ->label(__('Version'))
@@ -184,10 +238,6 @@ class VehicleResource extends Resource
                                             ->reactive()
                                             ->afterStateUpdated(fn(callable $set, $state) => $set('license_plate_prefix', $state))
                                             ->helperText(__('Is used for the license plate layout')),
-                                        TextInput::make('license_plate')
-                                            ->label(__('License plate'))
-                                            ->required()
-                                            ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false),
                                         Section::make(__('Status'))
                                             ->icon('mdi-list-status')
                                             ->description(__('Default value: driveable. Click open to edit.'))
