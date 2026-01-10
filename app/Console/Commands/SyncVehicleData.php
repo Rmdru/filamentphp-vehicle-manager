@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\VehicleStatus;
 use App\Models\Vehicle;
 use App\Services\RdwService;
 use Illuminate\Console\Command;
@@ -28,7 +29,13 @@ class SyncVehicleData extends Command
                     $rdwData = json_decode($this->rdwService->fetchVehicleDataByLicensePlate($vehicle->license_plate_normalized));
 
                     if (! empty($rdwData)) {
+                        $rdwData = $rdwData[0];
                         $vehicle->rdw_data = $rdwData[0];
+
+                        if (! empty($rdwData['wacht_op_keuren']) && $rdwData['wacht_op_keuren'] !== 'Geen verstrekking in Open Data') {
+                            $vehicle->status = VehicleStatus::Wok->value;
+                        }
+
                         $vehicle->saveQuietly();
 
                         $this->info("Updated vehicle ID {$vehicle->id} with RDW data with license plate {$vehicle->license_plate}.");

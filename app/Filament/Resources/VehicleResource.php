@@ -97,10 +97,10 @@ class VehicleResource extends Resource
                                             ->helperText(__('When you complete typing, some fields will be automatically filled in based on data from the RDW (only for vehicles registered in the Netherlands).'))
                                             ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false)
                                             ->live(true)
-                                            ->afterStateUpdated(function ($state, callable $set, RdwService $rdwService) {
+                                            ->afterStateUpdated(function (string $state, callable $set, RdwService $rdwService) {
                                                 $licensePlate = Vehicles::normalizeLicensePlate($state);
                                                 $vehicleRdwData = json_decode($rdwService->fetchVehicleDataByLicensePlate($licensePlate), true);
-                                                $powertrainRdwData = json_decode($rdwService->fetchPowertrainDataByLicensePlate($licensePlate), true);
+                                                $fuelRdwData = json_decode($rdwService->fetchFuelDataByLicensePlate($licensePlate), true);
                                                 $brands = config('vehicles.brands');
 
                                                 if (empty($vehicleRdwData)) {
@@ -122,18 +122,27 @@ class VehicleResource extends Resource
                                                 $set('model', ucfirst(strtolower($vehicleData['handelsbenaming'])) ?? null);
                                                 $set('version', ucfirst(strtolower($vehicleData['type'])) ?? null);
                                                 $set('engine', $engine);
-                                                $set('purchase_date', isset($vehicleData['datum_tenaamsteplling']) ? Carbon::createFromFormat('Ymd', $vehicleData['datum_tenaamstelling']) : null);
+                                                $set('purchase_date', isset($vehicleData['datum_tenaamstelling']) ? Carbon::createFromFormat('Ymd', $vehicleData['datum_tenaamstelling']) : null);
                                                 $set('construction_date', isset($vehicleData['datum_eerste_toelating']) ? Carbon::createFromFormat('Ymd', $vehicleData['datum_eerste_toelating']) : null);
                                                 $set('country_registration', 'netherlands');
 
-                                                if (empty($powertrainRdwData)) {
+                                                if (empty($fuelRdwData)) {
                                                     return;
                                                 }
 
-                                                $powertrainData = $powertrainRdwData[0];
+                                                $fuelData = $fuelRdwData[0];
 
-                                                if (! empty($powertrainData['nettomaximumvermogen'])) {
-                                                    $set('engine', $engine . ' ' . ((int) $powertrainData['nettomaximumvermogen']) . ' kW');
+                                                if (! empty($fuelData['nettomaximumvermogen'])) {
+                                                    $set('engine', $engine . ' ' . ((int) $fuelData['nettomaximumvermogen']) . ' kW');
+                                                }
+
+                                                if (! empty($fuelData['brandstof_omschrijving'])) {
+                                                    $fuelType = strtolower($fuelData['brandstof_omschrijving']);
+                                                    $powertrainKey = $rdwService->getPowertrainOptionFromRdwFuelResponse($fuelType);
+                                                    
+                                                    if (! empty($powertrainKey)) {
+                                                        $set('powertrain', $powertrainKey);
+                                                    }
                                                 }
                                             }),
                                     ]),

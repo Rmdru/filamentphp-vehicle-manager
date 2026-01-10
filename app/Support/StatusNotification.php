@@ -14,7 +14,7 @@ class StatusNotification
                 'thresholds' => ['critical' => 0, 'warning' => 31, 'info' => 62],
                 'thresholdType' => 'time',
                 'messages' => [
-                    'critical' => __('No active insurance found! Your are currently not allowed to drive with the vehicle!'),
+                    'critical' => __('Vehicle is not insured! Your are currently not allowed to drive with the vehicle!'),
                     'warning' => __('Insurance expires within 1 month!'),
                     'info' => __('Insurance expires within 2 months!'),
                 ],

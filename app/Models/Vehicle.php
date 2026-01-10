@@ -321,6 +321,19 @@ class Vehicle extends Model implements HasName
 
     public function getInsuranceStatusAttribute(): array
     {
+        $rdwData = $this->rdw_data;
+
+        if (! empty($rdwData['wam_verzekerd']) && $rdwData['wam_verzekerd'] !== 'Ja') {
+            return [
+                'time' => -1,
+                'timeDiffHumans' => __('Now'),
+            ];
+        }
+
+        if ($this->insurances->isEmpty()) {
+            return [];
+        }
+
         if ($this->insurances->isNotEmpty()) {
             $insurance = $this->insurances->where('start_date', '<=', today())->sortByDesc('start_date')->first();
 
