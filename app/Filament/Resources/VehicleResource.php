@@ -97,7 +97,11 @@ class VehicleResource extends Resource
                                             ->helperText(__('When you complete typing, some fields will be automatically filled in based on data from the RDW (only for vehicles registered in the Netherlands).'))
                                             ->prefix(fn(callable $get) => $countries[$get('license_plate_prefix')]['license_plate']['prefix'] ?? false)
                                             ->live(true)
-                                            ->afterStateUpdated(function (string $state, callable $set, RdwService $rdwService) {
+                                            ->afterStateUpdated(function (?string $state, callable $set, RdwService $rdwService) {
+                                                if (empty($state)) {
+                                                    return;
+                                                }
+
                                                 $licensePlate = Vehicles::normalizeLicensePlate($state);
                                                 $vehicleRdwData = json_decode($rdwService->fetchVehicleDataByLicensePlate($licensePlate), true);
                                                 $fuelRdwData = json_decode($rdwService->fetchFuelDataByLicensePlate($licensePlate), true);
@@ -118,7 +122,12 @@ class VehicleResource extends Resource
                                                 }
 
                                                 $vehicleData = $vehicleRdwData[0];
-                                                $set('brand', array_search(ucfirst(strtolower($vehicleData['merk'])), $brands) ?? null);
+                                                $brandOption = array_search(ucfirst(strtolower($vehicleData['merk'])), $brands);
+
+                                                if (! empty($brandOption)) {
+                                                    $set('brand', $brandOption);
+                                                }
+                                                
                                                 $set('model', ucfirst(strtolower($vehicleData['handelsbenaming'])) ?? null);
                                                 $set('version', ucfirst(strtolower($vehicleData['type'])) ?? null);
                                                 $set('engine', $engine);

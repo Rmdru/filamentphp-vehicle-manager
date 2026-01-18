@@ -40,6 +40,15 @@ class StatusNotification
                 ],
                 'icon' => 'gmdi-security',
             ],
+            'recall' => [
+                'statusKey' => 'recall_status',
+                'thresholds' => ['critical' => 0],
+                'thresholdType' => 'recordCount',
+                'messages' => [
+                    'critical' => __('Open recall! Please contact the dealer or manufactor as soon as possible!'),
+                ],
+                'icon' => 'mdi-head-sync',
+            ],
             'maintenance' => [
                 'statusKey' => 'maintenance_status',
                 'thresholds' => ['critical' => 31, 'warning' => 62],
@@ -73,7 +82,7 @@ class StatusNotification
             ],
             'periodic_super_plus' => [
                 'statusKey' => 'periodic_super_plus',
-                'thresholds' => ['info' => 3],
+                'thresholds' => ['info' => 2],
                 'thresholdType' => 'recordCount',
                 'messages' => [
                     'info' => __('Next time fill up with Super Plus fuel!'),

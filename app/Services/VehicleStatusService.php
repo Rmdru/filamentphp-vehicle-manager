@@ -26,6 +26,7 @@ class VehicleStatusService
             $notifications[] = $this->createNotification(
                 type: 'success',
                 text: __('No information available'),
+                key: 'no-info',
                 icon: 'fas-smile'
             );
             
@@ -34,20 +35,21 @@ class VehicleStatusService
 
         $notificationMappings = StatusNotification::configuration();
 
-        foreach ($notificationMappings as $mapping) {
+        foreach ($notificationMappings as $key => $mapping) {
             $status = $vehicle->{$mapping['statusKey']} ?? null;
 
             if (empty($status)) {
                 continue;
             }
 
-            $this->processNotification($notifications, $status ?? null, $mapping);
+            $this->processNotification($notifications, $status ?? null, $mapping, $key);
         }
 
         if (empty($notifications)) {
             $notifications[] = $this->createNotification(
                 type: 'success',
                 text: collect(StatusNotificationOk::cases())->map(fn ($case) => $case->getLabel())->random(),
+                key: 'ok',
                 icon: 'fas-smile'
             );
         }
@@ -72,7 +74,7 @@ class VehicleStatusService
         return $this->types[$notification['type']];
     }
 
-    private function processNotification(array &$notifications, ?array $status, array $mapping): void
+    private function processNotification(array &$notifications, ?array $status, array $mapping, string $key): void
     {
         if (! isset($status)) {
             return;
@@ -83,16 +85,24 @@ class VehicleStatusService
         $thresholdCompareKeyTime = $mapping['thresholdCompareKeyTime'] ?? 'time';
         $messages = $mapping['messages'];
         $icon = $mapping['icon'];
+        $hasModal = $status['hasModal'] ?? false;
+        $data = $status['data'] ?? [];
         
         $compareValueTime = $status[$thresholdCompareKeyTime] ?? null;
 
-        if (isset($thresholds['critical']) && $thresholdType === 'time' && $compareValueTime < $thresholds['critical']) {
-            $notifications[] = $this->createNotification('critical', $messages['critical'], $icon);
+        if (
+            (
+                isset($thresholds['critical']) && $thresholdType === 'time' && $compareValueTime < $thresholds['critical']
+            ) || (
+                isset($thresholds['critical']) && $thresholdType === 'recordCount' && $status['recordCount'] > $thresholds['critical']
+            )
+        ) {
+            $notifications[] = $this->createNotification('critical', $messages['critical'], $key, $icon, $hasModal, $data);
             return;
         }
 
         if (isset($thresholds['warning']) && $thresholdType === 'time' && $compareValueTime < $thresholds['warning']) {
-            $notifications[] = $this->createNotification('warning', $messages['warning'], $icon);
+            $notifications[] = $this->createNotification('warning', $messages['warning'], $key, $icon, $hasModal, $data);
             return;
         }
 
@@ -100,21 +110,30 @@ class VehicleStatusService
             (
                 isset($thresholds['info']) && $thresholdType === 'time' && $compareValueTime < $thresholds['info']
             ) || (
-                isset($thresholds['info']) && $thresholdType === 'recordCount' && $status['recordCount'] >= $thresholds['info']
+                isset($thresholds['info']) && $thresholdType === 'recordCount' && $status['recordCount'] > $thresholds['info']
             )
         ) {
-            $notifications[] = $this->createNotification('info', $messages['info'], $icon);
+            $notifications[] = $this->createNotification('info', $messages['info'], $key, $icon, $hasModal, $data);
         }
     }
 
-    private function createNotification(string $type, string $text, string $icon = ''): array
-    {
+    private function createNotification(
+        string $type,
+        string $text,
+        string $key,
+        string $icon = '',
+        bool $hasModal = false,
+        array $data = []
+    ): array {
         return array_merge($this->types[$type], [
+            'key' => $key,
             'type' => $type,
             'text' => $text,
             'icon' => $icon,
             'typeIcon' => $this->types[$type]['icon'],
             'priority' => $this->types[$type]['priority'],
+            'hasModal' => $hasModal,
+            'data' => $data,
         ]);
     }
 }

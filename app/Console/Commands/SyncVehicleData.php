@@ -26,24 +26,27 @@ class SyncVehicleData extends Command
             ->whereNotNull('license_plate')
             ->chunkById(100, function ($vehicles) {
                 foreach ($vehicles as $vehicle) {
-                    $rdwData = json_decode($this->rdwService->fetchVehicleDataByLicensePlate($vehicle->license_plate_normalized));
+                    $rdwData = json_decode($this->rdwService->fetchVehicleDataByLicensePlate($vehicle->license_plate_normalized), true);
 
-                    if (! empty($rdwData)) {
-                        $rdwData = $rdwData[0];
-                        $vehicle->rdw_data = $rdwData[0];
-
-                        if (! empty($rdwData['wacht_op_keuren']) && $rdwData['wacht_op_keuren'] !== 'Geen verstrekking in Open Data') {
-                            $vehicle->status = VehicleStatus::Wok->value;
-                        }
-
-                        $vehicle->saveQuietly();
-
-                        $this->info("Updated vehicle ID {$vehicle->id} with RDW data with license plate {$vehicle->license_plate}.");
+                    if (empty($rdwData)) {
+                        $this->warn("No RDW data found for vehicle ID {$vehicle->id} with license plate {$vehicle->license_plate}.");
 
                         continue;
                     }
                     
-                    $this->warn("No RDW data found for vehicle ID {$vehicle->id} with license plate {$vehicle->license_plate}.");
+                    $rdwData = $rdwData[0];
+
+                    $rdwData['open_recalls'] = $this->rdwService->getOpenRecalls($vehicle->license_plate_normalized);
+
+                    $vehicle->rdw_data = $rdwData;
+
+                    if (! empty($rdwData['wacht_op_keuren']) && $rdwData['wacht_op_keuren'] !== 'Geen verstrekking in Open Data') {
+                        $vehicle->status = VehicleStatus::Wok->value;
+                    }
+
+                    $vehicle->saveQuietly();
+
+                    $this->info("Updated vehicle ID {$vehicle->id} with RDW data with license plate {$vehicle->license_plate}.");
                 }
             });
     }

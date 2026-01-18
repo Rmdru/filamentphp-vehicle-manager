@@ -52,7 +52,7 @@
         </x-filament::fieldset>
     @endforeach
     @if (! $historyItems->count())
-        <x-filament::fieldset>w
+        <x-filament::fieldset>
             <h1 class="font-bold text-xl">{{ __('Nothing to show') }}</h1>
         </x-filament::fieldset>
     @endif
