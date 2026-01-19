@@ -70,7 +70,7 @@ class TaxResource extends Resource
                         ->date()
                         ->formatStateUsing(function (Tax $tax) {
                             if (empty($tax->end_date)) {
-                                $tax->end_date = __('Unknown');
+                                return $tax->start_date->isoFormat('MMM D, Y') . ' t/m ' . __('Unknown');
                             }
 
                             return $tax->start_date->isoFormat('MMM D, Y') . ' t/m ' . $tax->end_date->isoFormat('MMM D, Y');
