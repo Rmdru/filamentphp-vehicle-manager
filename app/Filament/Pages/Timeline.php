@@ -118,7 +118,7 @@ class Timeline extends Page
             $gasStationBrand = str($refueling->gas_station)->lower()->explode(' ')[0];
             $refueling->logo = $gasStationLogos[$gasStationBrand] ?? $gasStationLogos['default'];
             $refueling->heading = __('Refueling');
-            $refueling->price = $refueling->total_price;
+            $refueling->price = round($refueling->total_price, 2);
             $refueling->badges = [
                 [
                     'title' => $fuelTypes[$refueling->fuel_type],
