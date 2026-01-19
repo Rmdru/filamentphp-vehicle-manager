@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VignetteResource\Pages;
-use App\Models\Vehicle;
 use App\Models\Vignette;
 use App\Traits\CountryOptions;
 use App\Traits\IsMobile;
@@ -31,6 +32,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
+use Filament\Facades\Filament;
 
 class VignetteResource extends Resource
 {
