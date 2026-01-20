@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Services\RdwService;
 use App\Traits\Vehicles;
 use Carbon\Carbon;
+use Filament\Tables\Columns\ViewColumn;
 
 class VehicleResource extends Resource
 {
@@ -455,13 +456,10 @@ class VehicleResource extends Resource
                     ])
                         ->space(),
                     Stack::make([
-                        TextColumn::make('license_plate')
+                        ViewColumn::make('license_plate')
+                            ->view('filament.tables.columns.license-plate')
                             ->sortable()
                             ->searchable()
-                            ->formatStateUsing(function ($record) {
-                                return Livewire::mount('license-plate', ['vehicleId' => $record->id]);
-                            })
-                            ->html()
                             ->label(__('License plate')),
                         TextColumn::make('status_badge')
                             ->sortable()

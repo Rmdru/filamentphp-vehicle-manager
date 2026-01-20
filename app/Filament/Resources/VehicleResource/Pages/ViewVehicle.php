@@ -12,6 +12,7 @@ use Filament\Infolists\Components\IconEntry\IconEntrySize;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Tabs;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Livewire\Livewire;
@@ -77,17 +78,11 @@ class ViewVehicle extends ViewRecord
                                 Fieldset::make('ownership')
                                     ->label(__('Ownership'))
                                     ->schema([
-                                        TextEntry::make('country_registration')
-                                            ->formatStateUsing(function ($record) {
-                                                return Livewire::mount('country-flag', ['country' => $record->country_registration]);
-                                            })
-                                            ->html()
+                                        ViewEntry::make('country_registration')
+                                            ->view('filament.tables.columns.country-flag')
                                             ->label(__('Country of registration')),
-                                        TextEntry::make('license_plate')
-                                            ->formatStateUsing(function ($record) {
-                                                return Livewire::mount('license-plate', ['vehicleId' => $record->id]);
-                                            })
-                                            ->html()
+                                        ViewEntry::make('license_plate')
+                                            ->view('filament.tables.columns.license-plate')
                                             ->label(__('License plate')),
                                         TextEntry::make('mileage_start')
                                             ->icon('gmdi-route')

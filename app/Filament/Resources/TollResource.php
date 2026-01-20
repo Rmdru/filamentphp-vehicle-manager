@@ -36,6 +36,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Filament\Facades\Filament;
+use Filament\Tables\Columns\ViewColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
@@ -80,28 +81,16 @@ class TollResource extends Resource
             ->columns([
                 Split::make([
                     Stack::make([
-                        TextColumn::make('country')
+                        ViewColumn::make('country')
+                            ->view('filament.tables.columns.country-flag')
                             ->sortable()
-                            ->formatStateUsing(function ($record) {
-                                return Livewire::mount('CountryFlag', [
-                                    'country' => $record->country,
-                                ]);
-                            })
-                            ->html()
                             ->hidden(fn ($state) => empty($state))
                             ->label(__('Country')),
-                        TextColumn::make('road')
+                        ViewColumn::make('road')
+                            ->view('filament.tables.columns.road-badge')
                             ->sortable()
                             ->searchable()
-                            ->formatStateUsing(function ($record) {
-                                return Livewire::mount('RoadBadge', [
-                                    'roadType' => $record->road_type,
-                                    'road' => $record->road,
-                                    'country' => $record->country,
-                                ]);
-                            })
                             ->hidden(fn ($state) => empty($state))
-                            ->html()
                             ->label(__('Road')),
                     ]),
                     TextColumn::make('date')

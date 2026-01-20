@@ -17,7 +17,7 @@
                 </div>
             @endif
             @if (! empty($countryFlag))
-                <livewire:country-flag :country="$countryFlag" />
+                <livewire:country-flag :country="$countryFlag"  />
             @endif
             @if (! empty($roadConfig))
                 <livewire:road-badge :roadType="$roadConfig['roadType']" :road="$roadConfig['road']" :country="$roadConfig['country']" />
