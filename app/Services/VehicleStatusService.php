@@ -89,32 +89,39 @@ class VehicleStatusService
         $data = $status['data'] ?? [];
         
         $compareValueTime = $status[$thresholdCompareKeyTime] ?? null;
+        $recordCount = $status['recordCount'] ?? 0;
 
-        if (
-            (
-                isset($thresholds['critical']) && $thresholdType === 'time' && $compareValueTime < $thresholds['critical']
-            ) || (
-                isset($thresholds['critical']) && $thresholdType === 'recordCount' && $status['recordCount'] > $thresholds['critical']
-            )
-        ) {
+        if ($this->meetsCriteria('critical', $thresholds, $thresholdType, $compareValueTime, $recordCount)) {
             $notifications[] = $this->createNotification('critical', $messages['critical'], $key, $icon, $hasModal, $data);
             return;
         }
 
-        if (isset($thresholds['warning']) && $thresholdType === 'time' && $compareValueTime < $thresholds['warning']) {
+        if ($this->meetsCriteria('warning', $thresholds, $thresholdType, $compareValueTime, $recordCount)) {
             $notifications[] = $this->createNotification('warning', $messages['warning'], $key, $icon, $hasModal, $data);
             return;
         }
 
-        if (
-            (
-                isset($thresholds['info']) && $thresholdType === 'time' && $compareValueTime < $thresholds['info']
-            ) || (
-                isset($thresholds['info']) && $thresholdType === 'recordCount' && $status['recordCount'] > $thresholds['info']
-            )
-        ) {
+        if ($this->meetsCriteria('info', $thresholds, $thresholdType, $compareValueTime, $recordCount)) {
             $notifications[] = $this->createNotification('info', $messages['info'], $key, $icon, $hasModal, $data);
         }
+    }
+
+    private function meetsCriteria(
+        string $level,
+        array $thresholds,
+        string $thresholdType,
+        ?float $compareValueTime,
+        float $recordCount
+    ): bool {
+        if (! isset($thresholds[$level])) {
+            return false;
+        }
+
+        return match($thresholdType) {
+            'time' => $compareValueTime < $thresholds[$level],
+            'recordCount' => $recordCount > $thresholds[$level],
+            default => false,
+        };
     }
 
     private function createNotification(

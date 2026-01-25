@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Enums\VehicleStatus;
@@ -32,7 +34,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Guava\FilamentIconPicker\Forms\IconPicker;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
-use Livewire\Livewire;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\RdwService;
 use App\Traits\Vehicles;
