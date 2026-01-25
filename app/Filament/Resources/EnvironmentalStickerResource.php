@@ -27,6 +27,7 @@ use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,15 +71,12 @@ class EnvironmentalStickerResource extends Resource
             ])
             ->columns([
                 Split::make([
-                    TextColumn::make('country')
+                    ViewColumn::make('country')
+                        ->view('filament.tables.columns.country-flag', [
+                            'showName' => true,
+                        ])
                         ->sortable()
-                        ->formatStateUsing(function ($record) {
-                            return Livewire::mount('CountryFlag', [
-                                'country' => $record->country,
-                                'showName' => true,
-                            ]);
-                        })
-                        ->html()
+                        ->hidden(fn ($state) => empty($state))
                         ->label(__('Country')),
                     TextColumn::make('start_date')
                         ->label(__('Start date'))

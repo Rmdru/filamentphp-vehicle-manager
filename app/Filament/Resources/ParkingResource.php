@@ -1,17 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Enums\ParkingPaymentMethod;
 use App\Enums\ParkingType;
 use App\Filament\Resources\ParkingResource\Pages;
 use App\Models\Parking;
-use App\Models\Vehicle;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
@@ -101,6 +101,7 @@ class ParkingResource extends Resource
                         ]),
                     TextColumn::make('type')
                         ->label(__('Type'))
+                        ->required()
                         ->badge()
                         ->sortable()
                         ->color('gray')

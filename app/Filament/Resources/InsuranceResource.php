@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\InsuranceResource\Pages;
 use App\Models\Insurance;
-use App\Models\Vehicle;
 use App\Traits\InsuranceTypeOptions;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -74,7 +74,7 @@ class InsuranceResource extends Resource
                         ->date()
                         ->formatStateUsing(function (Insurance $insurance) {
                             if (empty($insurance->end_date)) {
-                                $insurance->end_date = __('Unknown');
+                                return $insurance->start_date->isoFormat('MMM D, Y') . ' - ' . __('Unknown');
                             }
 
                             return $insurance->start_date->isoFormat('MMM D, Y') . ' - ' . $insurance->end_date->isoFormat('MMM D, Y');

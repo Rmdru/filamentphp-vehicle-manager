@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VignetteResource\Pages;
-use App\Models\Vehicle;
 use App\Models\Vignette;
 use App\Traits\CountryOptions;
 use App\Traits\IsMobile;
@@ -31,6 +32,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
+use Filament\Facades\Filament;
+use Filament\Tables\Columns\ViewColumn;
 
 class VignetteResource extends Resource
 {
@@ -69,15 +72,12 @@ class VignetteResource extends Resource
             ])
             ->columns([
                 Split::make([
-                    TextColumn::make('country')
+                    ViewColumn::make('country')
+                        ->view('filament.tables.columns.country-flag', [
+                            'showName' => true,
+                        ])
                         ->sortable()
-                        ->formatStateUsing(function ($record) {
-                            return Livewire::mount('CountryFlag', [
-                                'country' => $record->country,
-                                'showName' => true,
-                            ]);
-                        })
-                        ->html()
+                        ->hidden(fn ($state) => empty($state))
                         ->label(__('Country')),
                     TextColumn::make('start_date')
                         ->label(__('Start date'))

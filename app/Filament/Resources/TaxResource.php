@@ -1,15 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TaxResource\Pages;
 use App\Models\Tax;
-use App\Models\Vehicle;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -70,7 +69,7 @@ class TaxResource extends Resource
                         ->date()
                         ->formatStateUsing(function (Tax $tax) {
                             if (empty($tax->end_date)) {
-                                $tax->end_date = __('Unknown');
+                                return $tax->start_date->isoFormat('MMM D, Y') . ' t/m ' . __('Unknown');
                             }
 
                             return $tax->start_date->isoFormat('MMM D, Y') . ' t/m ' . $tax->end_date->isoFormat('MMM D, Y');

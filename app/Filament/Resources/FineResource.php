@@ -36,6 +36,7 @@ use Filament\Tables\Columns\Summarizers\Average;
 use Filament\Tables\Columns\Summarizers\Range;
 use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Guava\FilamentIconPicker\Forms\IconPicker;
@@ -112,27 +113,17 @@ class FineResource extends Resource
                             })
                         ),
                     Stack::make([
-                        TextColumn::make('country')
+                        ViewColumn::make('country')
+                            ->view('filament.tables.columns.country-flag')
                             ->sortable()
-                            ->formatStateUsing(function ($record) {
-                                return Livewire::mount('CountryFlag', [
-                                    'country' => $record->country,
-                                ]);
-                            })
-                            ->html()
+                            ->hidden(fn ($state) => empty($state))
                             ->label(__('Country')),
-                        TextColumn::make('road')
+                        ViewColumn::make('road')
+                            ->view('filament.tables.columns.road-badge')
                             ->sortable()
                             ->searchable()
-                            ->formatStateUsing(function ($record) {
-                                return Livewire::mount('RoadBadge', [
-                                    'roadType' => $record->road_type,
-                                    'road' => $record->road,
-                                    'country' => $record->country,
-                                ]);
-                            })
-                            ->html()
-                            ->description(fn(Fine $fine) => ! empty($fine->road_distance_marker) ? '@ ' . $fine->road_distance_marker . ' km' : '')
+                            ->hidden(fn ($state) => empty($state))
+                            ->tooltip(fn(Fine $fine) => ! empty($fine->road_distance_marker) ? '@ ' . $fine->road_distance_marker . ' km' : '')
                             ->label(__('Road')),
                     ])
                         ->space(),

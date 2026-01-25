@@ -17,6 +17,7 @@ use Filament\Infolists\Components\Group;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\HtmlString;
@@ -74,16 +75,12 @@ class ViewRefueling extends ViewRecord
                             ])
                         ]),
                         Group::make([
-                            TextEntry::make('country')
+                            ViewEntry::make('country')
                                 ->label(__('Country'))
                                 ->placeholder(__('Unknown'))
-                                ->html()
-                                ->formatStateUsing(function ($record) {
-                                    return Livewire::mount('CountryFlag', [
-                                        'country' => $record->country,
-                                        'showName' => true,
-                                    ]);
-                                }),
+                                ->view('filament.tables.columns.country-flag', [
+                                    'showName' => true,
+                                ]),
                             TextEntry::make('date')
                                 ->label(__('Date'))
                                 ->date()
