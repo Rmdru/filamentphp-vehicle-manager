@@ -14,7 +14,7 @@ trait LocationByIp
             $ipAddress = '';
         }
 
-        $response = Http::timeout(10)
+        $response = Http::timeout(5)
             ->retry(3, 100)
             ->get(config('ip_api.base_url') . $ipAddress);
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Models\Vehicle;
 use App\Services\VehicleStatusService;
 use Filament\Facades\Filament;
 use Illuminate\View\View;

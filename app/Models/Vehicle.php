@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\MaintenanceTypeMaintenance;
 use App\Services\OpenMeteoService;
+use App\Services\RdwService;
 use App\Traits\VehicleStats;
 use App\Services\VehicleCostsService;
 use App\Support\Cost;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\LocationByIp;
+use Illuminate\Support\Facades\Cache;
 
 class Vehicle extends Model implements HasName
 {
@@ -382,10 +384,16 @@ class Vehicle extends Model implements HasName
         }
         
         $this->historicalMinTemps = (new OpenMeteoService)->fetchHistoricalMinTempsInDateRange($ipLocation, $latestWash->date->format('Y-m-d'), now()->format('Y-m-d'));
+
+        Cache::store('database')->put('vehicle_' . $this->id . '_historical_min_temps', $this->historicalMinTemps, now()->addDay());
     }
 
     private function getHistoricalMinTemps(): array
     {
+        if (Cache::has('vehicle_' . $this->id . '_historical_min_temps')) {
+            return Cache::get('vehicle_' . $this->id . '_historical_min_temps');
+        }
+
         if (empty($this->historicalMinTemps)) {
             $this->setHistoricalMinTemps();
         }
@@ -418,14 +426,20 @@ class Vehicle extends Model implements HasName
         if ($this->reconditionings->isEmpty()) {
             return [];
         }
+
+        $washingStatus = $this->washing_status;
+
+        if (empty($washingStatus) || (! empty($washingStatus) && $washingStatus['time'] >= 10)) {
+            return [];
+        }
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
 
-        if (! empty($historicalMinTemps) && min($historicalMinTemps['daily']['temperature_2m_min']) <= 4) {
-            return $this->washing_status;
+        if (empty($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) >= 4) {
+            return [];
         }
         
-        return [];
+        return $washingStatus;
     }
 
     public function getSelfWashingStatusAttribute(): array
@@ -433,14 +447,39 @@ class Vehicle extends Model implements HasName
         if ($this->reconditionings->isEmpty()) {
             return [];
         }
+
+        $washingStatus = $this->washing_status;
+
+        if (empty($washingStatus) || (! empty($washingStatus) && $washingStatus['time'] >= 10)) {
+            return [];
+        }
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
 
-        if (! empty($historicalMinTemps) && min($historicalMinTemps['daily']['temperature_2m_min']) >= 4) {
-            return $this->washing_status;
+        if (empty($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) < 4) {
+            return [];
         }
         
-        return [];
+        return $washingStatus;
+    }
+
+    public function getRecallStatusAttribute(): array
+    {
+        $openRecalls = $this->rdw_data['open_recalls'] ?? [];
+
+        if (empty($openRecalls)) {
+            return [
+                'recordCount' => 0,
+                'hasModal' => false,
+                'data' => [],
+            ];
+        }
+
+        return [
+            'recordCount' => count($openRecalls),
+            'hasModal' => true,
+            'data' => $openRecalls,
+        ];
     }
 
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
