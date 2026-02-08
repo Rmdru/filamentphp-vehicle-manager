@@ -101,7 +101,6 @@ class ParkingResource extends Resource
                         ]),
                     TextColumn::make('type')
                         ->label(__('Type'))
-                        ->required()
                         ->badge()
                         ->sortable()
                         ->color('gray')
@@ -192,6 +191,7 @@ class ParkingResource extends Resource
                         ToggleButtons::make('type')
                             ->label(__('Type'))
                             ->inline()
+                            ->required()
                             ->options(ParkingType::class),
                         TextInput::make('location')
                             ->label(__('Location'))
