@@ -13,8 +13,8 @@ return new class extends Migration
         if (! Schema::hasTable('fuel_detour_aggregates')) {
             Schema::create('fuel_detour_aggregates', function (Blueprint $table) {
                 $table->uuid('id')->primary();
-                $table->foreignUuid('vehicle_id')->constrained()->cascadeOnDelete();
-                $table->foreignUuid('fuel_price_id')->constrained()->cascadeOnDelete();
+                $table->foreignUuid('vehicle_id')->references('id')->on('vehicles')->cascadeOnDelete();
+                $table->foreignUuid('fuel_price_id')->references('id')->on('fuel_prices')->cascadeOnDelete();
                 $table->integer('max_detour_only_fuel_costs');
                 $table->integer('max_detour_all_costs');
                 $table->timestamps();
