@@ -1,5 +1,6 @@
 {
     "1 in 4 times fill up with Super Plus": "1 op de 4 keer tanken met Super Plus 98",
+    ":max_detour_only_fuel_costs km": ":max_detour_only_fuel_costs km",
     "About :distance km": "Over :distance km",
     "About :distance km (:timeTillDistanceDeadlineHumans)": "Over :distance km (:timeTillDistanceDeadlineHumans)",
     "Accident": "Ongeval",
@@ -140,6 +141,7 @@
     "Fuel consumption range": "Brandstofverbruik bereik",
     "Fuel is getting old!": "Brandstof wordt oud!",
     "Fuel is too old!": "Brandstof is te oud!",
+    "Fuel prices abroad": "Brandstofprijzen in het buitenland",
     "Fuel type": "Brandstoftype",
     "Garage": "Garage",
     "Gas station": "Tankstation",
@@ -235,6 +237,7 @@
     "Notification": "Melding",
     "Notifications": "Meldingen",
     "Now": "Nu",
+    "Break-even: :max_detour_all_costs km": "Break-even: :max_detour_all_costs km",
     "OK": "OK",
     "Object": "Object",
     "Officer": "Agent",

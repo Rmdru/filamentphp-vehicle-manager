@@ -1,5 +1,6 @@
 {
     "1 in 4 times fill up with Super Plus": "1 von 4 Malen mit Super Plus 98 tanken",
+    ":max_detour_only_fuel_costs km": ":max_detour_only_fuel_costs km",
     "About :distance km": "Ungefähr :distance km",
     "About :distance km (:timeTillDistanceDeadlineHumans)": "Ungefähr :distance km (:timeTillDistanceDeadlineHumans)",
     "Accident": "Unfall",
@@ -140,6 +141,7 @@
     "Fuel consumption range": "Kraftstoffverbrauchsbereich",
     "Fuel is getting old!": "Kraftstoff wird alt!",
     "Fuel is too old!": "Kraftstoff ist zu alt!",
+    "Fuel prices abroad": "Kraftstoffpreise im Ausland",
     "Fuel type": "Kraftstoffart",
     "Garage": "Garage",
     "Gas station": "Tankstelle",
@@ -236,6 +238,7 @@
     "Notification": "Benachrichtigung",
     "Notifications": "Benachrichtigungen",
     "Now": "Jetzt",
+    "Break-even: :max_detour_all_costs km": "Break-even: :max_detour_all_costs km",
     "OK": "OK",
     "Object": "Objekt",
     "Officer": "Offizier",

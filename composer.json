@@ -28,6 +28,8 @@
         "owenvoke/blade-fontawesome": "^2.6",
         "postare/blade-mdi": "^1.0",
         "secondnetwork/blade-tabler-icons": "^3.30",
+        "symfony/css-selector": "^7.4",
+        "symfony/dom-crawler": "^8.0",
         "thiagocordeiro/laravel-translator": "^1.2"
     },
     "require-dev": {

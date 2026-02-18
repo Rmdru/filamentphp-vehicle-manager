@@ -54,10 +54,23 @@
         @livewire(\App\Filament\Widgets\DashboardStatsOverview::class)
     </x-filament::section>
     <x-filament::section
+        icon="gmdi-local-gas-station-r"
+        collapsible
+        persist-collapsed
+        id="statistics"
+    >
+        <x-slot name="heading">
+            <span class="flex gap-2">
+                {{ __('Fuel prices abroad') }}
+            </span>
+        </x-slot>
+        @livewire(\App\Filament\Widgets\DashboardFuelPricesAbroad::class)
+    </x-filament::section>
+    <x-filament::section
         icon="gmdi-bar-chart-r"
         collapsible
         persist-collapsed
-        id="montly-costs"
+        id="monthly-costs"
     >
         <x-slot name="heading">
             <span class="flex gap-2">

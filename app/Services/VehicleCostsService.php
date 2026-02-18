@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Vehicle;
 use App\Support\Cost;
 use Carbon\Carbon;
 
@@ -11,9 +12,9 @@ class VehicleCostsService
 {
     private array $types = [];
 
-    public function __construct()
+    public function __construct(?Vehicle $vehicle = null)
     {
-        $this->types = Cost::types();
+        $this->types = Cost::types($vehicle);
     }
 
     public function getMonths(string $vehicleId): array

@@ -484,11 +484,11 @@ class Vehicle extends Model implements HasName
 
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
     {
-        $vehicleId = Filament::getTenant()->id;
-        $costTypes = Cost::types();
+        $vehicleId = $this->id;
+        $costTypes = Cost::types($this);
 
         if (empty($startDate) || empty($endDate)) {
-            $vehicleCostsService = new VehicleCostsService;
+            $vehicleCostsService = new VehicleCostsService($this);
             $dateRange = $vehicleCostsService->getMonths($vehicleId);
             $startDate = $dateRange['startDate'];
             $endDate = $dateRange['endDate'];

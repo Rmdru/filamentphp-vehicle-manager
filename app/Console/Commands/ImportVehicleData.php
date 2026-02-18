@@ -9,10 +9,10 @@ use App\Models\Vehicle;
 use App\Services\RdwService;
 use Illuminate\Console\Command;
 
-class SyncVehicleData extends Command
+class ImportVehicleData extends Command
 {
-    protected $signature = 'sync:vehicle-data';
-    protected $description = 'Sync vehicle data from RDW API to vehicles database table';
+    protected $signature = 'import:vehicle-data';
+    protected $description = 'Import vehicle data from RDW API to vehicles database table';
 
     public function __construct(
         private readonly RdwService $rdwService

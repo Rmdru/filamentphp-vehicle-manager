@@ -22,7 +22,6 @@ class DashboardCheapestGasStations extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $gasStationLogos = config('refuelings.gas_station_logos');
         $vehicle = Filament::getTenant();
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 

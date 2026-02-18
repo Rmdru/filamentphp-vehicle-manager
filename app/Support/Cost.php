@@ -23,9 +23,11 @@ use Filament\Facades\Filament;
 
 class Cost
 {
-    public static function types(): array
+    public static function types(?Vehicle $vehicle = null): array
     {
-        $vehicle = Filament::getTenant();
+        if (empty($vehicle)) {
+            $vehicle = Filament::getTenant();
+        }
         $powertrain = trans('powertrains')[$vehicle->powertrain];
 
         return [
