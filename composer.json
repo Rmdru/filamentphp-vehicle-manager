@@ -29,7 +29,7 @@
         "postare/blade-mdi": "^1.0",
         "secondnetwork/blade-tabler-icons": "^3.30",
         "symfony/css-selector": "^7.4",
-        "symfony/dom-crawler": "^8.0",
+        "symfony/dom-crawler": "7.4",
         "thiagocordeiro/laravel-translator": "^1.2"
     },
     "require-dev": {
