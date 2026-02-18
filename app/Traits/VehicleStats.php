@@ -11,9 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 trait VehicleStats
 {
-    private function calculateAverageMonthlyCosts(bool $thisMonth = false): float
+    private function calculateAverageMonthlyCosts(bool $thisMonth = false, ?Vehicle $vehicle = null): float
     {
-        $vehicle = Filament::getTenant();
+        if (empty($vehicle)) {
+            $vehicle = Filament::getTenant();
+        }
+
         $startDate = $this->filters['startDate'] ?? '';
         $endDate = $this->filters['endDate'] ?? '';
 
@@ -293,5 +296,39 @@ trait VehicleStats
         $ratio = ($premiumAmount / $totalAmount) * 100;
 
         return round($ratio, 1);
+    }
+
+    public function calculateAverageFuelCostsPerKilometer($vehicleId = null): float
+    {
+        if (empty($vehicleId)) {
+            $vehicleId = Filament::getTenant()->id;
+        }
+
+        $refuelings = Refueling::where('vehicle_id', $vehicleId);
+
+        if (! $refuelings->count()) {
+            return 0.0;
+        }
+
+        $refuelingsData = $refuelings->get();
+        if ($refuelingsData->isEmpty()) {
+            return 0.0;
+        }
+
+        $totalCosts = 0.0;
+        $totalDistance = 0.0;
+
+        foreach ($refuelingsData as $refueling) {
+            $totalCosts += $refueling->amount;
+            $totalDistance += ($refueling->mileage_end - $refueling->mileage_begin);
+        }
+
+        if ($totalDistance === 0.0) {
+            return 0.0;
+        }
+
+        $costsPerKilometer = $totalCosts / $totalDistance;
+
+        return round($costsPerKilometer, 3);
     }
 }
