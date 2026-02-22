@@ -34,10 +34,17 @@ class CalculateFuelDetourAggregates {
                             ->id;
 
                         $avgFuelCostsPerKm = $this->calculateAverageFuelCostsPerKilometer($vehicle->id);
-                        $avgTotalCostsPerKm = $this->calculateAverageMonthlyCosts(vehicle: $vehicle);
+                        $avgTotalCostsPerKm = $this->calculateCostsPerKilometer(vehicle: $vehicle);
 
-                        $dutchFuelPrice = array_filter($data, function ($item) use ($fuelPrice) {
-                            return $item['country'] === 'netherlands' && $item['fuel_type'] === $fuelPrice['fuel_type'];
+                        $comparisionFuelType = match ($fuelPrice['fuel_type']) {
+                            'Unleaded 95 (E10)' => 'Unleaded 95 (E10)',
+                            'Unleaded 95 (E5)' => 'Unleaded 95 (E10)',
+                            'Super Plus' => 'Unleaded 95 (E10)',
+                            default => $fuelPrice['fuel_type'],
+                        };
+
+                        $dutchFuelPrice = array_filter($data, function ($item) use ($comparisionFuelType) {
+                            return $item['country'] === 'netherlands' && $item['fuel_type'] === $comparisionFuelType;
                         });
 
                         if (empty($dutchFuelPrice)) {

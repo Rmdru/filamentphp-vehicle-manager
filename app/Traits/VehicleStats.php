@@ -39,12 +39,12 @@ trait VehicleStats
         return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
     }
 
-    private function calculateCostsPerKilometer(bool $thisMonth = false): float
+    private function calculateCostsPerKilometer(bool $thisMonth = false, ?Vehicle $vehicle = null): float
     {
-        $averageMonthlyCosts = $this->calculateAverageMonthlyCosts();
-        $currentMonthlyCosts = $this->calculateAverageMonthlyCosts(true);
-        $averageMonthlyDistance = $this->calculateAverageMonthlyDistance();
-        $currentMonthlyDistance = $this->calculateAverageMonthlyDistance(true);
+        $averageMonthlyCosts = $this->calculateAverageMonthlyCosts(vehicle: $vehicle);
+        $currentMonthlyCosts = $this->calculateAverageMonthlyCosts(true, vehicle: $vehicle);
+        $averageMonthlyDistance = $this->calculateAverageMonthlyDistance(vehicle: $vehicle);
+        $currentMonthlyDistance = $this->calculateAverageMonthlyDistance(true, vehicle: $vehicle);
 
         if ($thisMonth) {
             $rawCostsPerKilometerCurrentMonth = 0;
@@ -65,9 +65,13 @@ trait VehicleStats
         return round($rawCostsPerKilometer, 3);
     }
 
-    private function calculateAverageMonthlyDistance(bool $thisMonth = false): float
+    private function calculateAverageMonthlyDistance(bool $thisMonth = false, ?Vehicle $vehicle = null): float
     {
-        $vehicleId = Filament::getTenant()->id;
+        if (empty($vehicle)) {
+            $vehicle = Filament::getTenant();
+        }
+
+        $vehicleId = $vehicle->id;
         $startDate = $this->filters['startDate'] ?? null;
         $endDate = $this->filters['endDate'] ?? null;
 
@@ -319,7 +323,7 @@ trait VehicleStats
         $totalDistance = 0.0;
 
         foreach ($refuelingsData as $refueling) {
-            $totalCosts += $refueling->amount;
+            $totalCosts += $refueling->total_price;
             $totalDistance += ($refueling->mileage_end - $refueling->mileage_begin);
         }
 

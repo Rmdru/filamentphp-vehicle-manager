@@ -53,19 +53,21 @@
         </x-slot>
         @livewire(\App\Filament\Widgets\DashboardStatsOverview::class)
     </x-filament::section>
-    <x-filament::section
-        icon="gmdi-local-gas-station-r"
-        collapsible
-        persist-collapsed
-        id="statistics"
-    >
-        <x-slot name="heading">
-            <span class="flex gap-2">
-                {{ __('Fuel prices abroad') }}
-            </span>
-        </x-slot>
-        @livewire(\App\Filament\Widgets\DashboardFuelPricesAbroad::class)
-    </x-filament::section>
+    @if (! in_array($vehicle->powertrain, ['electricity', 'hydrogen']))
+        <x-filament::section
+            icon="gmdi-local-gas-station-r"
+            collapsible
+            persist-collapsed
+            id="statistics"
+        >
+            <x-slot name="heading">
+                <span class="flex gap-2">
+                    {{ __('Fuel prices abroad') }}
+                </span>
+            </x-slot>
+            @livewire(\App\Filament\Widgets\DashboardFuelPricesAbroad::class)
+        </x-filament::section>
+    @endif
     <x-filament::section
         icon="gmdi-bar-chart-r"
         collapsible
