@@ -222,7 +222,7 @@ class ParkingResource extends Resource
                         TextInput::make('price')
                             ->label(__('Price'))
                             ->numeric()
-                            ->mask(RawJs::make('$money($input, \'.\', \' \',)'))
+                            ->mask(RawJs::make('$money($input, \'.\', \'\',)'))
                             ->stripCharacters(',')
                             ->required()
                             ->prefix('€')

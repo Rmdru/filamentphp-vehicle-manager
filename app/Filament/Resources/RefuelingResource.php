@@ -354,7 +354,7 @@ class RefuelingResource extends Resource
                         TextInput::make('total_price')
                             ->label(__('Total price'))
                             ->numeric()
-                            ->mask(RawJs::make('$money($input, \'.\', \' \',)'))
+                            ->mask(RawJs::make('$money($input, \'.\', \'\',)'))
                             ->required()
                             ->prefix('€')
                             ->step(0.01)
