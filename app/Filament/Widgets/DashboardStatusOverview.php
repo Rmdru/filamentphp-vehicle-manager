@@ -72,7 +72,7 @@ class DashboardStatusOverview extends BaseWidget
             ]),
         ];
 
-        if ($maintenanceStatus['daysTillDistanceDeadline'] < $maintenanceStatus['daysTillTimeDeadline']) {
+        if ($maintenanceStatus['daysTillDistanceDeadline'] < $maintenanceStatus['time']) {
             $value = [
                 'primary' => __('About :distance km (:timeTillDistanceDeadlineHumans)', [
                     'distance' => $maintenanceStatus['distance'],
