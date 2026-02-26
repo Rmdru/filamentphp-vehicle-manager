@@ -46,8 +46,6 @@ class DashboardFuelPricesAbroad extends Widget
             $fuelTypesSorted[$fuelType] = trans('fuel_types.' . $fuelType);
         }
 
-        asort($fuelTypesSorted);
-
         $pivoted = [];
 
         foreach ($fuelPrices as $fuelPrice) {
@@ -57,6 +55,9 @@ class DashboardFuelPricesAbroad extends Widget
                 'max_detour_all_costs' => $fuelPrice->max_detour_all_costs ?? 0,
             ];
         }
+
+        ksort($fuelTypesSorted);
+        ksort($pivoted);
 
         return [
             'fuelPrices' => $pivoted,
