@@ -56,7 +56,7 @@ class DashboardFuelPricesAbroad extends Widget
             ];
         }
 
-        ksort($fuelTypesSorted);
+        asort($fuelTypesSorted);
         ksort($pivoted);
 
         return [
