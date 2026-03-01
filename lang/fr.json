@@ -43,6 +43,8 @@
     "Big maintenance": "Gros entretien",
     "Border control": "Contrôle aux frontières",
     "Brand": "Marque",
+    "Break-even fuel: :km km": "Break-even carburant : :km km",
+    "Break-even full: :km km": "Break-even complet : :km km",
     "Break-even: :max_detour_all_costs km": "Point mort : :max_detour_all_costs km",
     "Building": "Bâtiment",
     "Bus": "Bus",

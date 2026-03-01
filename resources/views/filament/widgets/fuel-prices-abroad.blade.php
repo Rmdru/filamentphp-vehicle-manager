@@ -29,14 +29,14 @@
                                     @if(isset($fuels[$key]))
                                         <div
                                             title="{{ $country !== 'netherlands'
-                                                ? __('Break-even: :km km', ['km' => $fuels[$key]['max_detour_all_costs']])
+                                                ? __('Break-even full: :km km', ['km' => $fuels[$key]['max_detour_all_costs']])
                                                 : '' }}"
                                         >
                                             <div>€ {{ $fuels[$key]['price'] }}/l</div>
 
                                             <div class="text-gray-500 text-xs">
                                                 {{ $country !== 'netherlands'
-                                                    ? __(':km km', ['km' => $fuels[$key]['max_detour_only_fuel_costs']])
+                                                    ? $fuels[$key]['max_detour_only_fuel_costs'] . ' km'
                                                     : '' }}
                                             </div>
                                         </div>
@@ -75,7 +75,8 @@
 
                                     @if($country !== 'netherlands')
                                         <div class="text-xs text-gray-500">
-                                            {{ $fuels[$key]['max_detour_only_fuel_costs'] }} km
+                                            {{ __('Break-even fuel: :km km', ['km' => $fuels[$key]['max_detour_only_fuel_costs']]) }}<br />
+                                            {{ __('Break-even full: :km km', ['km' => $fuels[$key]['max_detour_all_costs']]) }}
                                         </div>
                                     @endif
                                 </div>
