@@ -29,8 +29,8 @@
                                     @if(isset($fuels[$key]))
                                         <div
                                             title="{{ $country !== 'netherlands'
-                                                ? __('Break-even full: :km km', ['km' => $fuels[$key]['max_detour_all_costs']])
-                                                : '' }}"
+                                                ? __('Break-even full: :km km (:date)', ['km' => $fuels[$key]['max_detour_all_costs'], 'date' => $fuels[$key]['date']])
+                                                : $fuels[$key]['date'] }}"
                                         >
                                             <div>€ {{ $fuels[$key]['price'] }}/l</div>
 

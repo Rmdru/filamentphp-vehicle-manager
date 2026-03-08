@@ -32,6 +32,7 @@ class DashboardFuelPricesAbroad extends Widget
             })
             ->select([
                 'fuel_prices.country',
+                'fuel_prices.date',
                 'fuel_prices.fuel_type',
                 'fuel_prices.price',
                 'fuel_detour_aggregates.max_detour_only_fuel_costs',
@@ -50,6 +51,7 @@ class DashboardFuelPricesAbroad extends Widget
 
         foreach ($fuelPrices as $fuelPrice) {
             $pivoted[$fuelPrice->country][$fuelPrice->fuel_type] = [
+                'date' => $fuelPrice->date->format('d-m-Y'),
                 'price' => str($fuelPrice->price)->replace('.', ','),
                 'max_detour_only_fuel_costs' => $fuelPrice->max_detour_only_fuel_costs ?? 0,
                 'max_detour_all_costs' => $fuelPrice->max_detour_all_costs ?? 0,
