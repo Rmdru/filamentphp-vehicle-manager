@@ -130,8 +130,8 @@ class VehicleResource extends Resource
                                                     $set('brand', $brandOption);
                                                 }
                                                 
-                                                $set('model', ucfirst(strtolower($vehicleData['handelsbenaming'])) ?? null);
-                                                $set('version', ucfirst(strtolower($vehicleData['type'])) ?? null);
+                                                $set('model', ucfirst(strtolower($vehicleData['handelsbenaming'] ?? '')));
+                                                $set('version', ucfirst(strtolower($vehicleData['type'] ?? '')));
                                                 $set('engine', $engine);
                                                 $set('purchase_date', isset($vehicleData['datum_tenaamstelling']) ? Carbon::createFromFormat('Ymd', $vehicleData['datum_tenaamstelling']) : null);
                                                 $set('construction_date', isset($vehicleData['datum_eerste_toelating']) ? Carbon::createFromFormat('Ymd', $vehicleData['datum_eerste_toelating']) : null);
