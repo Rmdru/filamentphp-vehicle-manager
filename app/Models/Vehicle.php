@@ -377,7 +377,7 @@ class Vehicle extends Model implements HasName
         $ipLocation = $this->getLocationDataByIp(request()->ip());
         $latestWash = (new Reconditioning)->latestWash($this->reconditionings);
 
-        if (empty($latestWash)) {
+        if (empty($latestWash) || empty($ipLocation)) {
             return;
         }
         
