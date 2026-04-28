@@ -141,7 +141,7 @@ class RefuelingResource extends Resource
                         ->label(__('Fuel consumption'))
                         ->icon(function (Refueling $refueling) {
                             $fuelConsumption = $refueling->fuel_consumption;
-                            $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
+                            $avgFuelConsumption = round(Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption'), 2);
 
                             if ($fuelConsumption > $avgFuelConsumption) {
                                 return 'gmdi-trending-up-r';
@@ -154,7 +154,7 @@ class RefuelingResource extends Resource
                         ->badge()
                         ->color(function (Refueling $refueling) {
                             $fuelConsumption = $refueling->fuel_consumption;
-                            $avgFuelConsumption = Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption');
+                            $avgFuelConsumption = round(Refueling::where('vehicle_id', $refueling->vehicle_id)->avg('fuel_consumption'), 2);
 
                             if ($fuelConsumption > $avgFuelConsumption) {
                                 return 'danger';
