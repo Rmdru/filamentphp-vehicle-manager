@@ -343,10 +343,10 @@ class VehicleResource extends Resource
                                     ->collapsible()
                                     ->schema([
                                         Checkbox::make('notifications.refueling.old_fuel')
-                                            ->label(__('Outdated fuel (only unleaded 95 (E10))'))
+                                            ->label(__('Outdated fuel (only E10 fuels)'))
                                             ->default(true),
                                         Checkbox::make('notifications.refueling.periodic_super_plus')
-                                            ->label(__('1 in 4 times fill up with Super Plus'))
+                                            ->label(__('1 in 4 times fill up with Super Plus (E5)'))
                                             ->default(true),
                                     ]),
                                 Section::make(__('Insurances'))

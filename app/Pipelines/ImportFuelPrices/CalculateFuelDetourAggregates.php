@@ -39,7 +39,7 @@ class CalculateFuelDetourAggregates {
                         $comparisionFuelType = match ($fuelPrice['fuel_type']) {
                             'Unleaded 95 (E10)' => 'Unleaded 95 (E10)',
                             'Unleaded 95 (E5)' => 'Unleaded 95 (E10)',
-                            'Super Plus' => 'Unleaded 95 (E10)',
+                            'Super Plus (E5)' => 'Unleaded 95 (E10)',
                             default => $fuelPrice['fuel_type'],
                         };
 

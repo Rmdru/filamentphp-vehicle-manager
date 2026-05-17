@@ -85,7 +85,7 @@ class StatusNotification
                 'thresholds' => ['info' => 2],
                 'thresholdType' => 'recordCount',
                 'messages' => [
-                    'info' => __('Next time fill up with Super Plus fuel!'),
+                    'info' => __('Next time fill up with Super Plus (E5) fuel!'),
                 ],
                 'icon' => 'gmdi-local-gas-station-r',
             ],

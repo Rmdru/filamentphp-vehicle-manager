@@ -5,7 +5,8 @@ declare(strict_types=1);
 return [
     'Unleaded 95 (E10)' => 'Unleaded 95 (E10)',
     'Unleaded 95 (E5)' => 'Unleaded 95 (E5)',
-    'Super Plus' => 'Super Plus',
+    'Super Plus (E5)' => 'Super Plus (E5)',
+    'Super Plus (E10)' => 'Super Plus (E10)',
     'V-Power 100' => 'V-Power 100',
     'Ultimate 102' => 'Ultimate 102',
     'Diesel' => 'Diesel',

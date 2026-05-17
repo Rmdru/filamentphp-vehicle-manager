@@ -10,7 +10,6 @@ use App\Enums\TollPaymentMethod;
 use App\Enums\TollType;
 use App\Filament\Resources\TollResource\Pages;
 use App\Models\Toll;
-use App\Models\Vehicle;
 use App\Traits\CountryOptions;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
@@ -198,11 +197,17 @@ class TollResource extends Resource
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
                         ->modalIcon('gmdi-file-copy-r')
-                        ->beforeReplicaSaved(function (Toll $replica): Toll {
-                            $replica['date'] = today();
-
-                            return $replica;
-                        })
+                        ->fillForm([
+                            'date' => now(),
+                        ])
+                        ->form([
+                            DatePicker::make('date')
+                                ->label(__('Date'))
+                                ->required()
+                                ->native((new self)->isMobile())
+                                ->displayFormat('d-m-Y')
+                                ->maxDate(now()),
+                        ]),
                 ]),
             ])
             ->bulkActions([

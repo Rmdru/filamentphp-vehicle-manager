@@ -275,7 +275,7 @@ trait VehicleStats
         }
 
         $premiumFuelTypes = [
-            'Super Plus',
+            'Super Plus (E5)',
             'V-Power 100',
             'Ultimate 102',
             'Premium diesel',

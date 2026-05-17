@@ -88,7 +88,8 @@ class RefuelingResource extends Resource
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query
-                    ->select('*', DB::raw('mileage_end - mileage_begin as distance'));
+                    ->select('*', DB::raw('mileage_end - mileage_begin as distance'))
+                    ->orderByDesc('date', 'created_at');
             })
             ->columns([
                 Split::make([

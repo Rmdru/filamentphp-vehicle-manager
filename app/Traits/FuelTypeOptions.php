@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
-use App\Models\Vehicle;
 use Filament\Facades\Filament;
 
 trait FuelTypeOptions

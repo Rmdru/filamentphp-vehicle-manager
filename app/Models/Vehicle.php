@@ -150,10 +150,10 @@ class Vehicle extends Model implements HasName
 
     public function getFuelStatusAttribute(): ?array
     {
-        if ($this->refuelings->isNotEmpty() && $this->refuelings->where('fuel_type', 'Unleaded 95 (E10)')->count() > 0) {
+        if ($this->refuelings->isNotEmpty() && $this->refuelings->where('fuel_type', 'LIKE', '%E10%')->count() > 0) {
             $latestRefueling = $this->refuelings->sortByDesc('date')->first();
 
-            if (! empty($latestRefueling) && $latestRefueling->fuel_type === 'Unleaded 95 (E10)') {
+            if (! empty($latestRefueling) && str($latestRefueling->fuel_type)->contains('E10', true)) {
                 $diff = Carbon::parse($latestRefueling->date)->addMonths(2)->diffInDays(now());
                 return [
                     'time' => (int) max(0, $diff - ($diff * 2))
