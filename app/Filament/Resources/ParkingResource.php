@@ -10,6 +10,7 @@ use App\Filament\Resources\ParkingResource\Pages;
 use App\Models\Parking;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\TextInput;
@@ -166,11 +167,23 @@ class ParkingResource extends Resource
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
                         ->modalIcon('gmdi-file-copy-r')
-                        ->beforeReplicaSaved(function (Parking $replica): Parking {
-                            $replica['start_time'] = today();
-
-                            return $replica;
-                        })
+                        ->fillForm([
+                            'start_time' => now(),
+                            'end_time' => now()->addHour(),
+                        ])
+                        ->form([
+                            DateTimePicker::make('start_time')
+                                ->label(__('Start time'))
+                                ->required()
+                                ->native((new self)->isMobile())
+                                ->default(now())
+                                ->displayFormat('d-m-Y H:i'),
+                            DateTimePicker::make('end_time')
+                                ->label(__('End time'))
+                                ->native((new self)->isMobile())
+                                ->default(now())
+                                ->displayFormat('d-m-Y H:i'),
+                        ]),
                 ]),
             ])
             ->bulkActions([
