@@ -10,7 +10,7 @@ jobs:
       image: php:8.4-cli
     steps:
       - name: Clone
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Deployment
         uses: appleboy/ssh-action@v0.1.10
