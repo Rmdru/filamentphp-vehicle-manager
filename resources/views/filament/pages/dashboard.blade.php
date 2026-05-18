@@ -82,19 +82,6 @@
         </x-filament::section>
     @endif
     <x-filament::section
-        icon="gmdi-bar-chart-r"
-        collapsible
-        persist-collapsed
-        id="monthly-costs"
-    >
-        <x-slot name="heading">
-            <span class="flex gap-2">
-                {{ __('Monthly costs') }}
-            </span>
-        </x-slot>
-        @livewire(\App\Filament\Widgets\DashboardCostsChart::class)
-    </x-filament::section>
-    <x-filament::section
         icon="gmdi-local-gas-station-r"
         collapsible
         persist-collapsed
@@ -106,6 +93,19 @@
             </span>
         </x-slot>
         @livewire(\App\Filament\Widgets\DashboardCheapestGasStations::class)
+    </x-filament::section>
+    <x-filament::section
+        icon="gmdi-bar-chart-r"
+        collapsible
+        persist-collapsed
+        id="monthly-costs"
+    >
+        <x-slot name="heading">
+            <span class="flex gap-2">
+                {{ __('Monthly costs') }}
+            </span>
+        </x-slot>
+        @livewire(\App\Filament\Widgets\DashboardCostsChart::class)
     </x-filament::section>
     <x-filament::section
         icon="mdi-hand-coin-outline"
