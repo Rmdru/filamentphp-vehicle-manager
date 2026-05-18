@@ -67,6 +67,19 @@
             </x-slot>
             @livewire(\App\Filament\Widgets\DashboardFuelPricesAbroad::class)
         </x-filament::section>
+        <x-filament::section
+            icon="gmdi-local-gas-station-r"
+            collapsible
+            persist-collapsed
+            id="fuel-usage-by-type"
+        >
+            <x-slot name="heading">
+                <span class="flex gap-2">
+                    {{ __('Fuel usage by fuel type') }}
+                </span>
+            </x-slot>
+            @livewire(\App\Filament\Widgets\DashboardFuelUsageByType::class)
+        </x-filament::section>
     @endif
     <x-filament::section
         icon="gmdi-bar-chart-r"
