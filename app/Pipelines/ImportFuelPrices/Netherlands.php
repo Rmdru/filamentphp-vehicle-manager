@@ -6,11 +6,18 @@ namespace App\Pipelines\ImportFuelPrices;
 
 use App\Services\OpendataCbsService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Netherlands {
     public function handle($data, $next): array
     {
         $apiData = json_decode((new OpendataCbsService)->fetchDutchFuelPrices(), true);
+        
+        if ($apiData === null || ! isset($apiData['value']) || empty($apiData['value'])) {
+            Log::warning('Failed to fetch Dutch fuel prices: Invalid API response');
+            return $next($data);
+        }
+        
         $latest = $apiData['value'][array_key_last($apiData['value'])];
         $config = config('opendata_cbs');
 

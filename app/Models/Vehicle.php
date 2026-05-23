@@ -399,6 +399,12 @@ class Vehicle extends Model implements HasName
         return $this->historicalMinTemps;
     }
 
+    private function hasHistoricalMinTemps(array $historicalMinTemps): bool
+    {
+        return ! empty($historicalMinTemps['daily']['temperature_2m_min'])
+            && is_array($historicalMinTemps['daily']['temperature_2m_min']);
+    }
+
     public function getWashingStatusAttribute(): array
     {
         $latestWash = (new Reconditioning)->latestWash($this->reconditionings);
@@ -433,7 +439,7 @@ class Vehicle extends Model implements HasName
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
 
-        if (empty($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) >= 4) {
+        if (! $this->hasHistoricalMinTemps($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) >= 4) {
             return [];
         }
         
@@ -454,7 +460,7 @@ class Vehicle extends Model implements HasName
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
 
-        if (empty($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) < 4) {
+        if (! $this->hasHistoricalMinTemps($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) < 4) {
             return [];
         }
         

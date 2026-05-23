@@ -18,6 +18,7 @@ class OpendataCbsService
     {
         try {
             $response = Http::timeout(30)
+                ->connectTimeout(30)
                 ->withUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
                 ->retry(3, 1000)
                 ->get(config('opendata_cbs.base_url') . $endpoint, $params);
