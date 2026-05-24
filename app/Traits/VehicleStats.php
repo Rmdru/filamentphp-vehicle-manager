@@ -13,7 +13,7 @@ trait VehicleStats
 {
     private static array $metricCache = [];
 
-    private function rememberVehicleMetric(string $suffix, \Closure $callback, int $ttl = 300, ?Vehicle $vehicle = null): mixed
+    private function rememberVehicleMetric(string $suffix, \Closure $callback, ?Vehicle $vehicle = null): mixed
     {
         $vehicleId = $vehicle?->id ?? Filament::getTenant()->id;
         $cacheKey = "vehicle:{$vehicleId}:{$suffix}";
@@ -57,7 +57,6 @@ trait VehicleStats
 
                 return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
             },
-            300,
             $vehicle
         );
     }
@@ -139,7 +138,6 @@ trait VehicleStats
 
                 return round($averageMonthlyDistance);
             },
-            300,
             $vehicle
         );
     }
@@ -170,8 +168,7 @@ trait VehicleStats
                 }
 
                 return round((float) ($refuelings->avg('fuel_consumption') ?? 0), 2);
-            },
-            300
+            }
         );
     }
 
@@ -201,8 +198,7 @@ trait VehicleStats
                 }
 
                 return round((float) ($refuelings->avg('avg_speed') ?? 0), 1);
-            },
-            300
+            }
         );
     }
 
@@ -288,8 +284,7 @@ trait VehicleStats
                     ->value('average_deviation');
 
                 return round((float) ($averageDeviation ?? 0), 3);
-            },
-            300
+            }
         );
     }
 
@@ -336,8 +331,7 @@ trait VehicleStats
                 $ratio = (($stats->premium_amount ?? 0) / $stats->total_amount) * 100;
 
                 return round($ratio, 1);
-            },
-            300
+            }
         );
     }
 
@@ -364,8 +358,7 @@ trait VehicleStats
                 $costsPerKilometer = $stats->total_costs / $stats->total_distance;
 
                 return round((float) $costsPerKilometer, 3);
-            },
-            300
+            }
         );
     }
 }
