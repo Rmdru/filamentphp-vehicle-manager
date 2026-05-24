@@ -405,6 +405,11 @@ class Vehicle extends Model implements HasName
             && is_array($historicalMinTemps['daily']['temperature_2m_min']);
     }
 
+    private function getExteriorProtectionStatus(): Reconditioning|null
+    {
+        return $this->reconditionings()->where('type', 'exterior_protection')->latest()->first();
+    }
+
     public function getWashingStatusAttribute(): array
     {
         $latestWash = (new Reconditioning)->latestWash($this->reconditionings);
@@ -453,14 +458,40 @@ class Vehicle extends Model implements HasName
         }
 
         $washingStatus = $this->washing_status;
+        $exteriorProtectionStatus = $this->getExteriorProtectionStatus();
 
         if (empty($washingStatus) || (! empty($washingStatus) && $washingStatus['time'] >= 10)) {
             return [];
         }
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
+        $exteriorProtectionDate = Carbon::parse($exteriorProtectionStatus->date ?? now())->addMonth();
+        $exteriorProtectionDiff = $exteriorProtectionDate->diffInDays(now());
 
-        if (! $this->hasHistoricalMinTemps($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) < 4) {
+        if (! $this->hasHistoricalMinTemps($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) < 4 || $exteriorProtectionDiff >= 60) {
+            return [];
+        }
+        
+        return $washingStatus;
+    }
+
+    public function getSelfWashingProtectionStatusAttribute(): array
+    {
+        if ($this->reconditionings->isEmpty()) {
+            return [];
+        }
+
+        $washingStatus = $this->washing_status;
+        $exteriorProtectionStatus = $this->getExteriorProtectionStatus();
+
+        if (empty($washingStatus) || (! empty($washingStatus) && $washingStatus['time'] >= 10) || empty($exteriorProtectionStatus)) {
+            return [];
+        }
+        
+        $exteriorProtectionDate = Carbon::parse($exteriorProtectionStatus->date ?? now())->addMonth();
+        $exteriorProtectionDiff = $exteriorProtectionDate->diffInDays(now());
+
+        if ($exteriorProtectionDiff < 60) {
             return [];
         }
         

@@ -11,7 +11,7 @@ class StatusNotification
         return [
             'insurance' => [
                 'statusKey' => 'insurance_status',
-                'thresholds' => ['critical' => 0, 'warning' => 31, 'info' => 62],
+                'thresholds' => ['critical' => 0, 'warning' => 15, 'info' => 31],
                 'thresholdType' => 'time',
                 'messages' => [
                     'critical' => __('Vehicle is not insured! Your are currently not allowed to drive with the vehicle!'),
@@ -108,6 +108,16 @@ class StatusNotification
                     'info' => __('Self washing required soon!'),
                 ],
                 'icon' => 'mdi-car-wash',
+            ],
+            'self_washing_protection' => [
+                'statusKey' => 'self_washing_protection_status',
+                'thresholds' => ['warning' => 5, 'info' => 10],
+                'thresholdType' => 'time',
+                'messages' => [
+                    'warning' => __('Self washing with exterior protection required!'),
+                    'info' => __('Self washing with exterior protection required soon!'),
+                ],
+                'icon' => 'mdi-spray',
             ],
             'tire_pressure_check' => [
                 'statusKey' => 'tire_pressure_check_status',
