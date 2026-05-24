@@ -8,6 +8,7 @@ use App\Models\Refueling;
 use App\Models\Vehicle;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 trait VehicleStats
 {
@@ -107,9 +108,13 @@ trait VehicleStats
         return $this->rememberVehicleMetric(
             "average-monthly-distance:{$vehicleId}:{$filterKey}",
             function () use ($vehicleId, $startDate, $endDate) {
-                $query = Refueling::query()
-                    ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(mileage_end - mileage_begin) as total_distance')
-                    ->where('vehicle_id', $vehicleId);
+                $query = Refueling::query()->where('vehicle_id', $vehicleId);
+
+                if (DB::getDriverName() === 'sqlite') {
+                    $query->selectRaw("strftime('%Y', date) as year, strftime('%m', date) as month, SUM(mileage_end - mileage_begin) as total_distance");
+                } else {
+                    $query->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(mileage_end - mileage_begin) as total_distance');
+                }
 
                 if ($startDate) {
                     $query->whereDate('date', '>=', $startDate);
@@ -324,11 +329,13 @@ trait VehicleStats
                     ])
                     ->first();
 
-                if (($stats->total_amount ?? 0) === 0.0) {
+                $totalAmount = (float) ($stats->total_amount ?? 0);
+
+                if ($totalAmount <= 0) {
                     return 0.0;
                 }
 
-                $ratio = (($stats->premium_amount ?? 0) / $stats->total_amount) * 100;
+                $ratio = ((float) ($stats->premium_amount ?? 0) / $totalAmount) * 100;
 
                 return round($ratio, 1);
             }

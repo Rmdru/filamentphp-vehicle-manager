@@ -95,6 +95,19 @@
         @livewire(\App\Filament\Widgets\DashboardCheapestGasStations::class)
     </x-filament::section>
     <x-filament::section
+        icon="mdi-hand-coin-outline"
+        collapsible
+        persist-collapsed
+        id="average-monthly-costs"
+    >
+        <x-slot name="heading">
+            <span class="flex gap-2">
+                {{ __('Average monthly costs') }}
+            </span>
+        </x-slot>
+        @livewire(\App\Filament\Widgets\DashboardAverageMonthlyCostsByType::class)
+    </x-filament::section>
+    <x-filament::section
         icon="gmdi-bar-chart-r"
         collapsible
         persist-collapsed

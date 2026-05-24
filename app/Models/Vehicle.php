@@ -543,7 +543,6 @@ class Vehicle extends Model implements HasName
         $endDate = Carbon::parse($endDate);
 
         $monthlyCosts = [];
-        $labels = [];
 
         foreach ($costTypes as $label => $config) {
             $model = $config['model'];
@@ -572,15 +571,6 @@ class Vehicle extends Model implements HasName
                     }
 
                     $monthlyCosts[$month][$label] += $value;
-                }
-
-                if (empty($labels)) {
-                    $labels = collect();
-                    $currentMonth = $startDate->copy();
-                    while ($currentMonth <= $endDate) {
-                        $labels->push(str($currentMonth->isoFormat('MMM YY'))->ucfirst());
-                        $currentMonth->addMonth();
-                    }
                 }
             }
 
@@ -646,6 +636,12 @@ class Vehicle extends Model implements HasName
         }
 
         $monthlyCosts = collect($monthlyCosts)->sortKeys()->toArray();
+        $labels = $allMonths
+            ->map(function ($month) {
+                return str(Carbon::createFromFormat('Y-m', $month)->isoFormat('MMM YY'))->ucfirst();
+            })
+            ->values()
+            ->all();
 
         self::$monthlyCostsCache[$cacheKey] = [
             'monthlyCosts' => $monthlyCosts,
@@ -653,6 +649,27 @@ class Vehicle extends Model implements HasName
         ];
 
         return self::$monthlyCostsCache[$cacheKey];
+    }
+
+    public function calculateAverageMonthlyCostsByType(string $startDate = '', string $endDate = ''): array
+    {
+        $costData = $this->calculateMonthlyCosts($startDate, $endDate);
+        $monthCount = count($costData['labels']);
+
+        if ($monthCount === 0) {
+            return [];
+        }
+
+        $averages = [];
+
+        foreach (Cost::types($this) as $label => $config) {
+            $total = collect($costData['monthlyCosts'])
+                ->sum(fn (array $monthCosts): float => $monthCosts[$label] ?? 0);
+
+            $averages[$label] = round($total / $monthCount, 2);
+        }
+
+        return $averages;
     }
 
     public function user(): BelongsTo

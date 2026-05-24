@@ -104,8 +104,9 @@ class DashboardLatestCosts extends BaseWidget
                     ->latest('date');
             })
             ->when(! $monthly, function ($query) use ($dateColumn) {
-                return $query->whereMonth($dateColumn, Carbon::now()->month)
-                    ->whereYear($dateColumn, Carbon::now()->year)
+                return $query
+                    ->whereDate($dateColumn, '>=', Carbon::now()->startOfMonth()->toDateString())
+                    ->whereDate($dateColumn, '<=', Carbon::now()->endOfMonth()->toDateString())
                     ->latest($dateColumn);
             })
             ->addSelect(DB::raw('"' . $type . '" as type'))
