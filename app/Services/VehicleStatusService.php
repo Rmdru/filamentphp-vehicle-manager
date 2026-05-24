@@ -22,6 +22,14 @@ class VehicleStatusService
     {
         $notifications = [];
 
+        $vehicle->loadMissing([
+            'refuelings',
+            'maintenances',
+            'insurances',
+            'taxes',
+            'reconditionings',
+        ]);
+
         if (in_array($vehicle->status, [VehicleStatus::Suspended->value, VehicleStatus::Sold->value, VehicleStatus::Destroyed->value])) {
             $notifications[] = $this->createNotification(
                 type: 'success',

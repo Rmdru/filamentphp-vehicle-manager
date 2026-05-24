@@ -77,7 +77,7 @@ class VehicleFactory extends Factory
             ]),
             'powertrain' => $this->faker->randomElement(array_keys($powertrains)),
             'country_registration' => $this->faker->randomElement(array_keys($countries)),
-            'is_private' => $this->faker->boolean(),
+            'privacy_settings' => config('default_privacy_settings', []),
             'status' => $this->faker->randomElement(collect(VehicleStatus::cases())->pluck('value')->toArray()),
             'fuel_types' => $this->faker->randomElements(
                 array: array_keys($fuelTypes),

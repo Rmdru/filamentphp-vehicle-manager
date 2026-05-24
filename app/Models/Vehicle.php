@@ -84,6 +84,8 @@ class Vehicle extends Model implements HasName
         'liquids_check_status',
     ];
 
+    private static array $monthlyCostsCache = [];
+
     private array $historicalMinTemps = [];
 
     public function getFilamentName(): string
@@ -520,7 +522,6 @@ class Vehicle extends Model implements HasName
     public function calculateMonthlyCosts(string $startDate = '', string $endDate = ''): array
     {
         $vehicleId = $this->id;
-        $costTypes = Cost::types($this);
 
         if (empty($startDate) || empty($endDate)) {
             $vehicleCostsService = new VehicleCostsService($this);
@@ -529,6 +530,15 @@ class Vehicle extends Model implements HasName
             $endDate = $dateRange['endDate'];
         }
 
+        $startKey = Carbon::parse($startDate)->toDateString();
+        $endKey = Carbon::parse($endDate)->toDateString();
+        $cacheKey = "monthly-costs:{$vehicleId}:{$startKey}:{$endKey}";
+
+        if (array_key_exists($cacheKey, self::$monthlyCostsCache)) {
+            return self::$monthlyCostsCache[$cacheKey];
+        }
+
+        $costTypes = Cost::types($this);
         $startDate = Carbon::parse($startDate);
         $endDate = Carbon::parse($endDate);
 
@@ -637,10 +647,12 @@ class Vehicle extends Model implements HasName
 
         $monthlyCosts = collect($monthlyCosts)->sortKeys()->toArray();
 
-        return [
+        self::$monthlyCostsCache[$cacheKey] = [
             'monthlyCosts' => $monthlyCosts,
             'labels' => $labels,
         ];
+
+        return self::$monthlyCostsCache[$cacheKey];
     }
 
     public function user(): BelongsTo

@@ -41,6 +41,14 @@ class DashboardStatusOverview extends BaseWidget
     {
         $vehicle = Filament::getTenant();
 
+        $vehicle->loadMissing([
+            'refuelings',
+            'maintenances',
+            'insurances',
+            'taxes',
+            'reconditionings',
+        ]);
+
         $this->getMaintenanceStatus($vehicle);
         $this->getApkStatus($vehicle);
     }
