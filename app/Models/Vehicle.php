@@ -6,13 +6,11 @@ namespace App\Models;
 
 use App\Enums\MaintenanceTypeMaintenance;
 use App\Services\OpenMeteoService;
-use App\Services\RdwService;
 use App\Traits\VehicleStats;
 use App\Services\VehicleCostsService;
 use App\Support\Cost;
 use Carbon\Carbon;
 use Filament\Models\Contracts\HasName;
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

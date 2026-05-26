@@ -25,7 +25,8 @@ jobs:
             cd ./httpdocs/vehicle-manager.rubenderuijter.nl
             git pull origin main
             composer install --no-dev --optimize-autoloader
+            php artisan test
             php artisan migrate --force
             php artisan storage:link
-            php artisan optimize
+            php artisan optimize:clear
             npm install && npm run build

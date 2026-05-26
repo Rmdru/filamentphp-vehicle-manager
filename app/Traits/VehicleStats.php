@@ -14,9 +14,8 @@ trait VehicleStats
 {
     private static array $metricCache = [];
 
-    private function rememberVehicleMetric(string $suffix, \Closure $callback, ?Vehicle $vehicle = null): mixed
+    private function rememberVehicleMetric(string $suffix, \Closure $callback, string $vehicleId): mixed
     {
-        $vehicleId = $vehicle?->id ?? Filament::getTenant()->id;
         $cacheKey = "vehicle:{$vehicleId}:{$suffix}";
 
         if (array_key_exists($cacheKey, self::$metricCache)) {
@@ -58,7 +57,7 @@ trait VehicleStats
 
                 return $uniqueMonths > 0 ? $totalCosts / $uniqueMonths : 0;
             },
-            $vehicle
+            $vehicle->id
         );
     }
 
@@ -143,7 +142,7 @@ trait VehicleStats
 
                 return round($averageMonthlyDistance);
             },
-            $vehicle
+            $vehicle->id
         );
     }
 
@@ -173,7 +172,8 @@ trait VehicleStats
                 }
 
                 return round((float) ($refuelings->avg('fuel_consumption') ?? 0), 2);
-            }
+            },
+            $vehicleId
         );
     }
 
@@ -203,7 +203,8 @@ trait VehicleStats
                 }
 
                 return round((float) ($refuelings->avg('avg_speed') ?? 0), 1);
-            }
+            },
+            $vehicleId
         );
     }
 
@@ -289,7 +290,8 @@ trait VehicleStats
                     ->value('average_deviation');
 
                 return round((float) ($averageDeviation ?? 0), 3);
-            }
+            },
+            $vehicleId
         );
     }
 
@@ -338,7 +340,8 @@ trait VehicleStats
                 $ratio = ((float) ($stats->premium_amount ?? 0) / $totalAmount) * 100;
 
                 return round($ratio, 1);
-            }
+            },
+            $vehicleId
         );
     }
 
@@ -358,14 +361,18 @@ trait VehicleStats
                     ->selectRaw('COALESCE(SUM(total_price), 0) as total_costs, COALESCE(SUM(mileage_end - mileage_begin), 0) as total_distance')
                     ->first();
 
-                if (($stats->total_distance ?? 0) === 0.0) {
+                $totalDistance = (float) ($stats->total_distance ?? 0);
+
+                if ($totalDistance <= 0.0) {
                     return 0.0;
                 }
 
-                $costsPerKilometer = $stats->total_costs / $stats->total_distance;
+                $totalCosts = (float) ($stats->total_costs ?? 0);
+                $costsPerKilometer = $totalCosts / $totalDistance;
 
-                return round((float) $costsPerKilometer, 3);
-            }
+                return round($costsPerKilometer, 3);
+            },
+            $vehicleId
         );
     }
 }
