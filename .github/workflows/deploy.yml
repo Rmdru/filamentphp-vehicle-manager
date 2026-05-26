@@ -27,5 +27,5 @@ jobs:
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
             php artisan storage:link
-            php artisan optimize:clear
+            php artisan optimize
             npm install && npm run build
