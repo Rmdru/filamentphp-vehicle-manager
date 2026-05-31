@@ -6,12 +6,24 @@ namespace App\Filament\Widgets;
 
 use App\Models\FuelPrice;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class DashboardFuelPricesAbroad extends Widget
 {
     protected static string $view = 'filament.widgets.fuel-prices-abroad';
+
+    public function refreshFuelPrices(): void
+    {
+        Artisan::call('import:fuel-prices');
+
+        Notification::make()
+            ->title(__('Fuel prices imported successfully.'))
+            ->success()
+            ->send();
+    }
 
     protected function getViewData(): array
     {

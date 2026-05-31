@@ -1,4 +1,16 @@
 <x-filament::section>
+    <div class="flex justify-end mb-4">
+        <x-filament::button
+            type="button"
+            icon="gmdi-sync-o"
+            wire:click="refreshFuelPrices"
+            wire:loading.attr="disabled"
+            wire:target="refreshFuelPrices"
+        >
+            {{ __('Refresh fuel prices') }}
+        </x-filament::button>
+    </div>
+
     <div class="hidden md:block overflow-x-auto">
         @if (! empty($fuelPrices))
             <table class="fi-ta-table w-full text-sm">
