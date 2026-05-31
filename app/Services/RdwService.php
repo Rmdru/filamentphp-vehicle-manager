@@ -87,7 +87,7 @@ class RdwService
 
             return '';
         } catch (\Exception $e) {
-            Log::warning('RDW API call failed: ' . $e->getMessage());
+            Log::channel('rdw-api')->warning('RDW API call failed: ' . $e->getMessage());
 
             return '';
         }

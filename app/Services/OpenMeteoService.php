@@ -28,7 +28,7 @@ class OpenMeteoService
                 return $response->json();
             }
 
-            Log::warning('OpenMeteo API returned a non-success response.', [
+            Log::channel('openmeteo-api')->warning('OpenMeteo API returned a non-success response.', [
                 'status' => $response->status(),
                 'url' => $response->effectiveUri(),
                 'latitude' => $ipLocation['lat'] ?? null,
@@ -37,7 +37,7 @@ class OpenMeteoService
                 'end_date' => $endDate,
             ]);
         } catch (\Throwable $exception) {
-            Log::warning('OpenMeteo API call failed.', [
+            Log::channel('openmeteo-api')->warning('OpenMeteo API call failed.', [
                 'message' => $exception->getMessage(),
                 'url' => config('open_meteo.base_url'),
                 'latitude' => $ipLocation['lat'] ?? null,

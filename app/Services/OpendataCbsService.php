@@ -27,7 +27,7 @@ class OpendataCbsService
                 return $response->body();
             }
         } catch (\Exception $e) {
-            Log::warning('Opendata CBS API call failed: ' . $e->getMessage());
+            Log::channel('opendata-cbs-api')->warning('Opendata CBS API call failed: ' . $e->getMessage());
 
             return '';
         }

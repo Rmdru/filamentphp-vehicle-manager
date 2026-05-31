@@ -127,6 +127,46 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'fuel-prices' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/fuel-prices.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'rdw-api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/rdw-api.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'openmeteo-api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/openmeteo-api.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'opendata-cbs-api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/opendata-cbs-api.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'ip-api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/ip-api.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

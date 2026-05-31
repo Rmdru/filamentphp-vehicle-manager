@@ -14,7 +14,7 @@ class Netherlands {
         $apiData = json_decode((new OpendataCbsService)->fetchDutchFuelPrices(), true);
         
         if ($apiData === null || ! isset($apiData['value']) || empty($apiData['value'])) {
-            Log::warning('Failed to fetch Dutch fuel prices: Invalid API response');
+            Log::channel('fuel-prices')->warning('Failed to fetch Dutch fuel prices: Invalid API response');
             return $next($data);
         }
         

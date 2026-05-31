@@ -30,7 +30,7 @@ trait LocationByIp
                 }
             }
         } catch (\Exception $e) {
-            Log::warning('IP API call failed: ' . $e->getMessage());
+            Log::channel('ip-api')->warning('IP API call failed: ' . $e->getMessage());
 
             return [];
         }

@@ -8,6 +8,7 @@ use App\Models\FuelDetourAggregate;
 use App\Models\FuelPrice;
 use App\Models\Vehicle;
 use App\Traits\VehicleStats;
+use Illuminate\Support\Facades\Log;
 
 class CalculateFuelDetourAggregates {
     use VehicleStats;
@@ -26,12 +27,22 @@ class CalculateFuelDetourAggregates {
                             continue;
                         }
 
-                        $fuelPriceId = FuelPrice::query()
+                        $fuelPriceRecord = FuelPrice::query()
                             ->where('country', $fuelPrice['country'])
                             ->where('fuel_type', $fuelPrice['fuel_type'])
                             ->whereDate('date', $fuelPrice['date'])
-                            ->first('id')
-                            ->id;
+                            ->first('id');
+
+                        if ($fuelPriceRecord === null) {
+                            Log::channel('fuel-prices')->warning('FuelPrice record not found', [
+                                'country' => $fuelPrice['country'],
+                                'fuel_type' => $fuelPrice['fuel_type'],
+                                'date' => $fuelPrice['date'],
+                            ]);
+                            continue;
+                        }
+
+                        $fuelPriceId = $fuelPriceRecord->id;
 
                         $avgFuelCostsPerKm = $this->calculateAverageFuelCostsPerKilometer($vehicle->id);
                         $avgTotalCostsPerKm = $this->calculateCostsPerKilometer(vehicle: $vehicle);
