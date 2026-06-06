@@ -21,9 +21,9 @@ return [
         'periodic_super_plus' => true,
     ],
     'insurance' => [
-        'status' => true,
+        'insurance_status' => true,
     ],
     'tax' => [
-        'period_reminder' => true,
+        'tax_reminder' => true,
     ],
 ];
