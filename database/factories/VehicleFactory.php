@@ -4,24 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\TollType;
 use App\Enums\VehicleStatus;
-use App\Models\EnvironmentalSticker;
-use App\Models\Ferry;
-use App\Models\Fine;
-use App\Models\Insurance;
-use App\Models\Maintenance;
-use App\Models\Parking;
-use App\Models\Product;
-use App\Models\Reconditioning;
-use App\Models\Refueling;
-use App\Models\Service;
-use App\Models\Tax;
-use App\Models\Toll;
 use App\Models\User;
-use App\Models\Vehicle;
-use App\Models\Vignette;
-use Filament\Pages\Page;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

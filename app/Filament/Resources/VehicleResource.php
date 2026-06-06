@@ -9,6 +9,7 @@ use App\Filament\Resources\VehicleResource\Pages;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\VehicleStatusService;
+use App\Support\StatusNotification;
 use App\Traits\CountryOptions;
 use App\Traits\IsMobile;
 use App\Traits\PowerTrainOptions;
@@ -69,6 +70,63 @@ class VehicleResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return Vehicle::ownVehicles();
+    }
+
+    private static function buildNotificationSchema(): array
+    {
+        $config = StatusNotification::configuration();
+        $schema = [];
+        $categoryGrouped = [];
+
+        foreach ($config as $key => $notification) {
+            $category = $notification['category'] ?? 'other';
+            if (!isset($categoryGrouped[$category])) {
+                $categoryGrouped[$category] = [];
+            }
+            $categoryGrouped[$category][$key] = $notification;
+        }
+
+        $categoryLabels = [
+            'maintenance' => [
+                'label' => __('Maintenance'),
+                'icon' => 'mdi-car-wrench',
+            ],
+            'reconditioning' => [
+                'label' => __('Reconditioning'),
+                'icon' => 'mdi-car-wash',
+            ],
+            'refueling' => [
+                'label' => __('Refuelings'),
+                'icon' => 'gmdi-local-gas-station-r',
+            ],
+            'insurance' => [
+                'label' => __('Insurances'),
+                'icon' => 'mdi-shield-car',
+            ],
+            'tax' => [
+                'label' => __('Road taxes'),
+                'icon' => 'mdi-highway',
+            ],
+        ];
+
+        foreach ($categoryGrouped as $categoryKey => $notifications) {
+            $checkboxes = [];
+
+            foreach ($notifications as $notificationKey => $notificationData) {
+                $checkboxes[] = Checkbox::make("notifications.{$categoryKey}.{$notificationKey}")
+                    ->label($notificationData['label'])
+                    ->default(true);
+            }
+
+            if (!empty($checkboxes)) {
+                $schema[] = Section::make($categoryLabels[$categoryKey]['label'] ?? __($categoryKey))
+                    ->icon($categoryLabels[$categoryKey]['icon'] ?? '')
+                    ->collapsible()
+                    ->schema($checkboxes);
+            }
+        }
+
+        return $schema;
     }
     
     public static function form(Form $form): Form
@@ -309,63 +367,7 @@ class VehicleResource extends Resource
                         Tabs\Tab::make('notifications')
                             ->label(__('Notifications'))
                             ->icon('gmdi-notifications-active-r')
-                            ->schema([
-                                Section::make(__('Maintenance'))
-                                    ->icon('mdi-car-wrench')
-                                    ->collapsible()
-                                    ->schema([
-                                        Checkbox::make('notifications.maintenance.maintenance')
-                                            ->label(__('Maintenance reminder'))
-                                            ->default(true),
-                                        Checkbox::make('notifications.maintenance.apk')
-                                            ->label(__('MOT reminder'))
-                                            ->default(true),
-                                        Checkbox::make('notifications.maintenance.airco_check')
-                                            ->label(__('Airco check reminder'))
-                                            ->default(true),
-                                        Checkbox::make('notifications.maintenance.liquids_check')
-                                            ->label(__('Liquids check reminder'))
-                                            ->default(true),
-                                        Checkbox::make('notifications.maintenance.tire_pressure_check')
-                                            ->label(__('Tire pressure check reminder'))
-                                            ->default(true),
-                                    ]),
-                                Section::make(__('Reconditioning'))
-                                    ->icon('mdi-car-wash')
-                                    ->collapsible()
-                                    ->schema([
-                                        Checkbox::make('notifications.reconditioning.washing')
-                                            ->label(__('Washing reminder'))
-                                            ->default(true),
-                                    ]),
-                                Section::make(__('Refuelings'))
-                                    ->icon('gmdi-local-gas-station-r')
-                                    ->collapsible()
-                                    ->schema([
-                                        Checkbox::make('notifications.refueling.old_fuel')
-                                            ->label(__('Outdated fuel (only E10 fuels)'))
-                                            ->default(true),
-                                        Checkbox::make('notifications.refueling.periodic_super_plus')
-                                            ->label(__('1 in 4 times fill up with Super Plus (E5)'))
-                                            ->default(true),
-                                    ]),
-                                Section::make(__('Insurances'))
-                                    ->icon('mdi-shield-car')
-                                    ->collapsible()
-                                    ->schema([
-                                        Checkbox::make('notifications.insurance.status')
-                                            ->label(__('Insurance status reminder'))
-                                            ->default(true),
-                                    ]),
-                                Section::make(__('Road taxes'))
-                                    ->icon('mdi-highway')
-                                    ->collapsible()
-                                    ->schema([
-                                        Checkbox::make('notifications.tax.period_reminder')
-                                            ->label(__('Road tax period info'))
-                                            ->default(true),
-                                    ]),
-                            ]),
+                            ->schema(self::buildNotificationSchema()),
                         Tabs\Tab::make('privacy')
                             ->label(__('Privacy'))
                             ->icon('gmdi-lock')

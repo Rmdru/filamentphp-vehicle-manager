@@ -12,10 +12,12 @@ use App\Support\StatusNotification;
 class VehicleStatusService
 {
     private array $types = [];
+    private array $notificationMappings = [];
 
     public function __construct()
     {
         $this->types = StatusNotification::types();
+        $this->notificationMappings = StatusNotification::configuration();
     }
 
     public function getNotifications(Vehicle $vehicle): array
@@ -41,9 +43,11 @@ class VehicleStatusService
             return $notifications;
         }
 
-        $notificationMappings = StatusNotification::configuration();
+        foreach ($this->notificationMappings as $key => $mapping) {
+            if (! $this->isNotificationEnabled($vehicle, $key)) {
+                continue;
+            }
 
-        foreach ($notificationMappings as $key => $mapping) {
             $status = $vehicle->{$mapping['statusKey']} ?? null;
 
             if (empty($status)) {
@@ -150,5 +154,20 @@ class VehicleStatusService
             'hasModal' => $hasModal,
             'data' => $data,
         ]);
+    }
+
+    private function isNotificationEnabled(Vehicle $vehicle, string $key): bool
+    {
+        if (empty($vehicle->notifications)) {
+            return true;
+        }
+
+        foreach ($vehicle->notifications as $settings) {
+            if (is_array($settings) && isset($settings[$key])) {
+                return (bool) $settings[$key];
+            }
+        }
+
+        return true;
     }
 }

@@ -9,8 +9,10 @@ class StatusNotification
     public static function configuration(): array
     {
         return [
-            'insurance' => [
+            'insurance_status' => [
                 'statusKey' => 'insurance_status',
+                'category' => 'insurance',
+                'label' => __('Insurance status reminder'),
                 'thresholds' => ['critical' => 0, 'warning' => 15, 'info' => 31],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -20,8 +22,10 @@ class StatusNotification
                 ],
                 'icon' => 'mdi-shield-car',
             ],
-            'tax' => [
+            'tax_reminder' => [
                 'statusKey' => 'tax_status',
+                'category' => 'tax',
+                'label' => __('Road tax period info'),
                 'thresholds' => ['info' => 31],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -31,6 +35,8 @@ class StatusNotification
             ],
             'apk' => [
                 'statusKey' => 'apk_status',
+                'category' => 'maintenance',
+                'label' => __('MOT reminder'),
                 'thresholds' => ['critical' => 1, 'warning' => 31, 'info' => 62],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -42,6 +48,8 @@ class StatusNotification
             ],
             'recall' => [
                 'statusKey' => 'recall_status',
+                'category' => 'maintenance',
+                'label' => __('Recall reminder'),
                 'thresholds' => ['critical' => 0],
                 'thresholdType' => 'recordCount',
                 'messages' => [
@@ -51,6 +59,8 @@ class StatusNotification
             ],
             'maintenance' => [
                 'statusKey' => 'maintenance_status',
+                'category' => 'maintenance',
+                'label' => __('Maintenance reminder'),
                 'thresholds' => ['critical' => 31, 'warning' => 62],
                 'thresholdType' => 'time',
                 'thresholdCompareKeyTime' => 'minDaysTillDeadline',
@@ -62,6 +72,8 @@ class StatusNotification
             ],
             'airco_check' => [
                 'statusKey' => 'airco_check_status',
+                'category' => 'maintenance',
+                'label' => __('Airco check reminder'),
                 'thresholds' => ['critical' => 31, 'warning' => 62],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -70,8 +82,10 @@ class StatusNotification
                 ],
                 'icon' => 'mdi-air-conditioner',
             ],
-            'refueling' => [
+            'old_fuel' => [
                 'statusKey' => 'fuel_status',
+                'category' => 'refueling',
+                'label' => __('Outdated fuel (only E10 fuels)'),
                 'thresholds' => ['critical' => 10, 'warning' => 30],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -82,6 +96,8 @@ class StatusNotification
             ],
             'periodic_super_plus' => [
                 'statusKey' => 'periodic_super_plus',
+                'category' => 'refueling',
+                'label' => __('1 in 4 times fill up with Super Plus (E5)'),
                 'thresholds' => ['info' => 2],
                 'thresholdType' => 'recordCount',
                 'messages' => [
@@ -91,6 +107,8 @@ class StatusNotification
             ],
             'washing_carwash' => [
                 'statusKey' => 'carwash_status',
+                'category' => 'reconditioning',
+                'label' => __('Carwash reminder'),
                 'thresholds' => ['warning' => 5, 'info' => 10],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -101,6 +119,8 @@ class StatusNotification
             ],
             'self_washing' => [
                 'statusKey' => 'self_washing_status',
+                'category' => 'reconditioning',
+                'label' => __('Self washing reminder'),
                 'thresholds' => ['warning' => 5, 'info' => 10],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -111,6 +131,8 @@ class StatusNotification
             ],
             'self_washing_protection' => [
                 'statusKey' => 'self_washing_protection_status',
+                'category' => 'reconditioning',
+                'label' => __('Self washing with protection reminder'),
                 'thresholds' => ['warning' => 5, 'info' => 10],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -121,6 +143,8 @@ class StatusNotification
             ],
             'tire_pressure_check' => [
                 'statusKey' => 'tire_pressure_check_status',
+                'category' => 'maintenance',
+                'label' => __('Tire pressure check reminder'),
                 'thresholds' => ['warning' => 10, 'info' => 20],
                 'thresholdType' => 'time',
                 'messages' => [
@@ -131,6 +155,8 @@ class StatusNotification
             ],
             'liquids_check' => [
                 'statusKey' => 'liquids_check_status',
+                'category' => 'maintenance',
+                'label' => __('Liquids check reminder'),
                 'thresholds' => ['warning' => 5, 'info' => 10],
                 'thresholdType' => 'time',
                 'messages' => [
