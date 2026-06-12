@@ -17,8 +17,8 @@ class StatusNotification
                 'thresholdType' => 'time',
                 'messages' => [
                     'critical' => __('Vehicle is not insured! Your are currently not allowed to drive with the vehicle!'),
-                    'warning' => __('Insurance expires within 1 month!'),
-                    'info' => __('Insurance expires within 2 months!'),
+                    'warning' => __('Insurance expires within 2 weeks!'),
+                    'info' => __('Insurance expires within 1 month!'),
                 ],
                 'icon' => 'mdi-shield-car',
             ],
