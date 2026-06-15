@@ -9,6 +9,7 @@ use App\Models\Vehicle;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 trait VehicleStats
 {
@@ -22,9 +23,11 @@ trait VehicleStats
             return self::$metricCache[$cacheKey];
         }
 
-        self::$metricCache[$cacheKey] = $callback();
+        $value = Cache::remember($cacheKey, now()->addMinutes(10), $callback);
 
-        return self::$metricCache[$cacheKey];
+        self::$metricCache[$cacheKey] = $value;
+
+        return $value;
     }
 
     private function calculateAverageMonthlyCosts(bool $thisMonth = false, ?Vehicle $vehicle = null): float
@@ -217,7 +220,7 @@ trait VehicleStats
         $refuelings = Refueling::query()
             ->where('vehicle_id', $vehicleId);
 
-        if (! $refuelings->count()) {
+        if (! $refuelings->exists()) {
             return null;
         }
 

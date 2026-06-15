@@ -69,7 +69,6 @@ class Vehicle extends Model implements HasName
         'privacy_settings' => 'array',
         'rdw_data' => 'array',
     ];
-
     protected $appends = [
         'fuel_status',
         'maintenance_status',
@@ -465,10 +464,10 @@ class Vehicle extends Model implements HasName
         }
         
         $historicalMinTemps = $this->getHistoricalMinTemps();
-        $exteriorProtectionDate = Carbon::parse($exteriorProtectionStatus->date ?? now())->addMonth();
-        $exteriorProtectionDiff = $exteriorProtectionDate->diffInDays(now());
+        $exteriorProtectionDate = Carbon::parse($exteriorProtectionStatus->date ?? now())->addMonths(3);
+        $exteriorProtectionDiff = now()->diffInDays($exteriorProtectionDate);
 
-        if (! $this->hasHistoricalMinTemps($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) < 4 || $exteriorProtectionDiff >= 60) {
+        if (! $this->hasHistoricalMinTemps($historicalMinTemps) || min($historicalMinTemps['daily']['temperature_2m_min']) < 4 || $exteriorProtectionDiff <= 31) {
             return [];
         }
         
@@ -488,10 +487,10 @@ class Vehicle extends Model implements HasName
             return [];
         }
         
-        $exteriorProtectionDate = Carbon::parse($exteriorProtectionStatus->date ?? now())->addMonth();
-        $exteriorProtectionDiff = $exteriorProtectionDate->diffInDays(now());
+        $exteriorProtectionDate = Carbon::parse($exteriorProtectionStatus->date ?? now())->addMonths(3);
+        $exteriorProtectionDiff = now()->diffInDays($exteriorProtectionDate);
 
-        if ($exteriorProtectionDiff < 60) {
+        if ($exteriorProtectionDiff > 31) {
             return [];
         }
         
