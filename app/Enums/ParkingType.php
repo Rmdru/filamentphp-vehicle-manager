@@ -10,6 +10,7 @@ use Filament\Support\Contracts\HasLabel;
 enum ParkingType: string implements HasLabel, HasIcon
 {
     case Street = 'street';
+    case Lot = 'lot';
     case Garage = 'garage';
     case ParkAndRide = 'park_and_ride';
     case Company = 'company';
@@ -18,6 +19,7 @@ enum ParkingType: string implements HasLabel, HasIcon
     {
         return match ($this) {
             self::Street => __('Street'),
+            self::Lot => __('Parking lot'),
             self::Garage => __('Parking garage'),
             self::ParkAndRide => __('P+R'),
             self::Company => __('Company'),
@@ -28,6 +30,7 @@ enum ParkingType: string implements HasLabel, HasIcon
     {
         return match ($this) {
             self::Street => 'maki-parking-paid',
+            self::Lot => 'fas-parking',
             self::Garage => 'maki-parking-garage',
             self::ParkAndRide => 'gmdi-train',
             self::Company => 'mdi-office-building',

@@ -4,7 +4,23 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Accident;
+use App\Models\EnvironmentalSticker;
+use App\Models\Ferry;
+use App\Models\Fine;
+use App\Models\Insurance;
+use App\Models\Maintenance;
+use App\Models\Parking;
+use App\Models\Product;
+use App\Models\Reconditioning;
+use App\Models\Refueling;
+use App\Models\Service;
+use App\Models\Tax;
+use App\Models\Toll;
+use App\Models\Vehicle;
+use App\Models\Vignette;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -41,5 +57,26 @@ class AppServiceProvider extends ServiceProvider
         });
 
         DB::prohibitDestructiveCommands(app()->isProduction());
+
+        foreach ([
+            Accident::class,
+            EnvironmentalSticker::class,
+            Ferry::class,
+            Fine::class,
+            Insurance::class,
+            Maintenance::class,
+            Parking::class,
+            Product::class,
+            Reconditioning::class,
+            Refueling::class,
+            Service::class,
+            Tax::class,
+            Toll::class,
+            Vehicle::class,
+            Vignette::class,
+        ] as $model) {
+            $model::saved(fn () => Cache::flush());
+            $model::deleted(fn () => Cache::flush());
+        }
     }
 }
