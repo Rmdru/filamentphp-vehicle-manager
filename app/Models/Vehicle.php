@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\LocationByIp;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class Vehicle extends Model implements HasName
@@ -583,32 +584,30 @@ class Vehicle extends Model implements HasName
                     })
                     ->get();
 
-                foreach ($records as $record) {
-                    $start = Carbon::parse($record->start_date)->startOfMonth();
-                    $end = Carbon::parse($record->end_date)->endOfMonth();
-                    $paymentDay = $record->payment_day ?? 1;
-                    $monthlyAmount = $record->$priceField;
+                $monthCursor = $startDate->copy()->startOfMonth();
+                $endMonth = $endDate->copy()->endOfMonth()->startOfMonth();
 
-                    while ($start <= $end) {
-                        $month = $start->isoFormat('Y-MM');
+                while ($monthCursor <= $endMonth) {
+                    $month = $monthCursor->isoFormat('Y-MM');
+                    $activeRecord = $this->getActiveMonthlyCostRecord($model, $records, $monthCursor);
 
-                        if ($start->between($startDate, $endDate)) {
-                            if (!isset($monthlyCosts[$month])) {
-                                $monthlyCosts[$month] = [];
-                            }
-
-                            if (!isset($monthlyCosts[$month][$label])) {
-                                $monthlyCosts[$month][$label] = 0;
-                            }
-
-                            $paymentDate = Carbon::createFromFormat('Y-m-d', "{$start->year}-{$start->month}-{$paymentDay}");
-                            if ($paymentDate->between($startDate, $endDate)) {
-                                $monthlyCosts[$month][$label] += $monthlyAmount;
-                            }
+                    if ($activeRecord) {
+                        if (!isset($monthlyCosts[$month])) {
+                            $monthlyCosts[$month] = [];
                         }
 
-                        $start->addMonth();
+                        if (!isset($monthlyCosts[$month][$label])) {
+                            $monthlyCosts[$month][$label] = 0;
+                        }
+
+                        $paymentDay = $activeRecord->invoice_day ?? 1;
+                        $paymentDate = Carbon::createFromFormat('Y-m-d', "{$monthCursor->year}-{$monthCursor->month}-{$paymentDay}");
+                        if ($paymentDate->between($startDate, $endDate)) {
+                            $monthlyCosts[$month][$label] += $activeRecord->$priceField;
+                        }
                     }
+
+                    $monthCursor->addMonth();
                 }
             }
         }
@@ -646,6 +645,15 @@ class Vehicle extends Model implements HasName
         ];
 
         return self::$monthlyCostsCache[$cacheKey];
+    }
+
+    private function getActiveMonthlyCostRecord(string $modelClass, Collection $records, Carbon $month): ?Model
+    {
+        if (! method_exists($modelClass, 'getActiveMonthlyRecordForMonth')) {
+            return null;
+        }
+
+        return $modelClass::getActiveMonthlyRecordForMonth($records, $month);
     }
 
     public function calculateAverageMonthlyCostsByType(string $startDate = '', string $endDate = ''): array

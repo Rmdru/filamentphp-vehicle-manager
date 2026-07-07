@@ -47,6 +47,27 @@ class Tax extends Model
         return $this->getMonthsBetweenDates($start, $end);
     }
 
+    public static function getActiveMonthlyRecordForMonth(Collection $records, Carbon $month): ?self
+    {
+        $monthStart = Carbon::parse($month)->startOfMonth()->toDateString();
+        $monthEnd = Carbon::parse($month)->endOfMonth()->toDateString();
+
+        return $records
+            ->filter(function (self $tax) use ($monthStart, $monthEnd): bool {
+                $startDate = $tax->start_date ? Carbon::parse($tax->start_date)->toDateString() : null;
+                $endDate = $tax->end_date ? Carbon::parse($tax->end_date)->toDateString() : null;
+
+                $startsBeforeMonthEnd = $startDate === null || $startDate <= $monthEnd;
+                $endsAfterMonthStart = $endDate === null || $endDate >= $monthStart;
+
+                return $startsBeforeMonthEnd && $endsAfterMonthStart;
+            })
+            ->sortByDesc(function (self $tax): string {
+                return $tax->start_date ? Carbon::parse($tax->start_date)->toDateString() : '0000-00-00';
+            })
+            ->first();
+    }
+
     public function getMonthsBetweenDates(Carbon $startDate, Carbon $endDate): Collection
     {
         $start = Carbon::parse($startDate)->startOfMonth();

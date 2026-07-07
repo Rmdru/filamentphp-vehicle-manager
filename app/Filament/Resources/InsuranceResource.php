@@ -160,11 +160,30 @@ class InsuranceResource extends Resource
                         ->icon('gmdi-file-copy-r')
                         ->requiresConfirmation()
                         ->modalIcon('gmdi-file-copy-r')
-                        ->beforeReplicaSaved(function (Insurance $replica): Insurance {
-                            $replica['start_date'] = today();
-
-                            return $replica;
-                        })
+                        ->fillForm([
+                            'start_date' => now(),
+                            'end_date' => now()->addYear(),
+                        ])
+                        ->form([
+                            TextInput::make('price')
+                                ->label(__('Price per month'))
+                                ->numeric()
+                                ->mask(RawJs::make('$money($input, \'.\', \'\',)'))
+                                ->stripCharacters(',')
+                                ->required()
+                                ->prefix('€')
+                                ->step(0.01),
+                            DatePicker::make('start_date')
+                                ->label(__('Start date'))
+                                ->required()
+                                ->native((new self)->isMobile())
+                                ->displayFormat('d-m-Y'),
+                            DatePicker::make('end_date')
+                                ->label(__('End date'))
+                                ->required()
+                                ->native((new self)->isMobile())
+                                ->displayFormat('d-m-Y'),
+                        ]),
                 ]),
             ])
             ->bulkActions([
@@ -219,8 +238,7 @@ class InsuranceResource extends Resource
                             ->label(__('Start date'))
                             ->required()
                             ->native((new self)->isMobile())
-                            ->displayFormat('d-m-Y')
-                            ->maxDate(now()),
+                            ->displayFormat('d-m-Y'),
                         DatePicker::make('end_date')
                             ->label(__('End date'))
                             ->native((new self)->isMobile())

@@ -129,23 +129,41 @@ class Timeline extends Page
             $items->push($refueling);
         }
 
+        $insuranceMonths = collect();
+
         foreach ($vehicle->insurances as $insurance) {
             foreach ($insurance->months as $month) {
-                $insuranceClone = clone $insurance;
-
-                $insuranceClone->icon = 'mdi-shield-car';
-                $insuranceClone->link = 'insurances';
-                $insuranceClone->date = Carbon::parse($month . '-' . $insuranceClone->invoice_day);
-                $insuranceClone->heading = __('Insurance');
-                $insuranceClone->badges = [
-                    [
-                        'title' => $insuranceType[$insurance->type]['name'],
-                        'color' => 'primary',
-                        'icon' => $insuranceType[$insurance->type]['icon'],
-                    ],
-                ];
-                $items->push($insuranceClone);
+                $insuranceMonths->push([
+                    'month' => $month,
+                    'insurance' => $insurance,
+                ]);
             }
+        }
+
+        foreach ($insuranceMonths->groupBy('month') as $month => $monthInsurances) {
+            $activeInsurance = \App\Models\Insurance::getActiveMonthlyRecordForMonth(
+                $monthInsurances->pluck('insurance'),
+                Carbon::parse($month . '-01')
+            );
+
+            if (! $activeInsurance) {
+                continue;
+            }
+
+            $insuranceClone = clone $activeInsurance;
+
+            $insuranceClone->icon = 'mdi-shield-car';
+            $insuranceClone->link = 'insurances';
+            $insuranceClone->date = Carbon::parse($month . '-' . $insuranceClone->invoice_day);
+            $insuranceClone->heading = __('Insurance');
+            $insuranceClone->badges = [
+                [
+                    'title' => $insuranceType[$activeInsurance->type]['name'],
+                    'color' => 'primary',
+                    'icon' => $insuranceType[$activeInsurance->type]['icon'],
+                ],
+            ];
+            $items->push($insuranceClone);
         }
 
         foreach ($vehicle->taxes as $tax) {
@@ -362,23 +380,46 @@ class Timeline extends Page
         $insuranceType = config('insurances.types');
         
 
+        $insuranceDates = [];
+
         foreach ($vehicle->insurances as $insurance) {
             $nextInvoiceDate = $insurance->getNextInvoiceDate($insurance->start_date, $insurance->end_date, $insurance->invoice_day);
-    
+
             if ($nextInvoiceDate) {
-                $insuranceClone = clone $insurance;
-                $insuranceClone->icon = 'mdi-shield-car';
-                $insuranceClone->heading = __('Insurance');
-                $insuranceClone->date = $nextInvoiceDate;
-                $insuranceClone->badges = [
-                    [
-                        'title' => $insuranceType[$insurance->type]['name'],
-                        'color' => 'primary',
-                        'icon' => $insuranceType[$insurance->type]['icon'],
-                    ],
-                ];
-                $items->push($insuranceClone);
+                $monthKey = $nextInvoiceDate->format('Y-m');
+                $insuranceDates[$monthKey] = $insuranceDates[$monthKey] ?? [];
+                $insuranceDates[$monthKey][] = $insurance;
             }
+        }
+
+        foreach ($insuranceDates as $monthKey => $monthInsurances) {
+            $activeInsurance = \App\Models\Insurance::getActiveMonthlyRecordForMonth(
+                collect($monthInsurances),
+                Carbon::createFromFormat('Y-m', $monthKey)
+            );
+
+            if (! $activeInsurance) {
+                continue;
+            }
+
+            $nextInvoiceDate = $activeInsurance->getNextInvoiceDate($activeInsurance->start_date, $activeInsurance->end_date, $activeInsurance->invoice_day);
+
+            if (! $nextInvoiceDate) {
+                continue;
+            }
+
+            $insuranceClone = clone $activeInsurance;
+            $insuranceClone->icon = 'mdi-shield-car';
+            $insuranceClone->heading = __('Insurance');
+            $insuranceClone->date = $nextInvoiceDate;
+            $insuranceClone->badges = [
+                [
+                    'title' => $insuranceType[$activeInsurance->type]['name'],
+                    'color' => 'primary',
+                    'icon' => $insuranceType[$activeInsurance->type]['icon'],
+                ],
+            ];
+            $items->push($insuranceClone);
         }
     }
 

@@ -49,6 +49,27 @@ class Insurance extends Model
         return $this->getMonthsBetweenDates($start, $end);
     }
 
+    public static function getActiveMonthlyRecordForMonth(Collection $insurances, Carbon $month): ?self
+    {
+        $monthStart = Carbon::parse($month)->startOfMonth()->toDateString();
+        $monthEnd = Carbon::parse($month)->endOfMonth()->toDateString();
+
+        return $insurances
+            ->filter(function (self $insurance) use ($monthStart, $monthEnd): bool {
+                $startDate = $insurance->start_date ? Carbon::parse($insurance->start_date)->toDateString() : null;
+                $endDate = $insurance->end_date ? Carbon::parse($insurance->end_date)->toDateString() : null;
+
+                $startsBeforeMonthEnd = $startDate === null || $startDate <= $monthEnd;
+                $endsAfterMonthStart = $endDate === null || $endDate >= $monthStart;
+
+                return $startsBeforeMonthEnd && $endsAfterMonthStart;
+            })
+            ->sortByDesc(function (self $insurance): string {
+                return $insurance->start_date ? Carbon::parse($insurance->start_date)->toDateString() : '0000-00-00';
+            })
+            ->first();
+    }
+
     public function getMonthsBetweenDates(Carbon $startDate, Carbon $endDate): Collection
     {
         $start = Carbon::parse($startDate)->startOfMonth();
