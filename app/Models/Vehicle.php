@@ -222,6 +222,16 @@ class Vehicle extends Model implements HasName
             'daysTillDistanceDeadline' => $daysTillDistanceDeadline,
             'timeTillDistanceDeadlineHumans' => $timeTillDistanceDeadlineHumans,
             'minDaysTillDeadline' => $minDaysTillDeadline,
+            'hasModal' => true,
+            'modalTitle' => __('Maintenance deadline'),
+            'modalHeading' => __('Maintenance deadline'),
+            'data' => [
+                [
+                    'deadline_date' => $maintenanceDate->format('d-m-Y') . ' (' . $timeDiffHumans . ')',
+                    'deadline_distance' => __('Over') . ' ' . $distanceTillMaintenance . __('km') . ' (' . (! empty($latestMaintenance) ? $latestMaintenance->mileage + $distanceTillMaintenance . ' ' . __('km') : '') . ')',
+                    'deadline_distance_date' => now()->addDays($daysTillDistanceDeadline)->format('d-m-Y') . ' (' . $timeTillDistanceDeadlineHumans . ')',
+                ],
+            ],
         ];
     }
 
@@ -239,6 +249,14 @@ class Vehicle extends Model implements HasName
             return [
                 'time' => $timeTillApk,
                 'timeDiffHumans' => $timeDiffHumans,
+                'hasModal' => true,
+                'modalTitle' => __('MOT deadline'),
+                'modalHeading' => __('MOT deadline'),
+                'data' => [
+                    [
+                        'deadline_date' => $apkDate->format('d-m-Y') . ' (' . $timeDiffHumans . ')',
+                    ],
+                ],
             ];
         }
 
@@ -259,6 +277,14 @@ class Vehicle extends Model implements HasName
         return [
             'time' => $timeTillApk,
             'timeDiffHumans' => $timeDiffHumans,
+            'hasModal' => true,
+            'modalTitle' => __('MOT deadline'),
+            'modalHeading' => __('MOT deadline'),
+            'data' => [
+                [
+                    'deadline_date' => $timeTillApk->format('d-m-Y') . ' (' . $timeDiffHumans . ')',
+                ],
+            ],
         ];
     }
 
@@ -513,6 +539,8 @@ class Vehicle extends Model implements HasName
         return [
             'recordCount' => count($openRecalls),
             'hasModal' => true,
+            'modalTitle' => __('Detailed Information'),
+            'modalHeading' => __('Recalls'),
             'data' => $openRecalls,
         ];
     }

@@ -15,9 +15,15 @@
                         &nbsp;<h3 class="font-medium">
                             {{ $notification['text'] }}
                             @if ($notification['hasModal'])
-                                <x-filament::modal 
-                                    width="7xl" 
-                                    :title="__('Detailed Information')" 
+                                @php
+                                    $modalTitle = $notification['modalTitle'] ?? __('Detailed Information');
+                                    $modalHeading = $notification['modalHeading'] ?? __('Detailed Information');
+                                    $modalData = $notification['data'] ?? [];
+                                @endphp
+
+                                <x-filament::modal
+                                    width="7xl"
+                                    :title="$modalTitle"
                                     :id="'modal-'.$notification['key']"
                                 >
                                     <x-slot name="trigger">
@@ -27,10 +33,14 @@
                                     </x-slot>
                                     <div class="text-black dark:text-white border-none">
                                         <x-slot name="heading">
-                                            {{ __('Recalls') }}
+                                            {{ $modalHeading }}
                                         </x-slot>
-                                        @foreach ($notification['data'] as $key => $item)
-                                            <p class="font-bold text-lg mt-4 mb-2">{{ __('Recall :key', ['key' => $key + 1]) }}</p>
+
+                                        @forelse ($modalData as $item)
+                                            @if (is_array($item) && array_is_list($item))
+                                                <p class="font-bold text-lg mt-4 mb-2">{{ __('Item :key', ['key' => $loop->iteration]) }}</p>
+                                            @endif
+
                                             <div class="relative overflow-x-auto shadow-xs rounded border border-default">
                                                 <table class="w-full text-sm text-left rtl:text-right">
                                                     @foreach ($item as $key => $value)
@@ -41,7 +51,9 @@
                                                     @endforeach
                                                 </table>
                                             </div>
-                                        @endforeach
+                                        @empty
+                                            <p class="font-light">{{ __('No details available') }}</p>
+                                        @endforelse
                                     </div>
                                 </x-filament::modal>
                             @endif
