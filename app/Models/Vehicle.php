@@ -228,7 +228,7 @@ class Vehicle extends Model implements HasName
             'data' => [
                 [
                     'deadline_date' => $maintenanceDate->format('d-m-Y') . ' (' . $timeDiffHumans . ')',
-                    'deadline_distance' => __('Over') . ' ' . $distanceTillMaintenance . 'km (' . (! empty($latestMaintenance) ? $latestMaintenance->mileage + $distanceTillMaintenance . ' km' : '') . ')',
+                    'deadline_distance' => __('Over') . ' ' . $distanceTillMaintenance . 'km (' . (! empty($latestMaintenance) ? $latestMaintenance->mileage + $this->maintenance_interval_distance . ' km' : '') . ')',
                     'deadline_distance_date' => now()->addDays($daysTillDistanceDeadline)->format('d-m-Y') . ' (' . $timeTillDistanceDeadlineHumans . ')',
                 ],
             ],
