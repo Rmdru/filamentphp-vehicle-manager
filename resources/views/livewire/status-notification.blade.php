@@ -45,7 +45,7 @@
                                                 <table class="w-full text-sm text-left rtl:text-right">
                                                     @foreach ($item as $key => $value)
                                                         <tr class="border-b border-default">
-                                                            <th scope="row" class="px-3 py-2 font-bold text-heading whitespace-nowrap">{{ ucfirst(str_replace('_', ' ', $key)) }}:</th>
+                                                            <th scope="row" class="px-3 py-2 font-bold text-heading whitespace-nowrap">{{ __((string) str($key)->replace('_', ' ')->ucfirst()) }}:</th>
                                                             <td class="px-3 py-2 font-light dark:text-gray-400">{{ is_array($value) ? json_encode($value) : $value }}</td>
                                                         </tr>
                                                     @endforeach
