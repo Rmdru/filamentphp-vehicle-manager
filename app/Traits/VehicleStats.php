@@ -36,8 +36,8 @@ trait VehicleStats
             $vehicle = Filament::getTenant();
         }
 
-        $startDate = $this->filters['startDate'] ?? '';
-        $endDate = $this->filters['endDate'] ?? '';
+        $startDate = request()->query('dashboard_start', '');
+        $endDate = request()->query('dashboard_end', '');
 
         if ($thisMonth) {
             $startDate = now()->startOfMonth()->toDateString();
@@ -97,8 +97,8 @@ trait VehicleStats
         }
 
         $vehicleId = $vehicle->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
+        $startDate = $this->filters['startDate'] ?? request()->query('dashboard_start', null);
+        $endDate = $this->filters['endDate'] ?? request()->query('dashboard_end', null);
 
         if ($thisMonth) {
             $startDate = now()->startOfMonth()->toDateString();
@@ -152,8 +152,8 @@ trait VehicleStats
     private function calculateAverageFuelConsumption(bool $latest = false): float
     {
         $vehicleId = Filament::getTenant()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
+        $startDate = $this->filters['startDate'] ?? request()->query('dashboard_start', null);
+        $endDate = $this->filters['endDate'] ?? request()->query('dashboard_end', null);
 
         $filterKey = json_encode([$vehicleId, $startDate, $endDate, $latest]);
 
@@ -183,8 +183,8 @@ trait VehicleStats
     private function calculateAvgSpeed(bool $latest = false): float
     {
         $vehicleId = Filament::getTenant()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
+        $startDate = $this->filters['startDate'] ?? request()->query('dashboard_start', null);
+        $endDate = $this->filters['endDate'] ?? request()->query('dashboard_end', null);
 
         $filterKey = json_encode([$vehicleId, $startDate, $endDate, $latest]);
 
@@ -214,8 +214,8 @@ trait VehicleStats
     private function getRefuelings(): ?Builder
     {
         $vehicleId = Filament::getTenant()->id;
-        $startDate = $this->filters['startDate'] ?? null;
-        $endDate = $this->filters['endDate'] ?? null;
+        $startDate = $this->filters['startDate'] ?? request()->query('dashboard_start', null);
+        $endDate = $this->filters['endDate'] ?? request()->query('dashboard_end', null);
 
         $refuelings = Refueling::query()
             ->where('vehicle_id', $vehicleId);

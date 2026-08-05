@@ -18,7 +18,14 @@ class DashboardCostsChart extends ChartWidget
     protected function getData(): array
     {
         $vehicle = Filament::getTenant();
-        $costData = $vehicle->calculateMonthlyCosts(now()->subYear(), now());
+        $start = request()->query('dashboard_start', '');
+        $end = request()->query('dashboard_end', '');
+
+        if (empty($start) || empty($end)) {
+            $costData = $vehicle->calculateMonthlyCosts(now()->subYear(), now());
+        } else {
+            $costData = $vehicle->calculateMonthlyCosts($start, $end);
+        }
 
         $datasets = [];
 

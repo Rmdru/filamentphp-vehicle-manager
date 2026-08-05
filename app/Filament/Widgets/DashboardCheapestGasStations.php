@@ -52,6 +52,20 @@ class DashboardCheapestGasStations extends BaseWidget
     {
         $gasStations = Refueling::query()
             ->where('vehicle_id', Filament::getTenant()->id)
+            ;
+
+        $start = request()->query('dashboard_start', '');
+        $end = request()->query('dashboard_end', '');
+
+        if ($start) {
+            $gasStations->whereDate('date', '>=', $start);
+        }
+
+        if ($end) {
+            $gasStations->whereDate('date', '<=', $end);
+        }
+
+        $gasStations = $gasStations
             ->select(
                 DB::raw('MIN(id) as id'),
                 'gas_station',

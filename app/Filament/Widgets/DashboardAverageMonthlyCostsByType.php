@@ -17,7 +17,10 @@ class DashboardAverageMonthlyCostsByType extends Widget
     protected function getViewData(): array
     {
         $vehicle = Filament::getTenant();
-        $averages = $vehicle->calculateAverageMonthlyCostsByType();
+        $start = request()->query('dashboard_start', '');
+        $end = request()->query('dashboard_end', '');
+
+        $averages = $vehicle->calculateAverageMonthlyCostsByType($start, $end);
         $costDefinitions = Cost::types($vehicle);
 
         return [
