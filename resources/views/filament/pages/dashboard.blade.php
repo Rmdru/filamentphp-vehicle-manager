@@ -2,7 +2,7 @@
     @if ($vehicle->image_exists)
         <img src="{{ $vehicle->image_url }}" class="w-96" />
     @endif
-    <div class="w-full flex gap-4 items-center">
+    <div class="w-full flex gap-4 items-center flex-wrap">
         <div class="flex gap-2 items-center">
             @svg('si-' . str($vehicle->brand)->replace([' ', '-'], '')->lower()->ascii(), ['class' => 'w-8 h-8'])
             {{ $vehicle->brand . ' ' . $vehicle->model }}
@@ -13,7 +13,7 @@
                 {{ $vehicle->mileage_latest }} km
             </x-filament::badge>
         @endif
-        <button id="dashboard-filter-toggle" type="button" aria-label="Toggle date filter" class="ml-auto inline-flex items-center px-2 py-1 rounded-md text-sm border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-transparent hover:bg-gray-50 dark:hover:bg-white/5">
+        <button id="dashboard-filter-toggle" type="button" aria-label="Toggle date filter" class="sm:ml-auto inline-flex items-center px-2 py-1 rounded-md text-sm border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 bg-transparent hover:bg-gray-50 dark:hover:bg-white/5">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L15 12.414V19a1 1 0 01-.553.894l-4 2A1 1 0 019 21v-8.586L3.293 6.707A1 1 0 013 6V4z" />
             </svg>
