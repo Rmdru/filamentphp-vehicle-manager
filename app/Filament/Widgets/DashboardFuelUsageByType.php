@@ -31,6 +31,10 @@ class DashboardFuelUsageByType extends BaseWidget
                     ->label(__('Average consumption'))
                     ->suffix($this->getConsumptionUnit())
                     ->formatStateUsing(fn (?float $state) => $state !== null ? number_format($state, 2, ',', '.') : '-'),
+                TextColumn::make('avg_speed')
+                    ->label(__('Average speed'))
+                    ->suffix('km/h')
+                    ->formatStateUsing(fn (?float $state) => $state !== null ? number_format($state, 2, ',', '.') : '-'),
                 TextColumn::make('total_amount')
                     ->label(__('Total refueled'))
                     ->suffix('l')
@@ -48,11 +52,11 @@ class DashboardFuelUsageByType extends BaseWidget
         return Refueling::query()
             ->withTrashed()
             ->fromSub(function ($query) use ($vehicleId) {
-                $query->selectRaw('fuel_type, amount, date, LEAD(fuel_consumption) OVER (ORDER BY date, id) as next_fuel_consumption')
+                $query->selectRaw('fuel_type, amount, date, LEAD(fuel_consumption) OVER (ORDER BY date, id) as next_fuel_consumption, LEAD(avg_speed) OVER (ORDER BY date, id) as next_speed')
                     ->from('refuelings')
                     ->where('vehicle_id', $vehicleId);
             }, 'refuelings_with_next')
-            ->selectRaw('fuel_type as id, fuel_type, AVG(next_fuel_consumption) as avg_consumption, SUM(amount) as total_amount, COUNT(*) as refueling_count')
+            ->selectRaw('fuel_type as id, fuel_type, AVG(next_fuel_consumption) as avg_consumption, AVG(next_speed) as avg_speed, SUM(amount) as total_amount, COUNT(*) as refueling_count')
             ->whereNotNull('fuel_type')
             ->whereNotNull('next_fuel_consumption')
             ->groupBy('fuel_type')
