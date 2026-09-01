@@ -24,9 +24,9 @@ class FerryFactory extends Factory
             'vehicle_id' => Vehicle::factory(),
             'start_location' => $this->faker->words(asText: true),
             'end_location' => $this->faker->words(asText: true),
-            'start_date' => $this->faker->dateTimeBetween()->format('Y-m-d'),
+            'start_date' => $this->faker->dateTimeBetween()->format('Y-m-d H:i:s'),
             'end_date' => function ($attributes) {
-                return $this->faker->dateTimeBetween($attributes['start_date'], '+1 day')->format('Y-m-d');
+                return $this->faker->dateTimeBetween($attributes['start_date'], '+1 day')->format('Y-m-d H:i:s');
             },
             'price' => $this->faker->randomFloat(2, 0, 200),
         ];

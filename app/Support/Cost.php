@@ -118,13 +118,13 @@ class Cost
                 'link' => 'enironmental-stickers',
                 'icon' => 'fas-leaf',
             ],
-            'Ferry' => [
+            'Transport trains & ferry services' => [
                 'model' => Ferry::class,
                 'priceField' => 'price',
                 'dateColumn' => 'start_date',
                 'itemField' => "CONCAT(start_location, ' - ', end_location)",
                 'link' => 'ferries',
-                'icon' => 'mdi-ferry',
+                'icon' => 'mdi-train-car-flatbed-car',
             ],
             'Product' => [
                 'model' => Product::class,

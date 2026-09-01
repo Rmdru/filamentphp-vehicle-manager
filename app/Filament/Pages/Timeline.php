@@ -258,7 +258,7 @@ class Timeline extends Page
 
         foreach ($vehicle->ferries as $ferry) {
             $ferry->icon = 'mdi-ferry';
-            $ferry->heading = __('Ferry');
+            $ferry->heading = __('Transport train & ferry service');
             $ferry->date = $ferry->start_date;
             $ferry->link = 'ferries';
             $items->push($ferry);

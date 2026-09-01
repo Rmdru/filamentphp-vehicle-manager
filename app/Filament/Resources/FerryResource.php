@@ -1,15 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FerryResource\Pages;
 use App\Models\Ferry;
-use App\Models\Vehicle;
 use App\Traits\IsMobile;
 use Carbon\Carbon;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -34,21 +33,21 @@ class FerryResource extends Resource
     
     protected static ?string $model = Ferry::class;
 
-    protected static ?string $navigationIcon = 'mdi-ferry';
+    protected static ?string $navigationIcon = 'mdi-train-car-flatbed-car';
 
     public static function getNavigationLabel(): string
     {
-        return __('Ferries');
+        return __('Transport trains & ferry services');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('Ferries');
+        return __('Transport trains & ferry services');
     }
 
     public static function getModelLabel(): string
     {
-        return __('Ferry');
+        return __('Transport train & ferry service');
     }
 
     public static function form(Form $form): Form
@@ -63,17 +62,17 @@ class FerryResource extends Resource
                     ->label(__('End location'))
                     ->required()
                     ->maxLength(100),
-                DatePicker::make('start_date')
+                DateTimePicker::make('start_date')
                     ->label(__('Start date'))
                     ->required()
                     ->native((new self)->isMobile())
-                    ->displayFormat('d-m-Y')
+                    ->displayFormat('d-m-Y H:i')
                     ->maxDate(now()),
-                DatePicker::make('end_date')
+                DateTimePicker::make('end_date')
                     ->label(__('End date'))
                     ->required()
                     ->native((new self)->isMobile())
-                    ->displayFormat('d-m-Y'),
+                    ->displayFormat('d-m-Y H:i'),
                 TextInput::make('price')
                     ->label(__('Price'))
                     ->numeric()
@@ -114,9 +113,9 @@ class FerryResource extends Resource
                     TextColumn::make('start_date')
                         ->label(__('Date'))
                         ->sortable()
-                        ->date()
+                        ->dateTime()
                         ->formatStateUsing(function (Ferry $ferry) {
-                            return $ferry->start_date->isoFormat('MMM D, Y') . ' - ' . $ferry->end_date->isoFormat('MMM D, Y');
+                            return $ferry->start_date->isoFormat('MMM D, Y H:mm') . ' - ' . $ferry->end_date->isoFormat('MMM D, Y H:mm');
                         })
                         ->icon('gmdi-calendar-month-r'),
                     TextColumn::make('price')
@@ -133,10 +132,10 @@ class FerryResource extends Resource
                 Filter::make('date')
                     ->label(__('Date'))
                     ->form([
-                        DatePicker::make('start_date')
+                        DateTimePicker::make('start_date')
                             ->label(__('Start date'))
                             ->native((new self)->isMobile()),
-                        DatePicker::make('end_date')
+                        DateTimePicker::make('end_date')
                             ->label(__('End date'))
                             ->native((new self)->isMobile()),
                     ])
@@ -144,11 +143,11 @@ class FerryResource extends Resource
                         return $query
                             ->when(
                                 $data['start_date'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('start_date', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->where('start_date', '>=', $date),
                             )
                             ->when(
                                 $data['end_date'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('end_date', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->where('end_date', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
@@ -156,16 +155,16 @@ class FerryResource extends Resource
 
                         if ($data['start_date'] && $data['end_date']) {
                             $indicators['date'] = __('Date from :start until :end', [
-                                'start' => Carbon::parse($data['start_date'])->isoFormat('MMM D, Y'),
-                                'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
+                                'start' => Carbon::parse($data['start_date'])->isoFormat('MMM D, Y H:mm'),
+                                'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y H:mm'),
                             ]);
                         } else if ($data['start_date']) {
                             $indicators['date'] = __('Date from :start', [
-                                'start' => Carbon::parse($data['date_from'])->isoFormat('MMM D, Y'),
+                                'start' => Carbon::parse($data['start_date'])->isoFormat('MMM D, Y H:mm'),
                             ]);
                         } else if ($data['end_date']) {
                             $indicators['date'] = __('Date until :end', [
-                                'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y'),
+                                'end' => Carbon::parse($data['end_date'])->isoFormat('MMM D, Y H:mm'),
                             ]);
                         }
 
@@ -181,7 +180,7 @@ class FerryResource extends Resource
                         ->requiresConfirmation()
                         ->modalIcon('gmdi-file-copy-r')
                         ->beforeReplicaSaved(function (Ferry $replica): Ferry {
-                            $replica['start_date'] = today();
+                            $replica['start_date'] = now();
 
                             return $replica;
                         })
