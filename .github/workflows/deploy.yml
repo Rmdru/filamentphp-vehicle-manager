@@ -22,7 +22,7 @@ jobs:
           script_stop: true
           command_timeout: 10m
           script: |
-            cd ./httpdocs/vehicle-manager.rubenderuijter.nl
+            cd ../../var/www/vehicle-manager.rubenderuijter.nl
             git pull origin main
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
