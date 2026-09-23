@@ -3,7 +3,8 @@
 use App\Models\Ferry;
 use Carbon\Carbon;
 
-uses(Tests\TestCase::class);
+uses(Tests\UnitTestCase::class);
+
 
 describe('Ferry casts', function () {
     it('casts start_date and end_date to datetime Carbon instances', function () {
